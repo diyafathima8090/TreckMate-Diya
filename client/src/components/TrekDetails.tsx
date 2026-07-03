@@ -1,0 +1,771 @@
+import React, { useState, useEffect, useRef } from 'react';
+import { useParams, Link } from './RouterCompatibility';
+import { useAuth } from '../context/AuthContext';
+import Navbar from './Navbar';
+import { getTrekById } from '../utils/trekStorage';
+import { MapContainer as LeafletMapContainer, TileLayer as LeafletTileLayer, Marker as LeafletMarker, Polyline as LeafletPolyline, useMap } from 'react-leaflet';
+const MapContainer = LeafletMapContainer as any;
+const TileLayer = LeafletTileLayer as any;
+const Marker = LeafletMarker as any;
+const Polyline = LeafletPolyline as any;
+import L from 'leaflet';
+import 'leaflet/dist/leaflet.css';
+import { ChatLayout } from './chat/ChatLayout';
+
+const MapBoundsFitter = ({ bounds }) => {
+  const map = useMap();
+  useEffect(() => {
+    if (bounds) {
+      map.fitBounds(bounds, { padding: [20, 20], animate: false });
+    }
+  }, [map, bounds]);
+  return null;
+};
+
+const startIcon = new L.divIcon({
+  className: 'bg-transparent',
+  html: `<div class="relative flex items-center justify-center">
+          <div class="absolute w-8 h-8 bg-blue-500/40 rounded-full animate-ping"></div>
+          <div class="relative w-3 h-3 bg-blue-500 border-2 border-white rounded-full z-10"></div>
+         </div>`,
+  iconSize: [24, 24],
+  iconAnchor: [12, 12],
+});
+
+const destIcon = new L.divIcon({
+  className: 'bg-transparent',
+  html: `<div class="relative flex items-center justify-center">
+          <div class="w-4 h-4 bg-green-500 rounded-full border-2 border-black z-10 flex items-center justify-center">
+            <div class="w-1.5 h-1.5 bg-white rounded-full"></div>
+          </div>
+          <div class="absolute -bottom-4 font-mono text-[9px] font-black text-green-500 whitespace-nowrap">DEST</div>
+         </div>`,
+  iconSize: [16, 16],
+  iconAnchor: [8, 8]
+});
+
+const coordsLookup = {
+  munnar: { lat: 10.0889, lng: 77.0597 },
+  wayanad: { lat: 11.6854, lng: 76.1320 },
+  peak: { lat: 9.6841, lng: 76.9042 },
+  vagamon: { lat: 9.6912, lng: 76.9015 },
+  idukki: { lat: 9.8512, lng: 76.9654 },
+  photography: { lat: 10.0152, lng: 76.9812 },
+  anamudi: { lat: 10.1685, lng: 77.0645 },
+  kudremukh: { lat: 13.2185, lng: 75.2530 },
+  chembra: { lat: 11.5452, lng: 76.0890 },
+  agasthyakoodam: { lat: 8.6189, lng: 77.2488 }
+};
+
+const TrekDetails = () => {
+  const { id } = useParams();
+
+  // Dynamic database containing trek-specific layout specs
+  const allTreksData = {
+    munnar: {
+      title: "Munnar Mist Trek",
+      location: "Vegamon, Kerala",
+      rating: "4.8 (120k reviews)",
+      difficulty: "Moderate",
+      duration: "2 Days / 1 Night",
+      seats: "12 Persons",
+      left: "4 Left",
+      reportingTime: "8:00 AM",
+      pickup: "Kochi International Airport",
+      temp: "14°C Clear",
+      description: "An immersive 2-day expedition through the rolling tea gardens and misty peaks of Munnar. This journey is designed for those seeking high-altitude thrills combined with the serene beauty of Western Ghats' biodiversity.",
+      timeline: [
+        { num: "01", title: "Base Camp Arrival", desc: "Arrival at Munnar, briefing, and a gentle sunset trek to the first campsite overlooking the valley.", hasDining: true, hasWarning: true },
+        { num: "02", title: "Summit Ascent & Return", desc: "Challenging climb to the peak (2,400m) followed by a steep forest trail descent and return.", alert: "Rain coat required" }
+      ],
+      guide: { name: "Sarah Williams", title: "Certified Lead Guide", treks: "45+ Treks Done", exp: "8 yrs Experience", avatar: "S" }
+    },
+    wayanad: {
+      title: "Wayanad River Camp",
+      location: "Wayanad, Kerala",
+      rating: "4.9 (85k reviews)",
+      difficulty: "Easy",
+      duration: "3 Days / 2 Nights",
+      seats: "15 Persons",
+      left: "8 Left",
+      reportingTime: "9:00 AM",
+      pickup: "Calicut International Airport",
+      temp: "22°C Clear",
+      description: "Explore the wild forests and riverbanks of Wayanad. This camping trek brings you closer to nature with scenic campsite views, light bamboo rafting, and guided nocturnal wildlife trails.",
+      timeline: [
+        { num: "01", title: "Forest Trail Crossing", desc: "Trek through bamboo groves and set up camp next to the Kabini river tributary.", hasDining: true },
+        { num: "02", title: "Chembra Ridge Hike", desc: "Climb to the Chembra ridge line for spectacular morning cloud bed views.", alert: "Leech protection socks recommended" },
+        { num: "03", title: "Bamboo Rafting & Checkout", desc: "Gentle river rafting session followed by local tribal lunch and checkout.", hasWater: true }
+      ],
+      guide: { name: "David Miller", title: "Senior Trail Master", treks: "62+ Treks Done", exp: "10 yrs Experience", avatar: "D" }
+    },
+    peak: {
+      title: "Peak Challenge",
+      location: "Vegamon, Kerala",
+      rating: "4.7 (42k reviews)",
+      difficulty: "Difficult",
+      duration: "1 Day",
+      seats: "10 Persons",
+      left: "2 Left",
+      reportingTime: "6:00 AM",
+      pickup: "Vegamon Town Bus Stand",
+      temp: "19°C Cloudy",
+      description: "A high-intensity, one-day vertical challenge pushing your endurance limits. Scale steep rocky pathways to the Vegamon Peak summit for a panoramic 360-degree overlook of the valleys.",
+      timeline: [
+        { num: "01", title: "Ascent Briefing", desc: "Early morning base meeting, safety check, and start of the steep uphill hike.", hasDining: true },
+        { num: "02", title: "Summit Reach & Return", desc: "Reach the peak summit, enjoy packed local lunch, and safely navigate the steep rocky descent.", alert: "Sturdy hiking boots required" }
+      ],
+      guide: { name: "Sarah Williams", title: "Certified Lead Guide", treks: "45+ Treks Done", exp: "8 yrs Experience", avatar: "S" }
+    },
+    vagamon: {
+      title: "Vagamon Meadows Hike",
+      location: "Vegamon, Kerala",
+      rating: "4.8 (60k reviews)",
+      difficulty: "Easy",
+      duration: "2 Days / 1 Night",
+      seats: "20 Persons",
+      left: "11 Left",
+      reportingTime: "10:00 AM",
+      pickup: "Kottayam Railway Station",
+      temp: "20°C Windy",
+      description: "A scenic hike across the lush pine forests and green rolling hills of Vagamon. Ideal for beginners and families looking for a peaceful mountain getaway.",
+      timeline: [
+        { num: "01", title: "Pine Forest Walk", desc: "Enjoy a leisure walk through tall pine groves, leading to the meadow tents campsite.", hasDining: true },
+        { num: "02", title: "Meadow Sunrise & Exit", desc: "Watch the valley sunrise, enjoy breakfast, hike the lower ridge paths, and check out.", hasWater: true }
+      ],
+      guide: { name: "David Miller", title: "Senior Trail Master", treks: "62+ Treks Done", exp: "10 yrs Experience", avatar: "D" }
+    },
+    idukki: {
+      title: "Idukki Canyon Exploration",
+      location: "Idukki, Kerala",
+      rating: "4.8 (55k reviews)",
+      difficulty: "Difficult",
+      duration: "3 Days / 2 Nights",
+      seats: "8 Persons",
+      left: "3 Left",
+      reportingTime: "7:00 AM",
+      pickup: "Kochi International Airport",
+      temp: "17°C Overcast",
+      description: "Thru-hike the dramatic gorge systems and waterfalls of the Idukki canyons. Face rugged terrain, stream crossings, and high-altitude mountain lookouts.",
+      timeline: [
+        { num: "01", title: "Canyon Entry & Camp", desc: "Briefing, entry into the deep canyon forest trail, and pitch tents near the stream.", hasDining: true },
+        { num: "02", title: "Water Abseiling Challenge", desc: "Climb down wet rocky paths using abseil ropes under expert guidance.", alert: "Waterproof drybag and helmet mandatory" },
+        { num: "03", title: "Ridge Walk & Exit", desc: "Navigate the upper cliff ridges back to the main pick-up van.", hasWater: true }
+      ],
+      guide: { name: "Sarah Williams", title: "Certified Lead Guide", treks: "45+ Treks Done", exp: "8 yrs Experience", avatar: "S" }
+    },
+    photography: {
+      title: "Photography Masterclass Trek",
+      location: "Idukki, Kerala",
+      rating: "4.8 (30k reviews)",
+      difficulty: "Intermediate",
+      duration: "1 Day",
+      seats: "15 Persons",
+      left: "5 Left",
+      reportingTime: "5:00 AM",
+      pickup: "Adimali Bus Terminal",
+      temp: "18°C Sunny",
+      description: "Combine nature trekking with professional photography instruction. Capture epic golden-hour landscapes, macro flora, and wild stream long exposures with on-trail workshops.",
+      timeline: [
+        { num: "01", title: "Golden Hour Shoot", desc: "Early morning hike to catch the sun breaking through the mist over the tea fields.", hasDining: true },
+        { num: "02", title: "Macro & Stream Workshop", desc: "Learn slow-shutter water photography techniques and close-up natural shoots, followed by feedback." }
+      ],
+      guide: { name: "David Miller", title: "Senior Trail Master", treks: "62+ Treks Done", exp: "10 yrs Experience", avatar: "D" }
+    },
+    anamudi: {
+      title: "Anamudi Peak",
+      location: "Munnar, India",
+      rating: "4.9 (140k reviews)",
+      difficulty: "Hard",
+      duration: "3 Days / 2 Nights",
+      seats: "10 Persons",
+      left: "4 Left",
+      reportingTime: "7:30 AM",
+      pickup: "Munnar KSRTC Bus Stand",
+      temp: "11°C Cold",
+      description: "Ascend the highest peak in South India (2,695m). Navigate unique shola forest ecosystems and high-altitude grasslands home to the endangered Nilgiri Tahr.",
+      timeline: [
+        { num: "01", title: "Eravikulam Camp Entry", desc: "Park entry permit clearance, trek to the shola forest edge, and pitch high-altitude tents.", hasDining: true },
+        { num: "02", title: "Summit Climb", desc: "Hike to the steep ridge-line close to the peak summit with a certified guide.", alert: "Extreme cold weather gear required" },
+        { num: "03", title: "Grassland Walk & Return", desc: "Leisure morning walk in the high grasslands, spotting wildlife before descending.", hasWater: true }
+      ],
+      guide: { name: "Sarah Williams", title: "Certified Lead Guide", treks: "45+ Treks Done", exp: "8 yrs Experience", avatar: "S" }
+    },
+    kudremukh: {
+      title: "Kudremukh Trail",
+      location: "Chikmagalur, India",
+      rating: "4.8 (98k reviews)",
+      difficulty: "Moderate",
+      duration: "2 Days / 1 Night",
+      seats: "12 Persons",
+      left: "6 Left",
+      reportingTime: "8:00 AM",
+      pickup: "Mangalore Central Station",
+      temp: "16°C Cloudy",
+      description: "Trek the horse-faced peak of Kudremukh through open meadows, overlapping hills, and cool shola forests inside a protected National Park.",
+      timeline: [
+        { num: "01", title: "Base Camp & Forest Walk", desc: "Reach the home-stay base camp, brief, and take a light walk into the forest boundary.", hasDining: true },
+        { num: "02", title: "Kudremukh Summit Ascent", desc: "Ascend the grassy ridges to the iconic horse-face peak and return for evening checkout.", alert: "Forest department pass mandatory (provided)" }
+      ],
+      guide: { name: "David Miller", title: "Senior Trail Master", treks: "62+ Treks Done", exp: "10 yrs Experience", avatar: "D" }
+    },
+    chembra: {
+      title: "Chembra Peak",
+      location: "Wayanad, India",
+      rating: "4.7 (70k reviews)",
+      difficulty: "Moderate",
+      duration: "1 Day",
+      seats: "25 Persons",
+      left: "12 Left",
+      reportingTime: "7:00 AM",
+      pickup: "Kalpetta Bus Station",
+      temp: "21°C Sunny",
+      description: "Hike to the highest peak in Wayanad. Stop by the famous heart-shaped lake (Chembra Lake) which is believed to never dry up, set against stunning tea estate backdrops.",
+      timeline: [
+        { num: "01", title: "Tea Estate Ascent", desc: "Trek through lush green tea gardens before entering the forest department border.", hasDining: true },
+        { num: "02", title: "Heart Lake Summit", desc: "Reach the beautiful heart-shaped lake, capture views of the surrounding valley, and descend.", alert: "Do not litter around the lake area" }
+      ],
+      guide: { name: "David Miller", title: "Senior Trail Master", treks: "62+ Treks Done", exp: "10 yrs Experience", avatar: "D" }
+    },
+    agasthyakoodam: {
+      title: "Agasthyakoodam Summit",
+      location: "Trivandrum, India",
+      rating: "4.9 (110k reviews)",
+      difficulty: "Expert",
+      duration: "3 Days / 2 Nights",
+      seats: "6 Persons",
+      left: "1 Left",
+      reportingTime: "6:30 AM",
+      pickup: "Trivandrum Central Station",
+      temp: "13°C Foggy",
+      description: "A highly controlled, challenging wilderness trek through the Agasthyavanam Biosphere Reserve. Requires peak physical fitness and forest permit clearances.",
+      timeline: [
+        { num: "01", title: "Bonacaud to Athirumala", desc: "Cover 20km of forest trails, crossing streams and high vegetation to reach the forest shelter.", hasDining: true },
+        { num: "02", title: "Agasthyakoodam Ascent", desc: "Hike up vertical rope climbs to reach the sacred wind-swept summit (1,868m).", alert: "Strictly follow guide safety rope instructions" },
+        { num: "03", title: "Return to Bonacaud", desc: "Trek 20km back from Athirumala to Bonacaud base and transfer back to town.", hasWater: true }
+      ],
+      guide: { name: "Sarah Williams", title: "Certified Lead Guide", treks: "45+ Treks Done", exp: "8 yrs Experience", avatar: "S" }
+    }
+  };
+
+  const [trek, setTrek] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [bookingStatus, setBookingStatus] = useState(null);
+  
+  const { sessions } = useAuth();
+  const user = sessions.trekker || sessions.organizer || sessions.admin;
+
+  useEffect(() => {
+    const fetchTrekAndBooking = async () => {
+      const data = await getTrekById(id);
+      setTrek(data);
+      
+      if (user && data) {
+        try {
+          const res = await fetch('/api/bookings/my-bookings', {
+            headers: {
+              'Authorization': `Bearer ${localStorage.getItem(`token_${user.role}`) || ''}`
+            }
+          });
+          if (res.ok) {
+            const bookingsData = await res.json();
+            if (bookingsData.success && bookingsData.data) {
+              const currentBooking = bookingsData.data.find(b => b.trekId === id || b.trekTitle === data.title);
+              if (currentBooking) {
+                setBookingStatus(currentBooking.booking_status);
+              } else {
+                setBookingStatus(null);
+              }
+            } else {
+              setBookingStatus(null);
+            }
+          } else {
+            setBookingStatus(null);
+          }
+        } catch (error) {
+          console.error("Error fetching bookings:", error);
+          setBookingStatus(null);
+        }
+      } else {
+        setBookingStatus(null);
+      }
+      
+      setLoading(false);
+    };
+    fetchTrekAndBooking();
+  }, [id, user]);
+
+  // INTERACTIVE STATES
+  const [isMapExpanded, setIsMapExpanded] = useState(false);
+  const [guideRequested, setGuideRequested] = useState(false);
+  const [toastMessage, setToastMessage] = useState('');
+  // Fetch historical chat from MongoDB (Optional legacy cleanup)
+  const [userLocation, setUserLocation] = useState(null);
+
+  useEffect(() => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => setUserLocation({ lat: position.coords.latitude, lng: position.coords.longitude }),
+        (error) => console.warn("Error getting location", error)
+      );
+    }
+  }, []);
+
+  useEffect(() => {
+    // ... removed old chat logic ...
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="font-sans text-white bg-trek-dark min-h-screen flex items-center justify-center">
+        <div className="text-center space-y-4">
+          <svg className="animate-spin h-8 w-8 text-orange-500 mx-auto" fill="none" viewBox="0 0 24 24">
+            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+          </svg>
+          <p className="text-xs uppercase tracking-widest text-gray-500 font-bold">Retrieving Trail Data...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!trek) {
+    return (
+      <div className="font-sans text-white bg-trek-dark min-h-screen flex items-center justify-center">
+        <div className="text-center space-y-4">
+          <span className="text-4xl">️</span>
+          <p className="text-xs uppercase tracking-widest text-red-400 font-bold">Trail Not Found</p>
+          <Link to="/explore" className="text-xs text-orange-500 underline uppercase tracking-wider block">Return to Explore</Link>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="font-sans text-white bg-trek-dark min-h-screen selection:bg-orange-500 selection:text-white pt-20 relative overflow-hidden">
+
+      {/* Toast Notification */}
+      {toastMessage && (
+        <div className="fixed top-24 right-5 z-50 bg-orange-600 text-white px-5 py-3 rounded-lg shadow-[0_0_15px_rgba(234,88,12,0.6)] font-black uppercase tracking-wider animate-bounce text-xs border border-orange-400">
+          {toastMessage}
+        </div>
+      )}
+
+      {/* Wilderness Background Photograph */}
+      <div
+        className="absolute inset-0 bg-cover bg-center z-0"
+        style={{ backgroundImage: `url('${trek.image || trek.banner || '/trips_details_bg.png'}')` }}
+      >
+        <div className="absolute inset-0 bg-black/80 z-10"></div>
+        <div className="absolute inset-0 bg-gradient-to-t from-trek-dark via-transparent to-black/35 z-10"></div>
+      </div>
+
+      <Navbar />
+
+      {/* 1. HERO HEADER SECTION */}
+      <section className="relative z-20 max-w-7xl mx-auto px-6 md:px-12 lg:px-24 pt-10 pb-6 select-text">
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-white/10 pb-8">
+
+          <div className="max-w-xl">
+            {/* Tag capsules */}
+            <div className="flex items-center gap-2 mb-3.5 select-none">
+              {['Camping', 'Trekking', 'High Altitude'].map((tag) => (
+                <span key={tag} className="bg-white/5 border border-white/10 rounded px-2.5 py-1 text-[9px] font-black uppercase text-gray-300 tracking-wider">
+                  {tag}
+                </span>
+              ))}
+            </div>
+
+            {/* Title */}
+            <h1 className="font-outfit text-4xl md:text-5xl lg:text-6xl font-black uppercase tracking-tight text-white leading-none mb-3.5">
+              {trek.title}
+            </h1>
+
+            {/* Location & Ratings */}
+            <div className="flex flex-wrap items-center gap-4 text-xs font-light text-gray-400">
+              <span className="flex items-center gap-1.5 font-bold text-orange-400">
+                 {trek.location}
+              </span>
+              <span className="h-1.5 w-1.5 rounded-full bg-white/20 select-none"></span>
+              <span className="flex items-center gap-1.5">
+                 {trek.rating}
+              </span>
+            </div>
+
+            {/* Actions Row */}
+            <div className="flex flex-wrap items-center gap-3.5 mt-6 select-none">
+              {bookingStatus === 'confirmed' ? (
+                <button disabled className="bg-green-500/20 text-green-400 border border-green-500/50 font-bold px-8 py-3 rounded-xl uppercase tracking-wider text-xs shadow-none transition-all duration-300">
+                  Already Joined
+                </button>
+              ) : bookingStatus === 'pending' ? (
+                <button disabled className="bg-yellow-500/20 text-yellow-400 border border-yellow-500/50 font-bold px-8 py-3 rounded-xl uppercase tracking-wider text-xs shadow-none transition-all duration-300">
+                  Request Pending
+                </button>
+              ) : bookingStatus === 'rejected' ? (
+                <button disabled className="bg-red-500/20 text-red-400 border border-red-500/50 font-bold px-8 py-3 rounded-xl uppercase tracking-wider text-xs shadow-none transition-all duration-300">
+                  Request Rejected
+                </button>
+              ) : (
+                <Link
+                  to={`/book/${id || 'munnar'}`}
+                  id="btn-join-trip"
+                  className="bg-orange-500 hover:bg-orange-600 active:scale-98 text-white font-bold px-8 py-3 rounded-xl uppercase tracking-wider text-xs shadow-[0_0_20px_rgba(249,115,22,0.45)] hover:shadow-[0_0_25px_rgba(249,115,22,0.65)] transition-all duration-300"
+                >
+                  Join Trip
+                </Link>
+              )}
+              <Link
+                to={`/tracking/${id}`}
+                className="border border-white/20 text-white rounded-xl px-7 py-3 text-xs font-semibold tracking-wider uppercase bg-white/5 backdrop-blur-sm hover:bg-white hover:text-black hover:border-white transition-all duration-300 shadow-md flex items-center gap-2 cursor-pointer active:scale-98"
+              >
+                 Live Tracking
+              </Link>
+            </div>
+          </div>
+
+          {/* Weather status capsule right side */}
+          <div className="bg-white/5 border border-white/10 rounded-2xl p-4 flex items-center gap-4 w-fit select-none backdrop-blur-md shadow-lg h-max self-start md:self-end">
+            <svg className="w-8 h-8 text-amber-400 animate-pulse" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m0-12.728l.707.707m12.728 12.728l.707-.707M12 8a4 4 0 100 8 4 4 0 000-8z" />
+            </svg>
+            <div className="flex flex-col">
+              <span className="text-[9px] text-gray-500 font-black uppercase tracking-widest leading-none">Weather</span>
+              <span className="text-sm font-extrabold text-white mt-1 leading-none">{trek.temp}</span>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      {/* 2. SPLIT LAYOUT COLUMNS GRID */}
+      <main className="relative z-20 max-w-7xl mx-auto px-6 md:px-12 lg:px-24 py-6 pb-24 flex flex-col lg:flex-row gap-10 items-stretch">
+
+        {/* LEFT COLUMN: Overview & Journey Details */}
+        <section className="flex-[1.8] flex flex-col gap-8 select-text">
+
+          {/* Trek description */}
+          <div>
+            <p className="text-sm md:text-base text-gray-400 font-light leading-relaxed select-text">
+              {trek.description}
+            </p>
+          </div>
+
+          {/* Quick Stats Grid (4 Columns) */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 select-none">
+
+            {/* Stat 1: Difficulty */}
+            <div className="bg-[#121317]/80 border border-white/5 rounded-2xl p-4 flex flex-col justify-between hover:border-white/10 transition shadow-md">
+              <span className="text-[8px] text-gray-500 uppercase font-black tracking-widest block mb-3">️ Difficulty</span>
+              <span className="text-md font-extrabold text-white uppercase tracking-wide leading-none">{trek.difficulty}</span>
+            </div>
+
+            {/* Stat 2: Duration */}
+            <div className="bg-[#121317]/80 border border-white/5 rounded-2xl p-4 flex flex-col justify-between hover:border-white/10 transition shadow-md">
+              <span className="text-[8px] text-gray-500 uppercase font-black tracking-widest block mb-3"> Duration</span>
+              <span className="text-md font-extrabold text-white uppercase tracking-wide leading-none">{trek.duration}</span>
+            </div>
+
+            {/* Stat 3: Max Seats */}
+            <div className="bg-[#121317]/80 border border-white/5 rounded-2xl p-4 flex flex-col justify-between hover:border-white/10 transition shadow-md">
+              <span className="text-[8px] text-gray-500 uppercase font-black tracking-widest block mb-3"> Max Seats</span>
+              <span className="text-md font-extrabold text-white uppercase tracking-wide leading-none">{trek.seats}</span>
+            </div>
+
+            {/* Stat 4: Availability */}
+            <div className="bg-orange-500/10 border border-orange-500/20 rounded-2xl p-4 flex flex-col justify-between hover:border-orange-500/35 transition shadow-md animate-pulse">
+              <span className="text-[8px] text-orange-400 uppercase font-black tracking-widest block mb-3"> Availability</span>
+              <span className="text-md font-extrabold text-orange-400 uppercase tracking-wide leading-none">{trek.left}</span>
+            </div>
+
+          </div>
+
+          {/* Departure Reporting Details */}
+          <div className="bg-white/[0.01] border border-white/10 rounded-2xl p-5 select-none grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="flex items-center gap-3.5">
+              <div className="h-10 w-10 bg-white/5 border border-white/10 rounded-xl flex items-center justify-center text-lg shadow-inner">
+                
+              </div>
+              <div className="flex flex-col">
+                <span className="text-[9px] text-gray-500 uppercase font-black leading-none">Reporting Time</span>
+                <span className="text-xs font-bold text-gray-300 mt-1.5">{trek.reportingTime}</span>
+              </div>
+            </div>
+            <div className="flex items-center gap-3.5 border-t border-white/5 md:border-t-0 md:border-l md:pl-6 pt-4 md:pt-0">
+              <div className="h-10 w-10 bg-white/5 border border-white/10 rounded-xl flex items-center justify-center text-lg shadow-inner">
+                
+              </div>
+              <div className="flex flex-col">
+                <span className="text-[9px] text-gray-500 uppercase font-black leading-none">Pickup Point</span>
+                <span className="text-xs font-bold text-gray-300 mt-1.5">{trek.pickup}</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Journey Timeline vertical flow */}
+          <div>
+            <h3 className="font-outfit text-xl font-black uppercase text-white tracking-wide mb-6">Journey Timeline</h3>
+
+            <div className="flex flex-col gap-6 relative pl-3">
+              {/* Central vertical dotted line */}
+              <div className="absolute left-[1.125rem] top-4 bottom-4 w-0.5 border-l border-dashed border-white/20 select-none" />
+
+              {trek.timeline.map((item, index) => (
+                <div key={index} className="flex gap-5 relative group">
+
+                  {/* Timeline Node Circle */}
+                  <div className="h-9 w-9 rounded-full bg-[#121317] border border-white/20 flex items-center justify-center text-xs font-black text-orange-500 relative z-10 select-none shadow-md group-hover:border-orange-500 transition duration-300">
+                    {item.num}
+                  </div>
+
+                  {/* Card Content */}
+                  <div className="flex-grow bg-[#121317]/80 border border-white/5 rounded-2xl p-5 hover:border-white/15 hover:bg-[#121317]/95 transition duration-300 shadow-xl flex flex-col justify-between gap-3">
+                    <div>
+                      <h4 className="font-outfit text-md font-extrabold uppercase text-white">{item.title}</h4>
+                      <p className="text-xs text-gray-400 font-light leading-relaxed mt-2 select-text">{item.desc}</p>
+                    </div>
+
+                    {/* Checkpoint accessories / warnings */}
+                    {item.hasDining && (
+                      <div className="flex gap-2 items-center select-none text-[10px] text-gray-400 border-t border-white/5 pt-2 w-max">
+                         Food Provided <span className="h-1.5 w-1.5 rounded-full bg-white/20" />  Base Camp Shelter
+                      </div>
+                    )}
+                    {item.alert && (
+                      <div className="bg-orange-500/10 border border-orange-500/20 text-orange-400 text-[9px] font-extrabold uppercase tracking-widest px-3 py-1 rounded-md w-max select-none animate-pulse">
+                        ️ {item.alert}
+                      </div>
+                    )}
+                    {item.hasWater && (
+                      <div className="flex gap-2 items-center select-none text-[10px] text-gray-400 border-t border-white/5 pt-2 w-max">
+                         swimming access <span className="h-1.5 w-1.5 rounded-full bg-white/20" />  scenic points
+                      </div>
+                    )}
+
+                  </div>
+
+                </div>
+              ))}
+            </div>
+
+          </div>
+
+        </section>
+
+        {/* RIGHT COLUMN: Interactive Widgets */}
+        <section className="flex-1 flex flex-col gap-6 select-none">
+
+          {/* A. Live Route Path Map Widget */}
+          <div className="bg-[#121317]/90 border border-white/10 rounded-2xl p-5 shadow-xl flex flex-col gap-3 relative overflow-hidden group">
+
+            {/* Header */}
+            <div className="flex justify-between items-center border-b border-white/5 pb-2.5">
+              <span className="text-[10px] text-orange-400 font-black uppercase tracking-widest">Satellite Trail</span>
+              <span className="text-[8px] bg-white/5 border border-white/10 rounded px-1.5 py-0.5 text-gray-400 font-semibold tracking-wider font-mono">Live route path</span>
+            </div>
+
+            {/* Micro map canvas preview */}
+            <div className="h-36 w-full bg-black/40 border border-white/5 rounded-xl flex items-center justify-center relative overflow-hidden select-none">
+              {(() => {
+                const coords = coordsLookup[id] || coordsLookup.munnar;
+                const destLat = coords.lat;
+                const destLng = coords.lng;
+                
+                const startLat = userLocation ? userLocation.lat : destLat - 0.05;
+                const startLng = userLocation ? userLocation.lng : destLng - 0.05;
+
+                const bounds = [
+                  [startLat, startLng],
+                  [destLat, destLng]
+                ];
+
+                return (
+                  <MapContainer 
+                    center={[destLat, destLng]} 
+                    zoom={11}
+                    zoomControl={false}
+                    scrollWheelZoom={false}
+                    dragging={false}
+                    doubleClickZoom={false}
+                    touchZoom={false}
+                    className="w-full h-full z-0"
+                    attributionControl={false}
+                  >
+                    <MapBoundsFitter bounds={bounds} />
+                    <TileLayer
+                      url='https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
+                    />
+                    <Polyline positions={[[startLat, startLng], [destLat, destLng]]} pathOptions={{ color: '#f97316', weight: 3, dashArray: '5, 5' }} />
+                    <Marker position={[startLat, startLng]} icon={startIcon} />
+                    <Marker position={[destLat, destLng]} icon={destIcon} />
+                  </MapContainer>
+                );
+              })()}
+              
+              {/* Blurred overlays */}
+              <div className="absolute inset-0 bg-gradient-to-t from-[#121317]/90 to-transparent pointer-events-none z-10" />
+
+              <Link
+                to={`/tracking/${id}`}
+                className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 px-4 py-2 border border-white/20 bg-black/60 backdrop-blur-md rounded-lg text-[9px] font-black uppercase tracking-wider text-white hover:bg-white hover:text-black hover:border-white transition-all shadow-md cursor-pointer active:scale-95 inline-flex items-center z-20"
+              >
+                Expand Map
+              </Link>
+            </div>
+
+          </div>
+
+          {/* B. Live Group Chat Widget */}
+          <div className="flex-1 bg-[#121317]/95 border border-white/10 rounded-2xl shadow-xl overflow-hidden h-[400px]">
+             <ChatLayout singleRoomId={id} />
+          </div>
+
+          {/* C. Amber Weather Alert Banner */}
+          <div className="bg-red-500/10 border border-red-500/20 rounded-2xl p-4 flex items-start gap-3 shadow-md animate-pulse">
+            <svg className="w-5 h-5 text-red-400 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+            </svg>
+            <div className="flex flex-col select-text">
+              <span className="text-[10px] font-black text-red-400 uppercase tracking-widest leading-none">Weather Alert</span>
+              <p className="text-[11px] text-red-200/80 font-light leading-relaxed mt-1.5">
+                Rain expected on Day 2 - Pack waterproof gear and rain jackets.
+              </p>
+            </div>
+          </div>
+
+          {/* D. Guide Profile Credentials Card */}
+          <div className="bg-[#121317]/95 border border-white/10 rounded-2xl p-5 shadow-xl flex items-center justify-between">
+            <div className="flex items-center gap-3.5 select-text">
+              {/* Guide initials avatar */}
+              <div className="h-10 w-10 rounded-xl bg-gradient-to-tr from-trek-brown/30 to-white/10 border border-white/10 flex items-center justify-center font-black text-lg text-orange-400 shadow-inner select-none">
+                {trek.guide.avatar}
+              </div>
+              <div className="flex flex-col">
+                <span className="text-[8px] text-gray-500 uppercase font-black leading-none">Certified Trail Guide</span>
+                <span className="text-sm font-extrabold text-white mt-1 leading-none">{trek.guide.name}</span>
+
+                {/* Stats subrow */}
+                <div className="flex items-center gap-2 text-[9px] text-gray-500 mt-2 font-medium select-none">
+                  <span>{trek.guide.treks}</span>
+                  <span className="h-1 w-1 rounded-full bg-white/10" />
+                  <span>{trek.guide.exp}</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Contact Trigger */}
+            <button
+              onClick={() => setGuideRequested(!guideRequested)}
+              className={`text-[9px] font-black uppercase tracking-widest border rounded-xl px-4.5 py-2.5 transition active:scale-95 cursor-pointer shadow-md select-none ${guideRequested
+                ? 'bg-green-500/10 border-green-500 text-green-400'
+                : 'border-white/10 bg-white/5 text-gray-300 hover:border-white hover:text-white'
+                }`}
+            >
+              {guideRequested ? ' Sent' : 'Contact'}
+            </button>
+          </div>
+
+        </section>
+
+      </main>
+
+      {/* FOOTER */}
+      <footer className="relative z-20 px-6 md:px-12 lg:px-24 py-8 bg-black border-t border-white/5 flex items-center justify-between select-none">
+        <div className="flex items-center gap-3">
+          <svg className="w-6 h-6 text-orange-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+            <path d="M3 20L12 4L21 20H3Z" />
+          </svg>
+          <span className="font-outfit font-black tracking-widest text-md uppercase">TrekMate</span>
+        </div>
+        <div className="text-[10px] text-gray-500 font-light">
+          &copy; {new Date().getFullYear()} TrekMate. All rights reserved.
+        </div>
+      </footer>
+
+      {/* INTERACTIVE FULLSCREEN SVG MAP MODAL OVERLAY */}
+      {isMapExpanded && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-black/95 backdrop-blur-md select-none animate-fadeIn">
+          <div className="max-w-3xl w-full bg-[#121317] border border-white/10 rounded-2xl overflow-hidden shadow-2xl p-6 relative flex flex-col justify-between h-[85vh]">
+
+            {/* Header info */}
+            <div className="flex justify-between items-center border-b border-white/5 pb-4 mb-4 select-text">
+              <div>
+                <span className="text-[10px] text-orange-400 font-black uppercase tracking-widest block leading-none">satellite route map</span>
+                <h3 className="font-outfit text-xl font-black uppercase text-white leading-none mt-2">{trek.title} GPS Tracking</h3>
+              </div>
+              <button
+                onClick={() => setIsMapExpanded(false)}
+                className="h-8 w-8 rounded-full bg-white/5 border border-white/10 flex items-center justify-center hover:bg-white hover:text-black transition shadow-inner cursor-pointer"
+              >
+                
+              </button>
+            </div>
+
+            {/* Detailed Topographic SVG path Canvas */}
+            <div className="flex-grow flex items-center justify-center relative w-full h-[60vh] bg-black/30 border border-white/5 rounded-xl p-4 select-none">
+              <svg viewBox="0 0 500 500" className="w-full h-full text-gray-600 select-none">
+
+                {/* Elevation Contours */}
+                <path d="M 20 80 Q 120 150 200 60 T 350 40" fill="none" stroke="currentColor" strokeWidth="0.75" className="opacity-10" />
+                <path d="M 40 180 Q 160 220 280 140 T 440 120" fill="none" stroke="currentColor" strokeWidth="0.75" className="opacity-15" />
+                <path d="M 60 280 Q 200 320 340 240 T 480 200" fill="none" stroke="currentColor" strokeWidth="0.75" className="opacity-20" />
+                <path d="M 120 380 Q 280 400 400 340 T 490 300" fill="none" stroke="currentColor" strokeWidth="0.75" className="opacity-10" />
+                <path d="M 380 180 C 410 180 440 220 440 250 C 440 280 410 320 380 320 C 350 320 320 280 320 250 C 320 220 350 180 380 180 Z" fill="none" stroke="currentColor" strokeWidth="0.75" className="opacity-15" />
+                <path d="M 380 200 C 400 200 420 230 420 250 C 420 270 400 300 380 300 C 360 300 340 270 340 250 C 340 230 360 200 380 200 Z" fill="none" stroke="currentColor" strokeWidth="0.75" className="opacity-20" />
+
+                {/* Compass lines */}
+                <line x1="250" y1="40" x2="250" y2="460" stroke="currentColor" strokeWidth="0.5" className="opacity-15" strokeDasharray="6 6" />
+                <line x1="40" y1="250" x2="460" y2="250" stroke="currentColor" strokeWidth="0.5" className="opacity-15" strokeDasharray="6 6" />
+
+                {/* Main GPS Route Path */}
+                <path
+                  id="expanded-route-path"
+                  d="M 90 410 Q 180 360 220 290 T 320 230 T 410 130"
+                  fill="none"
+                  stroke="#f97316"
+                  strokeWidth="5"
+                  strokeDasharray="10 8"
+                  strokeLinecap="round"
+                  className="drop-shadow-[0_0_10px_rgba(249,115,22,0.9)] z-10"
+                >
+                  <animate attributeName="stroke-dashoffset" values="100;0" dur="8s" repeatCount="indefinite" />
+                </path>
+
+                {/* Current position */}
+                <g>
+                  <circle cx="90" cy="410" r="14" fill="#f97316" fillOpacity="0.15" className="animate-ping" style={{ animationDuration: '3s' }} />
+                  <circle cx="90" cy="410" r="7" fill="#1e1e1e" stroke="#f97316" strokeWidth="2.5" className="drop-shadow-[0_0_6px_rgba(249,115,22,0.8)]" />
+                  <circle cx="90" cy="410" r="2.5" fill="#f97316" />
+                </g>
+
+                {/* Waypoints */}
+                <circle cx="180" cy="340" r="6" fill="#f97316" className="drop-shadow-[0_0_4px_rgba(249,115,22,0.8)] animate-pulse" />
+                <circle cx="280" cy="270" r="6" fill="#f97316" className="drop-shadow-[0_0_4px_rgba(249,115,22,0.8)] animate-pulse" />
+
+                {/* Peak Summit flag */}
+                <g>
+                  <circle cx="410" cy="130" r="18" fill="#10b981" fillOpacity="0.15" className="animate-pulse" />
+                  <circle cx="410" cy="130" r="7" fill="#1e1e1e" stroke="#10b981" strokeWidth="2.5" className="drop-shadow-[0_0_8px_rgba(16,185,129,0.8)]" />
+                  <path d="M 410 130 L 410 108 L 424 114 L 410 120 Z" fill="#10b981" stroke="#10b981" strokeWidth="1" />
+                </g>
+
+                {/* Labels */}
+                <text x="90" y="440" fill="#9ca3af" fontSize="9" fontWeight="bold" textAnchor="middle">START POINT</text>
+                <text x="410" y="90" fill="#10b981" fontSize="9" fontWeight="extrabold" textAnchor="middle">SUMMIT SUMMIT</text>
+              </svg>
+            </div>
+
+            {/* Footer note */}
+            <div className="border-t border-white/5 pt-4 text-center select-text">
+              <span className="text-[10px] text-gray-500 uppercase tracking-widest font-semibold">Active GPS coordinate feed updated real-time over satellite</span>
+            </div>
+
+          </div>
+        </div>
+      )}
+
+    </div>
+  );
+};
+
+export default TrekDetails;
