@@ -1,6 +1,6 @@
 import Trek from '../models/Trek.js';
 
-// Default Treks list to seed database if empty
+
 const DEFAULT_TREKS_SEED = [
   {
     id: "munnar",
@@ -321,9 +321,9 @@ const DEFAULT_TREKS_SEED = [
   }
 ];
 
-// @desc    Get all treks (auto-seeds if empty)
-// @route   GET /api/treks
-// @access  Public
+
+
+
 export const getTreks = async (req, res, next) => {
   try {
     let treks = await Trek.find({});
@@ -333,7 +333,7 @@ export const getTreks = async (req, res, next) => {
       await Trek.insertMany(DEFAULT_TREKS_SEED);
       treks = await Trek.find({});
     } else {
-      // Check for any missing default treks and seed them
+      
       const missingTreks = DEFAULT_TREKS_SEED.filter(
         seedTrek => !treks.some(dbTrek => dbTrek.id === seedTrek.id)
       );
@@ -344,8 +344,8 @@ export const getTreks = async (req, res, next) => {
       }
     }
 
-    // Return as dictionary key mapping to match frontend schema expectations if desired, or standard array
-    // Let's return as standard array, but we can structure frontend adapters to parse it
+    
+    
     res.status(200).json({
       success: true,
       count: treks.length,
@@ -356,9 +356,9 @@ export const getTreks = async (req, res, next) => {
   }
 };
 
-// @desc    Get single trek details by custom id
-// @route   GET /api/treks/:id
-// @access  Public
+
+
+
 export const getTrekById = async (req, res, next) => {
   try {
     const trek = await Trek.findOne({ id: req.params.id });
@@ -379,9 +379,9 @@ export const getTrekById = async (req, res, next) => {
   }
 };
 
-// @desc    Update a trek
-// @route   PUT /api/treks/:id
-// @access  Private (Organizer/Admin)
+
+
+
 export const updateTrek = async (req, res, next) => {
   try {
     if (!req.user || (req.user.role !== 'organizer' && req.user.role !== 'admin')) {
@@ -400,7 +400,7 @@ export const updateTrek = async (req, res, next) => {
       });
     }
 
-    // Prepare body
+    
     const body = { ...req.body };
     if (body.price && !String(body.price).startsWith('₹')) {
       const rawNum = parseFloat(String(body.price).replace(/[^0-9.]/g, ''));
@@ -428,9 +428,9 @@ export const updateTrek = async (req, res, next) => {
   }
 };
 
-// @desc    Create a new custom trek
-// @route   POST /api/treks
-// @access  Private (Organizer)
+
+
+
 export const createTrek = async (req, res, next) => {
   try {
     if (!req.user || (req.user.role !== 'organizer' && req.user.role !== 'admin')) {
@@ -442,7 +442,7 @@ export const createTrek = async (req, res, next) => {
 
     const body = { ...req.body };
 
-    // Auto-format price: if it's a plain number string like "25", convert to "₹25"
+    
     if (body.price && !String(body.price).startsWith('₹')) {
       const rawNum = parseFloat(String(body.price).replace(/[^0-9.]/g, ''));
       if (!isNaN(rawNum)) {
@@ -450,12 +450,12 @@ export const createTrek = async (req, res, next) => {
         body.price = `₹${rawNum.toLocaleString('en-IN')}`;
       }
     } else if (body.price) {
-      // Extract numeric from "₹4,500"
+      
       const rawNum = parseFloat(String(body.price).replace(/[^0-9.]/g, ''));
       if (!isNaN(rawNum)) body.price_num = rawNum;
     }
 
-    // Ensure required fields have defaults if missing
+    
     if (!body.pickup) body.pickup = body.location || 'To be confirmed';
     if (!body.description) body.description = body.title;
 

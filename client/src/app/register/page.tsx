@@ -3,24 +3,24 @@ import { GuestRoute } from '../../components/RouteGuard';
 import React, { useState } from 'react';
 import { Link, useNavigate } from '../../components/RouterCompatibility';
 import { useAuth } from '../../context/AuthContext';
-import axios from '../../utils/axios';
+import axios from '../../lib/axios';
 
 const Register = () => {
   const { register, loginWithGoogle } = useAuth();
   const navigate = useNavigate();
 
-  // Form states
+  
   const [name, setName] = useState('');
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [role, setRole] = useState('trekker'); // 'trekker' or 'organizer'
+  const [role, setRole] = useState('trekker'); 
   const [showPassword, setShowPassword] = useState(false);
 
-  // Organizer specific states
+  
   const [documentFile, setDocumentFile] = useState<File | null>(null);
 
-  // UI States
+  
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
   const [formError, setFormError] = useState('');
@@ -30,7 +30,7 @@ const Register = () => {
     e.preventDefault();
     setFormError('');
 
-    // Basic Client-side validations
+    
     if (!name || !username || !email || !password) {
       setFormError('Please fill in all the required fields.');
       return;
@@ -59,7 +59,7 @@ const Register = () => {
       let documentFilename = '';
 
       if (role === 'organizer' && documentFile) {
-        // Upload the file first
+        
         const formData = new FormData();
         formData.append('document', documentFile);
 
@@ -134,9 +134,9 @@ const Register = () => {
   return (
     <div className="font-sans text-white bg-trek-dark min-h-screen flex items-stretch select-none relative overflow-hidden">
 
-      {/* LEFT COLUMN: Cinematic Hero Video Panel (Consistent with Login) */}
+      {}
       <section className="hidden lg:flex lg:w-1/2 relative items-end p-16 overflow-hidden">
-        {/* Background Video */}
+        {}
         <div className="absolute inset-0 z-0 bg-trek-dark">
           <video
             autoPlay
@@ -148,11 +148,11 @@ const Register = () => {
             poster="/explore_glowing_tent.png"
           />
         </div>
-        {/* Heavy overlays */}
+        {}
         <div className="absolute inset-0 bg-black/60 z-10"></div>
         <div className="absolute inset-0 bg-gradient-to-t from-trek-dark via-transparent to-black/35 z-10"></div>
 
-        {/* Cinematic branding & quote */}
+        {}
         <div className="relative z-20 max-w-md">
           <Link to="/" className="flex items-center gap-3 text-white mb-8 group w-fit">
             <svg className="w-8 h-8 text-white transition-transform duration-500 group-hover:rotate-12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
@@ -174,15 +174,15 @@ const Register = () => {
         </div>
       </section>
 
-      {/* RIGHT COLUMN: Form Panel */}
+      {}
       <section className="w-full lg:w-1/2 flex items-center justify-center p-6 md:p-12 lg:p-16 bg-[#0a0a0a]/95 relative z-20 overflow-y-auto min-h-screen py-12">
 
-        {/* Floating background gradient light source */}
+        {}
         <div className="absolute bottom-1/4 left-1/4 h-[300px] w-[300px] bg-trek-brown/5 blur-[120px] rounded-full pointer-events-none" />
 
         <div className="max-w-md w-full z-10">
 
-          {/* Header */}
+          {}
           <div className="mb-6">
             <div className="flex lg:hidden items-center gap-2 text-white mb-4">
               <svg className="w-7 h-7 text-trek-brown" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
@@ -198,10 +198,10 @@ const Register = () => {
             </p>
           </div>
 
-          {/* Form */}
+          {}
           <form onSubmit={handleSubmit} className="flex flex-col gap-4 select-text">
 
-            {/* Error Message Box */}
+            {}
             {formError && (
               <div className="bg-red-500/10 border border-red-500/20 text-red-400 rounded-xl p-4 flex items-center gap-3 text-xs animate-pulse">
                 <span className="h-1.5 w-1.5 rounded-full bg-red-500 flex-shrink-0" />
@@ -209,14 +209,14 @@ const Register = () => {
               </div>
             )}
 
-            {/* Segmented/Interactive Card Role Selector (At the top) */}
+            {}
             <div className="flex flex-col gap-2">
               <span className="text-[9px] text-gray-500 uppercase tracking-widest font-black select-none">
                 Select Portal Role
               </span>
               <div className="grid grid-cols-2 gap-3.5">
 
-                {/* Hiker/Trekker Card */}
+                {}
                 <div
                   onClick={() => setRole('trekker')}
                   className={`border rounded-xl p-3.5 cursor-pointer flex flex-col justify-between transition-all duration-300 ${role === 'trekker'
@@ -234,7 +234,7 @@ const Register = () => {
                   </div>
                 </div>
 
-                {/* Guide/Organizer Card */}
+                {}
                 <div
                   onClick={() => setRole('organizer')}
                   className={`border rounded-xl p-3.5 cursor-pointer flex flex-col justify-between transition-all duration-300 ${role === 'organizer'
@@ -255,9 +255,9 @@ const Register = () => {
               </div>
             </div>
 
-            {/* Two Column Name & Username Fields */}
+            {}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {/* Full Name */}
+              {}
               <div className="flex flex-col gap-1.5">
                 <label className="text-[9px] text-gray-500 uppercase tracking-widest font-black flex items-center gap-1.5 select-none">
                   <svg className="w-3.5 h-3.5 text-gray-500" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
@@ -275,7 +275,7 @@ const Register = () => {
                 />
               </div>
 
-              {/* Username */}
+              {}
               <div className="flex flex-col gap-1.5">
                 <label className="text-[9px] text-gray-500 uppercase tracking-widest font-black flex items-center gap-1.5 select-none">
                   <svg className="w-3.5 h-3.5 text-gray-500" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
@@ -294,7 +294,7 @@ const Register = () => {
               </div>
             </div>
 
-            {/* Email Field */}
+            {}
             <div className="flex flex-col gap-1.5">
               <label className="text-[9px] text-gray-500 uppercase tracking-widest font-black flex items-center gap-1.5 select-none">
                 <svg className="w-3.5 h-3.5 text-gray-500" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
@@ -312,7 +312,7 @@ const Register = () => {
               />
             </div>
 
-            {/* Password Field */}
+            {}
             <div className="flex flex-col gap-1.5 relative">
               <label className="text-[9px] text-gray-500 uppercase tracking-widest font-black flex items-center gap-1.5 select-none">
                 <svg className="w-3.5 h-3.5 text-gray-500" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
@@ -348,14 +348,14 @@ const Register = () => {
               </div>
             </div>
 
-            {/* Organizer-specific File Upload (Only show when role === 'organizer') */}
+            {}
             {role === 'organizer' && (
               <div className="border border-white/10 rounded-xl p-4 bg-white/[0.02] flex flex-col gap-4 animate-fadeIn">
                 <h3 className="text-xs font-black uppercase tracking-wider text-trek-brown border-b border-white/5 pb-2">
                   Organizer Verification Proof
                 </h3>
 
-                {/* File Upload */}
+                {}
                 <div className="flex flex-col gap-1.5">
                   <label className="text-[9px] text-gray-500 uppercase tracking-widest font-black">
                     Upload Verification Proof (PDF, JPG, PNG - Max 10MB) *
@@ -394,7 +394,7 @@ const Register = () => {
               </div>
             )}
 
-            {/* Registration CTA Button */}
+            {}
             <button
               type="submit"
               disabled={isSubmitting}
@@ -414,14 +414,14 @@ const Register = () => {
             </button>
           </form>
 
-          {/* Divider */}
+          {}
           <div className="flex items-center gap-4 my-6 select-none opacity-50">
             <div className="h-px bg-white/10 flex-1"></div>
             <span className="text-[10px] text-gray-500 uppercase tracking-widest font-black">OR</span>
             <div className="h-px bg-white/10 flex-1"></div>
           </div>
 
-          {/* Google Login Button */}
+          {}
           <button
             type="button"
             onClick={handleGoogleLogin}
@@ -449,7 +449,7 @@ const Register = () => {
             )}
           </button>
 
-          {/* Login Link Toggle */}
+          {}
           <div className="mt-6 text-center border-t border-white/5 pt-4 text-xs font-light text-gray-400">
             Already have an account?{' '}
             <Link to="/login" className="text-trek-brown hover:text-white font-extrabold uppercase tracking-widest transition-colors ml-1">

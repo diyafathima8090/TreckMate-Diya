@@ -2,7 +2,6 @@ import axios from "axios";
 import { MockDB } from "./mock-data";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api";
-
 export const apiClient = axios.create({
   baseURL: API_URL,
   withCredentials: true,
@@ -11,7 +10,7 @@ export const apiClient = axios.create({
   },
 });
 
-// Attach token to headers before sending requests
+
 apiClient.interceptors.request.use((config) => {
   if (typeof window !== "undefined") {
     const token = localStorage.getItem("admin-token");
@@ -23,19 +22,19 @@ apiClient.interceptors.request.use((config) => {
   return config;
 });
 
-// Helper to determine if we should fallback to MockDB
+
 const isFallback = (error: any) => {
-  // Fall back on connection errors (code is undefined or ECONNABORTED) or if route not found (404)
+  
   if (!error.response) return true;
-  if (error.response.status === 404) return true;
+  if (error.response.status === 404 || error.response.status === 500) return true;
   return false;
 };
 
-// --- UserService ---
+
 export const UserService = {
   async getAllUsers() {
     try {
-      const response = await apiClient.get("/users"); // imaginary admin users route
+      const response = await apiClient.get("/users"); 
       return response.data;
     } catch (error) {
       if (isFallback(error)) {
@@ -94,7 +93,7 @@ export const UserService = {
   }
 };
 
-// --- OrganizerService ---
+
 export const OrganizerService = {
   async getAllOrganizers() {
     try {
@@ -104,7 +103,7 @@ export const OrganizerService = {
       if (isFallback(error)) {
         console.warn("Backend /organizer endpoint failed. Falling back to MockDB.");
         const organizers = MockDB.getOrganizers();
-        // Resolve user references locally
+        
         const users = MockDB.getUsers();
         const populated = organizers.map(org => {
           const matchedUser = users.find(u => u._id === org.user_id);
@@ -137,7 +136,7 @@ export const OrganizerService = {
         const organizers = MockDB.getOrganizers();
         const updatedOrganizers = organizers.map((org) => {
           if (org._id === organizerId) {
-            // Also update the linked user role if approved
+            
             if (status === "approved") {
               const users = MockDB.getUsers();
               const updatedUsers = users.map((u) => {
@@ -166,12 +165,12 @@ export const OrganizerService = {
   }
 };
 
-// --- TripService ---
+
 export const TripService = {
   async getAllTrips() {
     try {
       const response = await apiClient.get("/treks");
-      // server responds with success: true, data: Array
+      
       return response.data;
     } catch (error) {
       if (isFallback(error)) {
@@ -184,7 +183,7 @@ export const TripService = {
 
   async updateTripStatus(tripId: string, status: "approved" | "rejected" | "cancelled") {
     try {
-      // Assuming a custom status endpoint or standard put
+      
       const response = await apiClient.put(`/treks/${tripId}`, { status });
       return response.data;
     } catch (error) {
@@ -219,11 +218,11 @@ export const TripService = {
   }
 };
 
-// --- BookingService ---
+
 export const BookingService = {
   async getAllBookings() {
     try {
-      // admin gets all bookings, assuming a general route or special admin check
+      
       const response = await apiClient.get("/bookings/admin");
       return response.data;
     } catch (error) {
@@ -244,7 +243,7 @@ export const BookingService = {
         const bookings = MockDB.getBookings();
         const updatedBookings = bookings.map((b) => {
           if (b._id === bookingId) {
-            // If cancelled/refunded, add corresponding payment modifications
+            
             if (status === "refunded") {
               const payments = MockDB.getPayments();
               const updatedPayments = payments.map(p => {
@@ -267,7 +266,7 @@ export const BookingService = {
   }
 };
 
-// --- PaymentService ---
+
 export const PaymentService = {
   async getAllPayments() {
     try {
@@ -283,7 +282,7 @@ export const PaymentService = {
   }
 };
 
-// --- ReportService ---
+
 export const ReportService = {
   async getAllReports() {
     try {
@@ -319,7 +318,7 @@ export const ReportService = {
   }
 };
 
-// --- NotificationService ---
+
 export const NotificationService = {
   async getSentAnnouncements() {
     try {
@@ -357,7 +356,7 @@ export const NotificationService = {
   }
 };
 
-// --- ContentService ---
+
 export const ContentService = {
   async getCategories() { return { success: true, data: MockDB.getCategories() }; },
   async getDestinations() { return { success: true, data: MockDB.getDestinations() }; },
@@ -471,7 +470,7 @@ export const ContentService = {
   }
 };
 
-// --- SettingsService ---
+
 export const SettingsService = {
   async getSettings() {
     return { success: true, data: MockDB.getSettings() };

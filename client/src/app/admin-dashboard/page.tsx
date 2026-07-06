@@ -4,14 +4,14 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, Link } from '../../components/RouterCompatibility';
 import { io } from 'socket.io-client';
 import { useAuth } from '../../context/AuthContext';
-import { getAllTreks } from '../../utils/trekStorage';
+import { getAllTreks } from '../../services/trekStorage';
 
 const AdminDashboard = () => {
   const { sessions, logout } = useAuth();
   const user = sessions.admin;
   const navigate = useNavigate();
 
-  // Active view: 'overview' | 'users' | 'all-trips' | 'reports' | 'system-health'
+  
   const [activeView, setActiveView] = useState(() => {
     return sessionStorage.getItem('trekmate_admin_view') || 'overview';
   });
@@ -20,7 +20,7 @@ const AdminDashboard = () => {
     sessionStorage.setItem('trekmate_admin_view', activeView);
   }, [activeView]);
 
-  // Global Platform Stats
+  
   const [stats, setStats] = useState({
     totalPlatformTreks: 0,
     totalPlatformRevenue: 0,
@@ -28,7 +28,7 @@ const AdminDashboard = () => {
     totalUsers: 0
   });
 
-  // Emergency stats
+  
   const [emergencyAlerts, setEmergencyAlerts] = useState(0);
   const [telemetryLogs, setTelemetryLogs] = useState([
     'SYSTEM: Initializing global telemetry...',
@@ -37,20 +37,20 @@ const AdminDashboard = () => {
 
   const socketRef = useRef(null);
 
-  // Load platform data
+  
   useEffect(() => {
     const fetchPlatformData = async () => {
       try {
         const allTreks = await getAllTreks();
         const treksArray = Object.values(allTreks) as any[];
         
-        // Very basic mock stats calculation since we don't have global users/revenue endpoints yet
-        // In a real app we'd call /api/admin/stats
+        
+        
         setStats({
           totalPlatformTreks: treksArray.length,
-          totalPlatformRevenue: treksArray.reduce((acc: number, t: any) => acc + (parseInt(String(t.price).replace(/[^0-9]/g, '')) || 0) * 5, 0), // Mocked avg 5 bookings per trek
+          totalPlatformRevenue: treksArray.reduce((acc: number, t: any) => acc + (parseInt(String(t.price).replace(/[^0-9]/g, '')) || 0) * 5, 0), 
           activeOrganizers: new Set(treksArray.map(t => t.organizer)).size,
-          totalUsers: 142 // Mocked global user count for now
+          totalUsers: 142 
         });
 
       } catch (err) {
@@ -60,12 +60,12 @@ const AdminDashboard = () => {
     fetchPlatformData();
   }, []);
 
-  // Socket for platform-wide alerts
+  
   useEffect(() => {
     socketRef.current = io(process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000');
     
     socketRef.current.on('connect', () => {
-      // Admins listen to organizer_dispatch to hear everything
+      
       socketRef.current.emit('join_organizer');
     });
 
@@ -79,7 +79,7 @@ const AdminDashboard = () => {
     };
   }, []);
 
-  // Redirect if not logged in or not admin
+  
   useEffect(() => {
     if (!user) {
       navigate('/login');
@@ -97,9 +97,9 @@ const AdminDashboard = () => {
   return (
     <div className="font-sans text-white bg-[#070708] h-screen flex flex-col selection:bg-purple-500 selection:text-white overflow-hidden">
       
-      {/* TOP HEADER BAR */}
+      {}
       <header className="h-14 bg-[#0c0c0e] border-b border-white/5 flex items-center justify-between px-6 shrink-0 z-30 select-none">
-        {/* Left Side: Logo */}
+        {}
         <div className="flex items-center gap-2.5">
           <Link to="/" className="flex items-center gap-2.5 text-white group">
             <div className="h-6 w-6 rounded-full bg-purple-500/10 border border-purple-500/30 flex items-center justify-center text-purple-500">
@@ -113,12 +113,12 @@ const AdminDashboard = () => {
           </Link>
         </div>
 
-        {/* Center: Dynamic Active Title */}
+        {}
         <div className="hidden md:block text-[11px] font-bold text-purple-500/80 uppercase tracking-widest font-mono">
           {activeView.replace('-', ' ')}
         </div>
 
-        {/* Right Side: Operations indicators & initials avatar */}
+        {}
         <div className="flex items-center gap-4">
           <button className="text-gray-400 hover:text-white transition duration-200 cursor-pointer relative" title="System Alerts">
             <svg className="w-4.5 h-4.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
@@ -131,14 +131,14 @@ const AdminDashboard = () => {
         </div>
       </header>
 
-      {/* LOWER PANEL: SIDEBAR + MAIN PANELS */}
+      {}
       <div className="flex-grow flex overflow-hidden">
 
-        {/* LEFT SIDEBAR PANEL */}
+        {}
         <aside className="w-52 bg-[#0c0c0e] border-r border-white/5 flex flex-col justify-between shrink-0 h-full select-none z-20">
           <div className="p-3 space-y-1 overflow-y-auto flex-grow">
             
-            {/* Platform Category */}
+            {}
             <div className="pt-3 pb-1 px-3 text-[9px] font-black tracking-widest text-gray-600 uppercase">Platform Oversight</div>
             
             <button
@@ -180,7 +180,7 @@ const AdminDashboard = () => {
               All Expeditions
             </button>
 
-            {/* Health & Analytics Category */}
+            {}
             <div className="pt-3 pb-1 px-3 text-[9px] font-black tracking-widest text-gray-600 uppercase">System Intelligence</div>
 
             <button
@@ -224,7 +224,7 @@ const AdminDashboard = () => {
           </div>
         </aside>
 
-        {/* RIGHT MAIN PANEL */}
+        {}
         <main className="flex-1 h-full overflow-y-auto z-10 flex flex-col justify-between relative bg-[#070708]">
           <div className="absolute top-0 right-0 h-[400px] w-[400px] bg-purple-600/5 blur-[120px] rounded-full pointer-events-none z-0" />
           <div className="absolute bottom-0 left-0 h-[400px] w-[400px] bg-indigo-600/5 blur-[120px] rounded-full pointer-events-none z-0" />
@@ -233,7 +233,7 @@ const AdminDashboard = () => {
             
             {activeView === 'overview' && (
               <div className="space-y-6 animate-fadeIn">
-                {/* Hero Tactical Banner */}
+                {}
                 <div
                   className="relative rounded-2xl overflow-hidden border border-white/5 shadow-[0_10px_30px_rgba(168,85,247,0.05)] min-h-[220px] flex items-center p-6 md:p-8 bg-cover bg-center select-none"
                   style={{ backgroundImage: "url('/lake_mountain_hero.png')" }}
@@ -253,9 +253,9 @@ const AdminDashboard = () => {
                   </div>
                 </div>
 
-                {/* Metrics Row */}
+                {}
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 select-none">
-                  {/* Revenue Card */}
+                  {}
                   <div className="bg-[#100f13]/90 border border-white/5 rounded-2xl p-4.5 hover:border-purple-500/20 transition duration-300 shadow-xl flex flex-col justify-between min-h-[110px]">
                     <div className="flex justify-between items-start">
                       <span className="text-[8px] text-gray-500 uppercase font-black tracking-widest">Global Revenue</span>
@@ -264,7 +264,7 @@ const AdminDashboard = () => {
                     <span className="font-outfit text-3xl font-black text-white leading-none mt-3">₹{(stats.totalPlatformRevenue / 1000).toFixed(1)}k</span>
                   </div>
 
-                  {/* Organizers Card */}
+                  {}
                   <div className="bg-[#100f13]/90 border border-white/5 rounded-2xl p-4.5 hover:border-purple-500/20 transition duration-300 shadow-xl flex flex-col justify-between min-h-[110px]">
                     <div className="flex justify-between items-start">
                       <span className="text-[8px] text-gray-500 uppercase font-black tracking-widest">Active Organizers</span>
@@ -273,7 +273,7 @@ const AdminDashboard = () => {
                     <span className="font-outfit text-3xl font-black text-white leading-none mt-3">{stats.activeOrganizers}</span>
                   </div>
 
-                  {/* Expeditions Card */}
+                  {}
                   <div className="bg-[#100f13]/90 border border-white/5 rounded-2xl p-4.5 hover:border-purple-500/20 transition duration-300 shadow-xl flex flex-col justify-between min-h-[110px]">
                     <div className="flex justify-between items-start">
                       <span className="text-[8px] text-gray-500 uppercase font-black tracking-widest">Total Expeditions</span>
@@ -282,7 +282,7 @@ const AdminDashboard = () => {
                     <span className="font-outfit text-3xl font-black text-white leading-none mt-3">{stats.totalPlatformTreks}</span>
                   </div>
 
-                  {/* Total Users Card */}
+                  {}
                   <div className="bg-[#100f13]/90 border border-white/5 rounded-2xl p-4.5 hover:border-purple-500/20 transition duration-300 shadow-xl flex flex-col justify-between min-h-[110px]">
                     <div className="flex justify-between items-start">
                       <span className="text-[8px] text-gray-500 uppercase font-black tracking-widest">Total Users</span>
@@ -292,9 +292,9 @@ const AdminDashboard = () => {
                   </div>
                 </div>
 
-                {/* Main Content Grid */}
+                {}
                 <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
-                  {/* System Growth Chart Placeholder */}
+                  {}
                   <div className="xl:col-span-2 bg-[#0c0c0e]/80 border border-white/5 rounded-2xl p-5 shadow-2xl flex flex-col justify-between min-h-[350px]">
                     <div className="select-none mb-4">
                       <span className="text-[8px] text-gray-500 uppercase font-black tracking-widest block font-mono">Analytics</span>
@@ -310,7 +310,7 @@ const AdminDashboard = () => {
                     </div>
                   </div>
 
-                  {/* Global Live Feed */}
+                  {}
                   <div className="bg-[#0c0c0e]/80 border border-white/5 rounded-2xl p-5 shadow-2xl flex flex-col min-h-[350px]">
                     <div className="select-none mb-4 flex justify-between items-center">
                       <div>
@@ -334,7 +334,7 @@ const AdminDashboard = () => {
               </div>
             )}
 
-            {/* Empty States for other views */}
+            {}
             {activeView !== 'overview' && (
               <div className="h-full flex items-center justify-center animate-fadeIn">
                 <div className="text-center p-8 bg-[#0c0c0e]/60 rounded-2xl border border-white/5 shadow-2xl max-w-md w-full backdrop-blur-sm">

@@ -1,6 +1,6 @@
 import React, { createContext, useState, useEffect, useContext } from 'react';
-import axios from '../utils/axios';
-import { auth, googleProvider } from '../utils/firebase';
+import axios from '../lib/axios';
+import { auth, googleProvider } from '../lib/firebase';
 import { signInWithPopup } from 'firebase/auth';
 
 const AuthContext = createContext<any>(null);
@@ -27,7 +27,7 @@ export const AuthProvider = ({ children }) => {
     setActiveRoleState(role);
   };
 
-  // Check if user is logged in for the active tab's role
+  
   const checkUserStatus = async () => {
     setLoading(true);
     const token = typeof window !== 'undefined' ? sessionStorage.getItem('trekmate_token') : null;

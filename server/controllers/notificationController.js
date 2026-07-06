@@ -2,9 +2,9 @@ import Notification from '../models/Notification.js';
 import Announcement from '../models/Announcement.js';
 import User from '../models/User.js';
 
-// @desc    Get all notifications for logged-in user
-// @route   GET /api/notifications
-// @access  Private
+
+
+
 export const getNotifications = async (req, res) => {
   try {
     const notifications = await Notification.find({ user_id: req.user._id })
@@ -22,9 +22,9 @@ export const getNotifications = async (req, res) => {
   }
 };
 
-// @desc    Mark a notification as read
-// @route   PUT /api/notifications/:id/read
-// @access  Private
+
+
+
 export const markAsRead = async (req, res) => {
   try {
     const notification = await Notification.findOneAndUpdate(
@@ -43,9 +43,9 @@ export const markAsRead = async (req, res) => {
   }
 };
 
-// @desc    Mark all notifications as read
-// @route   PUT /api/notifications/read-all
-// @access  Private
+
+
+
 export const markAllAsRead = async (req, res) => {
   try {
     await Notification.updateMany(
@@ -58,9 +58,9 @@ export const markAllAsRead = async (req, res) => {
   }
 };
 
-// @desc    Create a notification (internal helper, also exposed as route for admin)
-// @route   POST /api/notifications
-// @access  Private/Admin
+
+
+
 export const createNotification = async (req, res) => {
   try {
     const { user_id, title, message, type, reference_id, reference_type } = req.body;
@@ -80,9 +80,9 @@ export const createNotification = async (req, res) => {
   }
 };
 
-// @desc    Delete a notification
-// @route   DELETE /api/notifications/:id
-// @access  Private
+
+
+
 export const deleteNotification = async (req, res) => {
   try {
     const notification = await Notification.findOneAndDelete({
@@ -100,9 +100,9 @@ export const deleteNotification = async (req, res) => {
   }
 };
 
-// @desc    Send announcement broadcast
-// @route   POST /api/notifications/announce
-// @access  Private/Admin
+
+
+
 export const sendAnnouncement = async (req, res) => {
   try {
     const { title, message, target } = req.body;
@@ -111,18 +111,18 @@ export const sendAnnouncement = async (req, res) => {
       return res.status(400).json({ success: false, message: 'Please provide title, message, and target' });
     }
 
-    // Determine query for users based on target
+    
     let userQuery = {};
     if (target === 'organizers') {
       userQuery.role = 'organizer';
     } else if (target === 'trekkers') {
       userQuery.role = 'trekker';
     }
-    // 'all' will leave userQuery as {}
+    
 
     const users = await User.find(userQuery).select('_id');
 
-    // Create the announcement log
+    
     const announcement = await Announcement.create({
       title,
       message,
@@ -131,7 +131,7 @@ export const sendAnnouncement = async (req, res) => {
       admin_id: req.user._id,
     });
 
-    // Create notifications for all matching users
+    
     const notifications = users.map(user => ({
       user_id: user._id,
       title,
@@ -141,7 +141,7 @@ export const sendAnnouncement = async (req, res) => {
       reference_id: '',
     }));
 
-    // Bulk insert to avoid individual saves (performance)
+    
     if (notifications.length > 0) {
       await Notification.insertMany(notifications);
     }
@@ -152,9 +152,9 @@ export const sendAnnouncement = async (req, res) => {
   }
 };
 
-// @desc    Get sent announcements log
-// @route   GET /api/notifications/sent-announcements
-// @access  Private/Admin
+
+
+
 export const getSentAnnouncements = async (req, res) => {
   try {
     const announcements = await Announcement.find()
@@ -167,8 +167,8 @@ export const getSentAnnouncements = async (req, res) => {
   }
 };
 
-// ── Internal helper (not a route) ────────────────────────────────────────────
-// Call this from other controllers to push a notification to a user
+
+
 export const pushNotification = async ({ user_id, title, message, type, reference_id, reference_type }) => {
   try {
     await Notification.create({

@@ -22,7 +22,7 @@ import { Plus, Trash2, Eye, EyeOff, LayoutGrid, Map, Image as ImageIcon } from "
 export default function ContentManagement() {
   const queryClient = useQueryClient();
 
-  // Dialog Form states
+  
   const [catName, setCatName] = useState("");
   const [catDesc, setCatDesc] = useState("");
   const [catModalOpen, setCatModalOpen] = useState(false);
@@ -31,7 +31,7 @@ export default function ContentManagement() {
   const [destCountry, setDestCountry] = useState("");
   const [destModalOpen, setDestModalOpen] = useState(false);
 
-  // Banner Form states
+  
   const [bannerTitle, setBannerTitle] = useState("");
   const [bannerLink, setBannerLink] = useState("");
   const [bannerFile, setBannerFile] = useState<File | null>(null);
@@ -40,12 +40,12 @@ export default function ContentManagement() {
   const [bannerModalOpen, setBannerModalOpen] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
 
-  // 1. Queries
+  
   const { data: catResponse, isLoading: catsLoading } = useQuery({ queryKey: ["categories"], queryFn: ContentService.getCategories });
   const { data: destResponse, isLoading: destsLoading } = useQuery({ queryKey: ["destinations"], queryFn: ContentService.getDestinations });
   const { data: bannerResponse, isLoading: bannersLoading } = useQuery({ queryKey: ["banners"], queryFn: ContentService.getBanners });
 
-  // 2. Mutations
+  
   const categoryMutation = useMutation({
     mutationFn: ContentService.saveCategory,
     onSuccess: () => {
@@ -121,7 +121,7 @@ export default function ContentManagement() {
         }
       } catch (err) {
         console.error("Image upload failed:", err);
-        // Fallback: Generate a nice mountain unsplash image
+        
         const fallbackOptions = [
           "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b",
           "https://images.unsplash.com/photo-1501785888041-af3ef285b470",
@@ -163,7 +163,7 @@ export default function ContentManagement() {
 
   return (
     <div className="space-y-6">
-      {/* Title */}
+      {}
       <div>
         <h1 className="text-3xl font-extrabold tracking-tight">Content Manager</h1>
         <p className="text-muted-foreground text-sm mt-1">
@@ -184,7 +184,7 @@ export default function ContentManagement() {
           </TabsTrigger>
         </TabsList>
 
-        {/* Tab 1: Categories */}
+        {}
         <TabsContent value="categories">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between pb-4">
@@ -231,7 +231,7 @@ export default function ContentManagement() {
           </Card>
         </TabsContent>
 
-        {/* Tab 2: Spotlights / Destinations */}
+        {}
         <TabsContent value="destinations">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between pb-4">
@@ -278,7 +278,7 @@ export default function ContentManagement() {
           </Card>
         </TabsContent>
 
-        {/* Tab 3: Marketing Banners */}
+        {}
         <TabsContent value="banners">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between pb-4">
@@ -333,7 +333,7 @@ export default function ContentManagement() {
         </TabsContent>
       </Tabs>
 
-      {/* 1. Create Category Modal */}
+      {}
       <Dialog open={catModalOpen} onOpenChange={setCatModalOpen}>
         <DialogContent onClose={() => setCatModalOpen(false)}>
           <DialogHeader>
@@ -367,7 +367,7 @@ export default function ContentManagement() {
         </DialogContent>
       </Dialog>
 
-      {/* 2. Create Destination Modal */}
+      {}
       <Dialog open={destModalOpen} onOpenChange={setDestModalOpen}>
         <DialogContent onClose={() => setDestModalOpen(false)}>
           <DialogHeader>
@@ -394,7 +394,7 @@ export default function ContentManagement() {
         </DialogContent>
       </Dialog>
 
-      {/* 3. Create Banner Modal */}
+      {}
       <Dialog open={bannerModalOpen} onOpenChange={setBannerModalOpen}>
         <DialogContent onClose={() => setBannerModalOpen(false)}>
           <DialogHeader>

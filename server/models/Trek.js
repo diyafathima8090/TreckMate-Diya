@@ -2,14 +2,14 @@ import mongoose from 'mongoose';
 
 const trekSchema = new mongoose.Schema(
   {
-    // ── Slug ID (legacy, kept for URL routing) ──────────────────────
+    
     id: {
       type: String,
       unique: true,
       trim: true,
     },
 
-    // ── Core fields from DB design ───────────────────────────────────
+    
     title: {
       type: String,
       required: [true, 'Please add a trek title'],
@@ -34,11 +34,11 @@ const trekSchema = new mongoose.Schema(
       default: null,
     },
     price: {
-      type: String, // e.g. "₹4,500" — kept as String for display compat
+      type: String, 
       required: [true, 'Please add a price'],
     },
     price_num: {
-      type: Number, // Optional numeric price for filtering/sorting
+      type: Number, 
       default: null,
     },
     max_members: {
@@ -58,7 +58,7 @@ const trekSchema = new mongoose.Schema(
       default: 'Hiking',
     },
     images: {
-      type: [String], // Array of image URLs
+      type: [String], 
       default: [],
     },
     start_date: {
@@ -80,7 +80,7 @@ const trekSchema = new mongoose.Schema(
       default: 'active',
     },
 
-    // ── Legacy fields (kept for backward compat with existing UI) ────
+    
     name: { type: String, trim: true },
     rating: { type: String, default: '5.0 (New)' },
     duration: { type: String, trim: true },
@@ -92,8 +92,8 @@ const trekSchema = new mongoose.Schema(
     baseRate: { type: Number, default: 0 },
     guideRate: { type: Number, default: 0 },
     dates: { type: String },
-    image: { type: String }, // Single image (legacy)
-    organizer: { type: String }, // Organizer name string (legacy)
+    image: { type: String }, 
+    organizer: { type: String }, 
     timeline: { type: mongoose.Schema.Types.Mixed, default: [] },
     guide: { type: mongoose.Schema.Types.Mixed, default: {} },
   },
@@ -104,7 +104,7 @@ const trekSchema = new mongoose.Schema(
   }
 );
 
-// Virtual: current bookings count
+
 trekSchema.virtual('bookings', {
   ref: 'Booking',
   localField: '_id',

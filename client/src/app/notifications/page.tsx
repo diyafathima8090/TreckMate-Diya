@@ -3,7 +3,7 @@ import { ProtectedRoute } from '../../components/RouteGuard';
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import Navbar from '../../components/Navbar';
-import axios from '../../utils/axios';
+import axios from '../../lib/axios';
 import { Link, useNavigate } from '../../components/RouterCompatibility';
 
 const Notifications = () => {
@@ -21,7 +21,7 @@ const Notifications = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
-  // Notification Switch States
+  
   const [showUnreadOnly, setShowUnreadOnly] = useState(() => {
     return localStorage.getItem('trekmate_notif_unread_only') === 'true';
   });
@@ -32,7 +32,7 @@ const Notifications = () => {
     return localStorage.getItem('trekmate_notif_email') !== 'false';
   });
 
-  // Persist settings changes
+  
   useEffect(() => {
     localStorage.setItem('trekmate_notif_unread_only', String(showUnreadOnly));
   }, [showUnreadOnly]);
@@ -51,7 +51,7 @@ const Notifications = () => {
     return true;
   });
 
-  // Relative time helper
+  
   const getRelativeTime = (dateString) => {
     const date = new Date(dateString);
     const now = new Date();
@@ -94,7 +94,7 @@ const Notifications = () => {
 
   const handleMarkAsRead = async (id) => {
     try {
-      // Optimistic update
+      
       setNotifications(prev =>
         prev.map(notif => notif._id === id ? { ...notif, is_read: true } : notif)
       );
@@ -107,20 +107,20 @@ const Notifications = () => {
 
   const handleMarkAllAsRead = async () => {
     try {
-      // Optimistic update
+      
       setNotifications(prev => prev.map(notif => ({ ...notif, is_read: true })));
       await axios.put('/notifications/read-all');
     } catch (err) {
       console.error('Failed to mark all notifications as read:', err);
-      // Rollback or refetch
+      
       fetchNotifications();
     }
   };
 
   const handleDelete = async (e, id) => {
-    e.stopPropagation(); // Avoid triggering card click (mark as read)
+    e.stopPropagation(); 
     try {
-      // Optimistic update
+      
       setNotifications(prev => prev.filter(notif => notif._id !== id));
       await axios.delete(`/notifications/${id}`);
     } catch (err) {
@@ -129,7 +129,7 @@ const Notifications = () => {
     }
   };
 
-  // Icon selector based on type
+  
   const getNotificationIcon = (type) => {
     switch (type) {
       case 'booking_confirmed':
@@ -261,7 +261,7 @@ const Notifications = () => {
         )}
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Notifications List Panel */}
+          {}
           <div className="lg:col-span-2 space-y-4">
             {loading ? (
               <div className="space-y-4">
@@ -296,17 +296,17 @@ const Notifications = () => {
                           : 'border-trek-brown/30 bg-trek-brown/[0.02] hover:border-trek-brown/50 hover:bg-trek-brown/[0.04]'
                       }`}
                     >
-                      {/* Unread indicator dot */}
+                      {}
                       {!notif.is_read && (
                         <span className="absolute top-0 left-0 h-full w-1 bg-trek-brown" />
                       )}
 
-                      {/* Icon Panel */}
+                      {}
                       <div className={`h-10 w-10 shrink-0 rounded-xl border flex items-center justify-center shadow ${bgColor}`}>
                         {icon}
                       </div>
 
-                      {/* Text Details */}
+                      {}
                       <div className="flex-grow min-w-0 pr-4">
                         <div className="flex items-start justify-between gap-2">
                           <h4 className={`text-sm font-bold truncate transition ${notif.is_read ? 'text-white/90' : 'text-white'}`}>
@@ -320,7 +320,7 @@ const Notifications = () => {
                           {notif.message}
                         </p>
 
-                        {/* Reference Link helper */}
+                        {}
                         {notif.reference_id && (
                           <div className="mt-3.5 flex items-center gap-1.5">
                             <Link
@@ -336,7 +336,7 @@ const Notifications = () => {
                         )}
                       </div>
 
-                      {/* Operations actions */}
+                      {}
                       <div className="flex items-center self-center shrink-0">
                         <button
                           onClick={(e) => handleDelete(e, notif._id)}
@@ -355,7 +355,7 @@ const Notifications = () => {
             )}
           </div>
 
-          {/* Preferences Sidebar Settings Card */}
+          {}
           <div className="space-y-6">
             <div className="bg-[#121317] border border-white/10 rounded-3xl p-6 shadow-2xl relative overflow-hidden flex flex-col justify-between">
               <div className="absolute top-0 right-0 w-32 h-32 bg-trek-brown/5 rounded-full blur-2xl -translate-y-1/2 translate-x-1/2 pointer-events-none"></div>
@@ -369,7 +369,7 @@ const Notifications = () => {
                 </h3>
 
                 <div className="space-y-4">
-                  {/* Switch 1: Show Unread Only */}
+                  {}
                   <div className="flex items-center justify-between pb-3.5 border-b border-white/5 select-none">
                     <div>
                       <div className="text-xs font-bold text-gray-200">Unread Only</div>
@@ -383,7 +383,7 @@ const Notifications = () => {
                     </button>
                   </div>
 
-                  {/* Switch 2: Mute Alerts */}
+                  {}
                   <div className="flex items-center justify-between pb-3.5 border-b border-white/5 select-none">
                     <div>
                       <div className="text-xs font-bold text-gray-200">Mute Alerts</div>
@@ -397,7 +397,7 @@ const Notifications = () => {
                     </button>
                   </div>
 
-                  {/* Switch 3: Email Alerts */}
+                  {}
                   <div className="flex items-center justify-between select-none">
                     <div>
                       <div className="text-xs font-bold text-gray-200">Email Alerts</div>

@@ -14,7 +14,7 @@ const getInitialTheme = (): "light" | "dark" => {
     const systemTheme = window.matchMedia("(prefers-color-scheme: dark)").matches;
     return systemTheme ? "dark" : "light";
   }
-  return "dark"; // Default to dark mode for a premium feel
+  return "dark"; 
 };
 
 const initialState: ThemeState = {

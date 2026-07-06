@@ -16,7 +16,7 @@ export default function Providers({ children }: { children: React.ReactNode }) {
   }));
 
   useEffect(() => {
-    // Initialize dark/light mode class on html tag
+    
     const savedTheme = localStorage.getItem("admin-theme") || "dark";
     if (savedTheme === "dark") {
       document.documentElement.classList.add("dark");

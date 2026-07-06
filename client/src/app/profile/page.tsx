@@ -3,7 +3,7 @@ import { ProtectedRoute } from '../../components/RouteGuard';
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import Navbar from '../../components/Navbar';
-import axios from '../../utils/axios';
+import axios from '../../lib/axios';
 
   const Profile = () => {
   const { sessions, updateUser } = useAuth();
@@ -47,7 +47,7 @@ import axios from '../../utils/axios';
 
       if (data.success) {
         setSuccess(true);
-        // Update user in context
+        
         updateUser(data.data);
         setTimeout(() => setSuccess(false), 3000);
       } else {
@@ -74,7 +74,7 @@ import axios from '../../utils/axios';
       <main className="max-w-4xl mx-auto px-6 pt-32 pb-20">
         <div className="bg-[#121317] border border-white/10 rounded-3xl p-8 md:p-12 shadow-2xl relative overflow-hidden">
           
-          {/* Decorative background element */}
+          {}
           <div className="absolute top-0 right-0 w-64 h-64 bg-trek-brown/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 pointer-events-none"></div>
 
           <h1 className="text-3xl font-outfit font-black text-white uppercase tracking-tight mb-2">My Profile</h1>
@@ -96,7 +96,7 @@ import axios from '../../utils/axios';
 
           <form onSubmit={handleSubmit} className="space-y-8 relative z-10">
             
-            {/* Avatar Section */}
+            {}
             <div className="flex flex-col md:flex-row items-center gap-6 pb-6 border-b border-white/5">
               <div className="relative group">
                 <div className="h-24 w-24 rounded-full bg-white/5 border-2 border-white/10 overflow-hidden flex items-center justify-center">
@@ -127,7 +127,7 @@ import axios from '../../utils/axios';
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               
-              {/* Profile Image URL Input */}
+              {}
               <div className="md:col-span-2">
                 <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Avatar URL</label>
                 <input
@@ -140,7 +140,7 @@ import axios from '../../utils/axios';
                 />
               </div>
 
-              {/* Full Name */}
+              {}
               <div>
                 <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Full Name</label>
                 <input
@@ -153,7 +153,7 @@ import axios from '../../utils/axios';
                 />
               </div>
 
-              {/* Username */}
+              {}
               <div>
                 <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Username</label>
                 <input
@@ -166,7 +166,7 @@ import axios from '../../utils/axios';
                 />
               </div>
 
-              {/* Email (Disabled) */}
+              {}
               <div>
                 <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Email Address</label>
                 <input
@@ -178,7 +178,7 @@ import axios from '../../utils/axios';
                 />
               </div>
 
-              {/* Phone */}
+              {}
               <div>
                 <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Phone Number</label>
                 <input
@@ -191,7 +191,7 @@ import axios from '../../utils/axios';
                 />
               </div>
 
-              {/* Bio */}
+              {}
               <div className="md:col-span-2">
                 <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Expedition Bio</label>
                 <textarea

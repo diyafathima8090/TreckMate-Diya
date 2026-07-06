@@ -60,7 +60,7 @@ export default function DashboardSidebar() {
         sidebarOpen ? "w-64" : "w-20"
       )}
     >
-      {/* Sidebar Header */}
+      {}
       <div className="h-16 flex items-center justify-between px-6 border-b border-slate-800 relative">
         <Link href="/admin/dashboard" className="flex items-center gap-2">
           <div className="p-2 bg-primary rounded-lg text-primary-foreground shadow-md shadow-primary/30">
@@ -80,7 +80,7 @@ export default function DashboardSidebar() {
         </button>
       </div>
 
-      {/* Nav Links */}
+      {}
       <nav className="flex-1 overflow-y-auto px-4 py-6 space-y-1">
         {sidebarLinks.map((link) => {
           const isActive = pathname === link.href || pathname.startsWith(link.href + "/");
@@ -110,7 +110,7 @@ export default function DashboardSidebar() {
         })}
       </nav>
 
-      {/* Sidebar Footer User Info */}
+      {}
       <div className="p-4 border-t border-slate-800 flex flex-col gap-3">
         {user && (
           <div className="flex items-center gap-3">

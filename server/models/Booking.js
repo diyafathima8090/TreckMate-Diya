@@ -2,7 +2,7 @@ import mongoose from 'mongoose';
 
 const bookingSchema = new mongoose.Schema(
   {
-    // ── DB Design Fields ─────────────────────────────────────────────
+    
     user_id: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User',
@@ -32,7 +32,7 @@ const bookingSchema = new mongoose.Schema(
       default: Date.now,
     },
 
-    // ── Legacy Fields (backward compat) ─────────────────────────────
+    
     ticketId: {
       type: String,
       unique: true,
@@ -44,7 +44,7 @@ const bookingSchema = new mongoose.Schema(
       trim: true,
     },
     qrCode: {
-      type: String, // Store base64 data URL
+      type: String, 
     },
     scanned: {
       type: Boolean,
@@ -55,7 +55,7 @@ const bookingSchema = new mongoose.Schema(
       default: null,
     },
     trekId: {
-      type: String, // Slug ID (legacy)
+      type: String, 
       trim: true,
     },
     seats: {
@@ -103,7 +103,7 @@ const bookingSchema = new mongoose.Schema(
       type: String,
       default: 'Pending Approval',
     },
-    // Keep legacy user ref
+    
     user: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User',

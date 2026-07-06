@@ -1,9 +1,9 @@
 import Ticket from '../models/Ticket.js';
 import Booking from '../models/Booking.js';
 
-// Verify Ticket Scan
-// POST /api/tickets/verify
-// Private (Organizer/Admin)
+
+
+
 export const verifyTicket = async (req, res, next) => {
   try {
     const { ticketCode } = req.body;
@@ -12,19 +12,19 @@ export const verifyTicket = async (req, res, next) => {
       return res.status(400).json({ success: false, message: 'Ticket code is required' });
     }
 
-    // 1. Find ticket
+    
     const ticket = await Ticket.findOne({ ticketCode });
     if (!ticket) {
       return res.status(404).json({ success: false, message: 'Invalid Ticket' });
     }
 
-    // 2. Find booking
+    
     const booking = await Booking.findById(ticket.bookingId);
     if (!booking) {
       return res.status(404).json({ success: false, message: 'Associated booking not found' });
     }
 
-    // 3. Verify booking status
+    
     if (booking.booking_status !== 'confirmed') {
       return res.status(400).json({ 
         success: false, 
@@ -32,7 +32,7 @@ export const verifyTicket = async (req, res, next) => {
       });
     }
 
-    // 4. Check if already scanned
+    
     if (ticket.scanned) {
       return res.status(400).json({ 
         success: false, 
@@ -43,12 +43,12 @@ export const verifyTicket = async (req, res, next) => {
       });
     }
 
-    // 5. Mark as scanned
+    
     ticket.scanned = true;
     ticket.scannedAt = new Date();
     await ticket.save();
 
-    // Update Booking as well
+    
     booking.scanned = true;
     booking.scannedAt = new Date();
     await booking.save();

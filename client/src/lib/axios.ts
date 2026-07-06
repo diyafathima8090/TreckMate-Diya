@@ -1,12 +1,12 @@
 import axios from 'axios';
 
-// Create axios instance
+
 const axiosInstance = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL ? `${process.env.NEXT_PUBLIC_API_URL}/api` : '/api',
-  withCredentials: true, // For fallback to cookies if needed
+  baseURL: process.env.NEXT_PUBLIC_API_URL ? `${process.env.NEXT_PUBLIC_API_URL}/api` : 'http://localhost:5000/api',
+  withCredentials: true, 
 });
 
-// Add a request interceptor
+
 axiosInstance.interceptors.request.use(
   (config) => {
     let activeRole = 'trekker';
@@ -18,17 +18,17 @@ axiosInstance.interceptors.request.use(
         if (typeof config.headers.get === 'function') {
           headerRole = config.headers.get('x-active-role');
         } else {
-          // Fallbacks for older Axios versions or plain objects
+          
           headerRole = config.headers['x-active-role'] || config.headers['X-Active-Role'];
         }
       }
       
-      // Get role and token from sessionStorage for strict tab isolation
+      
       activeRole = headerRole || sessionStorage.getItem('trekmate_role') || 'trekker';
       token = sessionStorage.getItem('trekmate_token');
     }
     
-    // Set the x-active-role header
+    
     if (config.headers) {
       if (typeof config.headers.set === 'function') {
         config.headers.set('x-active-role', activeRole);
@@ -37,7 +37,7 @@ axiosInstance.interceptors.request.use(
       }
     }
 
-    // If token exists, add it to the headers
+    
     if (token) {
       if (typeof config.headers.set === 'function') {
         config.headers.set('Authorization', `Bearer ${token}`);

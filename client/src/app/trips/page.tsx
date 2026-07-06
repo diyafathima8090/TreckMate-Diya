@@ -3,7 +3,7 @@ import { UserRoute } from '../../components/RouteGuard';
 import React, { useState, useEffect } from 'react';
 import { Link, useSearchParams } from '../../components/RouterCompatibility';
 import Navbar from '../../components/Navbar';
-import { getUserBookings } from '../../utils/trekStorage';
+import { getUserBookings } from '../../services/trekStorage';
 import { useAuth } from '../../context/AuthContext';
 
 const Trips = () => {
@@ -12,14 +12,15 @@ const Trips = () => {
   const [tripsData, setTripsData] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // Fetch treks from database
+  
   useEffect(() => {
     const fetchTreks = async () => {
       try {
-        const res = await fetch('/api/treks');
+        const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+        const res = await fetch(`${API_URL}/api/treks`);
         const data = await res.json();
         if (data.success && data.data) {
-          // Map backend Trek schema to the format expected by the UI
+          
           const mappedTreks = data.data.map(t => ({
             id: t.id || t._id,
             title: t.title || t.name || 'Unknown Trek',
@@ -27,7 +28,7 @@ const Trips = () => {
             price: t.price || `₹${t.baseRate || 0}`,
             duration: t.duration || 'N/A',
             rating: parseFloat(t.rating) || 4.5,
-            imageRating: 4.8, // Default or derived
+            imageRating: 4.8, 
             difficultyBadge: `${t.difficulty || 'Moderate'} | ${t.duration || 'N/A'}`,
             category: t.difficulty === 'Easy' ? 'Camping' : 'Trekking',
             organizer: t.organizer || 'TrekMate Default',
@@ -44,7 +45,7 @@ const Trips = () => {
     fetchTreks();
   }, []);
 
-  // Interactivity States
+  
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [sortOrder, setSortOrder] = useState('Newest First');
@@ -52,17 +53,17 @@ const Trips = () => {
   const [budgetFilter, setBudgetFilter] = useState('Any');
   const [durationFilter, setDurationFilter] = useState('Any');
 
-  // Pagination state
+  
   const [visibleCount, setVisibleCount] = useState(6);
 
-  // Search parameters for tabs
+  
   const [searchParams, setSearchParams] = useSearchParams();
   const activeTab = searchParams.get('tab') === 'my-bookings' ? 'bookings' : 'explore';
 
-  // Local storage bookings list state
+  
   const [bookings, setBookings] = useState([]);
 
-  // Reset pagination when filters change
+  
   useEffect(() => {
     setVisibleCount(6);
   }, [searchQuery, selectedCategory, destFilter, budgetFilter, durationFilter]);
@@ -98,7 +99,7 @@ const Trips = () => {
     }
   }, [activeTab, user, setSearchParams]);
 
-  // Filter Logic for available trips
+  
   const filteredTrips = tripsData.filter((trip: any) => {
     const matchesSearch = trip.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       trip.organizer.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -127,23 +128,23 @@ const Trips = () => {
   return (
     <div className="font-sans text-white bg-trek-dark min-h-screen selection:bg-trek-brown selection:text-white pt-20 relative">
 
-      {/* Blurred twilight mountain background */}
+      {}
       <div
         className="absolute inset-0 bg-cover bg-center z-0"
         style={{ backgroundImage: "url('/trips_hero_blur.png')" }}
       >
-        {/* Dark semi-transparent overlays */}
+        {}
         <div className="absolute inset-0 bg-black/75 z-10"></div>
         <div className="absolute inset-0 bg-gradient-to-t from-trek-dark via-transparent to-black/35 z-10"></div>
       </div>
 
-      {/* Shared scroll-transitioning Navbar */}
+      {}
       <Navbar />
 
-      {/* Main Page Container */}
+      {}
       <main className="relative z-20 px-6 md:px-12 lg:px-24 py-12 max-w-7xl mx-auto w-full select-text">
 
-        {/* PAGE TITLE ROW */}
+        {}
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-8 border-b border-white/10 pb-4 w-full gap-4">
           <div>
             <span className="text-trek-brown text-xs font-bold tracking-widest uppercase mb-1.5 block">Explore Trails</span>
@@ -151,7 +152,7 @@ const Trips = () => {
           </div>
         </div>
 
-        {/* TABS NAVIGATION */}
+        {}
         <div className="flex items-center gap-6 border-b border-white/5 pb-4 mb-8 select-none overflow-x-auto whitespace-nowrap">
           <button
             onClick={() => setSearchParams({})}
@@ -175,13 +176,13 @@ const Trips = () => {
           )}
         </div>
 
-        {/* DYNAMIC CONTENT PANELS */}
+        {}
         {activeTab === 'explore' ? (
           <>
-            {/* SEARCH INPUT BAR */}
+            {}
             <div className="bg-[#121317]/80 backdrop-blur-md border border-white/10 rounded-2xl p-6 mb-12 shadow-2xl flex flex-col gap-4">
 
-              {/* Primary input with brand Search button */}
+              {}
               <div className="flex flex-col md:flex-row gap-3">
                 <div className="relative flex-grow">
                   <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-sm"></span>
@@ -200,7 +201,7 @@ const Trips = () => {
                 </button>
               </div>
 
-              {/* Horizontal Filter Capsules */}
+              {}
               <div className="flex flex-wrap items-center gap-2 border-t border-white/5 pt-4">
                 <span className="text-[10px] text-gray-500 uppercase tracking-widest font-bold mr-2">Quick Tags:</span>
                 {['All', 'Trekking', 'Camping', 'Weekend', 'Photography'].map((cat) => (
@@ -217,11 +218,11 @@ const Trips = () => {
                 ))}
               </div>
 
-              {/* Advanced Filters Row */}
+              {}
               <div className="flex flex-col lg:flex-row gap-4 items-end justify-between border-t border-white/5 pt-4 select-none">
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4 flex-grow w-full">
 
-                  {/* Destination Dropdown */}
+                  {}
                   <div className="flex flex-col gap-1.5">
                     <label className="text-[9px] text-gray-500 uppercase tracking-widest font-black flex items-center gap-1">
                        Destination
@@ -238,7 +239,7 @@ const Trips = () => {
                     </select>
                   </div>
 
-                  {/* Budget Dropdown */}
+                  {}
                   <div className="flex flex-col gap-1.5">
                     <label className="text-[9px] text-gray-500 uppercase tracking-widest font-black flex items-center gap-1">
                        Budget Range
@@ -254,7 +255,7 @@ const Trips = () => {
                     </select>
                   </div>
 
-                  {/* Duration Dropdown */}
+                  {}
                   <div className="flex flex-col gap-1.5">
                     <label className="text-[9px] text-gray-500 uppercase tracking-widest font-black flex items-center gap-1">
                       â± Duration
@@ -272,7 +273,7 @@ const Trips = () => {
 
                 </div>
 
-                {/* Brand Apply Filters button */}
+                {}
                 <button className="bg-trek-brown hover:bg-trek-brown-hover active:scale-95 text-white px-7 py-3 rounded-lg text-xs font-bold uppercase tracking-wider shadow-md transition-all flex-shrink-0 w-full lg:w-max border-none cursor-pointer">
                   Apply Filters
                 </button>
@@ -280,14 +281,14 @@ const Trips = () => {
 
             </div>
 
-            {/* TRIP CARDS GRID (3x2 Layout) */}
+            {}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {filteredTrips.slice(0, visibleCount).map((trip) => (
                 <div
                   key={trip.id}
                   className="group flex flex-col justify-between bg-[#121317]/95 border border-white/5 rounded-2xl overflow-hidden shadow-2xl hover:border-white/15 hover:shadow-trek-brown/[0.03] transition-all duration-300 relative select-text"
                 >
-                  {/* High-quality Landscape Photo container */}
+                  {}
                   <div className="h-48 w-full overflow-hidden relative">
                     <div
                       className="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-103"
@@ -295,14 +296,14 @@ const Trips = () => {
                     ></div>
                     <div className="absolute inset-0 bg-gradient-to-t from-[#121317] via-transparent to-black/20"></div>
 
-                    {/* Rating Star Badge within image */}
+                    {}
                     <div className="absolute top-4 right-4 z-10">
                       <span className="bg-black/60 backdrop-blur-md text-white text-[10px] font-black px-2.5 py-1 rounded-md border border-white/10 flex items-center gap-1 shadow-md">
                          <span className="text-gray-100">{trip.imageRating}</span>
                       </span>
                     </div>
 
-                    {/* Top difficulty/duration badges overlays */}
+                    {}
                     <div className="absolute bottom-4 left-4 z-10 flex gap-2">
                       <span className="bg-trek-brown text-white text-[9px] font-extrabold px-2.5 py-1 rounded uppercase tracking-widest shadow-md">
                         {trip.difficultyBadge}
@@ -310,10 +311,10 @@ const Trips = () => {
                     </div>
                   </div>
 
-                  {/* Card Content Details */}
+                  {}
                   <div className="p-5 flex-grow flex flex-col justify-between select-text">
                     <div>
-                      {/* Location details */}
+                      {}
                       <div className="flex items-center justify-between text-gray-400 text-xs font-light mb-1.5">
                         <span className="flex items-center gap-1 text-[11px] text-trek-brown font-bold uppercase tracking-wider">
                            {trip.location}
@@ -323,12 +324,12 @@ const Trips = () => {
                         </span>
                       </div>
 
-                      {/* Title */}
+                      {}
                       <h3 className="font-outfit text-xl font-black text-white uppercase tracking-wide leading-tight group-hover:text-trek-brown transition-colors duration-300">
                         {trip.title}
                       </h3>
 
-                      {/* Meta Information row */}
+                      {}
                       <div className="flex items-center gap-4 text-xs font-light text-gray-400 mt-2.5 border-b border-white/5 pb-4">
                         <span className="flex items-center gap-1">
                            {trip.duration}
@@ -339,7 +340,7 @@ const Trips = () => {
                         </span>
                       </div>
 
-                      {/* Detailed Organizer row */}
+                      {}
                       <div className="flex items-center justify-between py-4 text-xs">
                         <div className="flex items-center gap-2">
                           <div className="h-6 w-6 rounded-full bg-[#1e1e1e] border border-white/10 flex items-center justify-center text-[10px] font-bold text-trek-brown shadow-inner">
@@ -350,7 +351,7 @@ const Trips = () => {
                             <span className="text-gray-300 font-bold mt-0.5">{trip.organizer}</span>
                           </div>
                         </div>
-                        {/* Price */}
+                        {}
                         <div className="flex flex-col text-right">
                           <span className="text-[9px] text-gray-500 uppercase font-black leading-none">Price</span>
                           <span className="text-sm font-black text-white mt-0.5">{trip.price}</span>
@@ -358,7 +359,7 @@ const Trips = () => {
                       </div>
                     </div>
 
-                    {/* Card CTA Twin Buttons */}
+                    {}
                     <div className="grid grid-cols-2 gap-3 mt-3">
                       <Link to={`/details/${trip.id}`} className="py-2.5 text-center rounded-md border border-white/10 hover:border-white/25 text-white hover:bg-white hover:text-black transition-all duration-300 text-xs font-bold uppercase tracking-wider bg-black/40 backdrop-blur-sm">
                         Details
@@ -399,7 +400,7 @@ const Trips = () => {
               ))}
             </div>
 
-            {/* Empty State when filters yield no results */}
+            {}
             {filteredTrips.length === 0 && (
               <div className="text-center py-20 bg-[#121317]/50 rounded-2xl border border-white/5 shadow-2xl">
                 <span className="text-4xl block mb-4"></span>
@@ -408,7 +409,7 @@ const Trips = () => {
               </div>
             )}
 
-            {/* Centered Load More button */}
+            {}
             {visibleCount < filteredTrips.length && (
               <div className="flex justify-center mt-12 select-none">
                 <button
@@ -421,10 +422,10 @@ const Trips = () => {
             )}
           </>
         ) : (
-          /* MY BOOKINGS DASHBOARD PANEL */
+          
           <div className="w-full">
             {bookings.length === 0 ? (
-              /* EMPTY BOOKINGS STATE */
+              
               <div className="text-center py-24 bg-[#121317]/80 border border-white/10 rounded-2xl p-6 shadow-2xl max-w-2xl mx-auto select-none">
                 <span className="text-5xl block mb-5"></span>
                 <h3 className="font-outfit text-xl md:text-2xl font-black uppercase text-white tracking-wide mb-2">No Active Bookings</h3>
@@ -536,7 +537,7 @@ const Trips = () => {
 
       </main>
 
-      {/* FOOTER */}
+      {}
       <footer className="relative z-20 px-6 md:px-12 lg:px-24 py-8 bg-[#050505] border-t border-white/5 flex items-center justify-between select-none">
         <div className="flex items-center gap-3">
           <svg className="w-6 h-6 text-trek-brown" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
@@ -547,13 +548,13 @@ const Trips = () => {
         <div className="text-[10px] text-gray-500">
           &copy; {new Date().getFullYear()} TrekMate. All rights reserved.
         </div>
-        {/* ? Help Icon */}
+        {}
         <button className="h-6 w-6 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-xs font-bold hover:bg-white hover:text-black transition shadow-inner">
           ?
         </button>
       </footer>
 
-      {/* Floating Toast Notification */}
+      {}
       {toastMessage && (
         <div className="fixed bottom-6 right-6 z-[120] bg-[#8b5a2b] border border-orange-500 text-white rounded-xl px-5 py-3.5 shadow-2xl flex items-center gap-2.5 select-none animate-slideUp font-sans text-xs">
           <span className="h-2 w-2 rounded-full bg-white animate-ping" />

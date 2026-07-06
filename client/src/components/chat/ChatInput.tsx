@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Send, Smile, Paperclip } from 'lucide-react';
 import EmojiPicker, { Theme } from 'emoji-picker-react';
-import axios from '../../utils/axios';
+import axios from '../../lib/axios';
 
 interface ChatInputProps {
   onSendMessage: (message: string, type?: string, mediaUrl?: string) => void;
@@ -17,7 +17,7 @@ export const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, onTyping })
   const fileInputRef = useRef<HTMLInputElement>(null);
   const emojiPickerRef = useRef<HTMLDivElement>(null);
 
-  // Close emoji picker when clicking outside
+  
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (emojiPickerRef.current && !emojiPickerRef.current.contains(event.target as Node)) {
@@ -31,7 +31,7 @@ export const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, onTyping })
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setMessage(e.target.value);
 
-    // Typing indicator logic
+    
     onTyping(true);
     if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
     typingTimeoutRef.current = setTimeout(() => {
@@ -79,7 +79,7 @@ export const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, onTyping })
 
   return (
     <div className="relative">
-      {/* Emoji Picker Popover */}
+      {}
       {showEmojiPicker && (
         <div ref={emojiPickerRef} className="absolute bottom-20 left-4 z-50 shadow-2xl">
           <EmojiPicker

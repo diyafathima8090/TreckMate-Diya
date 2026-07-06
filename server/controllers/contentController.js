@@ -5,7 +5,7 @@ export const getBanners = async (req, res, next) => {
   try {
     let banners = await Banner.find({});
     
-    // Auto-seed initial banners if empty
+    
     if (banners.length === 0) {
       const initialBanners = [
         { title: "Summer Peaks Sale", imageUrl: "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b", link: "/trips?sale=summer", isActive: true },
@@ -35,7 +35,7 @@ export const toggleBanner = async (req, res, next) => {
     banner.isActive = !banner.isActive;
     await banner.save();
 
-    // Return all banners updated so admin gets full list easily
+    
     const banners = await Banner.find({});
     res.status(200).json({ success: true, data: banners });
   } catch (error) {

@@ -14,10 +14,10 @@ import { protect } from '../middleware/authMiddleware.js';
 
 const router = express.Router();
 
-// Public route for uploading document during registration (no token yet)
+
 router.post('/upload-doc', documentUpload.single('document'), uploadVerificationDoc);
 
-// Secure routes below this
+
 router.use(protect);
 
 router.get('/', getAllOrganizers);

@@ -3,14 +3,14 @@ import { UserRoute } from '../../components/RouteGuard';
 import React, { useState, useEffect } from 'react';
 import { Link } from '../../components/RouterCompatibility';
 import Navbar from '../../components/Navbar';
-import { getAllTreks, getUserBookings } from '../../utils/trekStorage';
+import { getAllTreks, getUserBookings } from '../../services/trekStorage';
 import { useAuth } from '../../context/AuthContext';
 
 const Explore = () => {
-  // Main Hero Video
+  
   const heroVideo = "https://videos.pexels.com/video-files/3121459/3121459-hd_1920_1080_24fps.mp4";
 
-  // Trending Expeditions & Custom Organizer Treks
+  
   const [trendingTreks, setTrendingTreks] = useState([]);
 
   useEffect(() => {
@@ -45,7 +45,7 @@ const Explore = () => {
     return booking ? booking.booking_status || 'confirmed' : null;
   };
 
-  // Ultra-premium Compact Backpacking Gear
+  
   const gearItems = [
     {
       id: 'poles',
@@ -123,7 +123,7 @@ const Explore = () => {
     }
   ];
 
-  // Gear controls
+  
   const [gearIndex, setGearIndex] = useState(0);
 
   const handleNextGear = () => {
@@ -219,10 +219,10 @@ const Explore = () => {
       <Navbar />
       <div className="animate-page flex-1 w-full">
 
-      {/* TOP SECTION: Cinematic Hero Video (FULL SCREEN WIDTH & VIEWPORT HEIGHT) */}
+      {}
       <section className="relative overflow-hidden w-full h-screen shadow-2xl z-20">
 
-        {/* Background Video */}
+        {}
         <div className="absolute inset-0 z-0 bg-trek-dark">
           <video
             autoPlay
@@ -234,11 +234,11 @@ const Explore = () => {
           />
         </div>
 
-        {/* Cinematic Gradient Overlays */}
+        {}
         <div className="absolute inset-0 bg-gradient-to-t from-trek-dark via-transparent to-black/35 z-10"></div>
         <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-transparent to-transparent z-10"></div>
 
-        {/* Hero Text Details Floating Bottom Left */}
+        {}
         <Link
           to="/trips"
           className="absolute bottom-12 left-6 md:left-12 lg:left-24 xl:left-32 z-30 max-w-3xl pr-6 block group cursor-pointer text-left select-none decoration-none notranslate"
@@ -259,7 +259,7 @@ const Explore = () => {
         </Link>
       </section>
 
-      {/* Infinite Scrolling Partner/Truster Marquee */}
+      {}
       <section className="w-full bg-[#0c0c0e]/95 border-y border-white/5 py-8 overflow-hidden select-none relative z-20">
         <div className="max-w-7xl mx-auto px-6 md:px-12 lg:px-24 mb-4 select-none">
           <span className="text-[10px] text-gray-500 uppercase font-black tracking-widest block text-center">
@@ -533,14 +533,14 @@ const Explore = () => {
                   </div>
                 </div>
 
-                {/* Cards Container */}
+                {}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 flex-grow items-stretch">
                   {gearItems.slice(gearIndex, gearIndex + 2).map((item) => (
                     <div
                       key={item.id}
                       className="relative bg-white/[0.02] border border-white/5 rounded-xl p-5 flex flex-col justify-between hover:bg-white/[0.04] transition-all duration-300 shadow-lg group"
                     >
-                      {/* SVG Icon & Top Category */}
+                      {}
                       <div className="flex justify-between items-start mb-4">
                         <div>
                           <span className="text-[10px] uppercase tracking-widest text-trek-brown font-bold block">{item.category}</span>
@@ -551,7 +551,7 @@ const Explore = () => {
                         </div>
                       </div>
 
-                      {/* Specifications Grid */}
+                      {}
                       <div className="border-t border-white/5 pt-4 mt-auto">
                         <div className="grid grid-cols-3 gap-2 text-center bg-black/20 rounded-lg p-2.5 border border-white/5 mb-4">
                           <div>
@@ -568,7 +568,7 @@ const Explore = () => {
                           </div>
                         </div>
 
-                        {/* Pricing Tag & View Button */}
+                        {}
                         <div className="flex items-center justify-between">
                           <div className="flex flex-col">
                             <span className="text-[9px] text-gray-500 uppercase font-medium leading-none">Price</span>
@@ -593,10 +593,10 @@ const Explore = () => {
 
       </main>
 
-      {/* FOOTER */}
+      {}
       <footer className="px-6 md:px-12 lg:px-24 py-20 bg-black border-t border-white/10">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-16">
-          {/* Brand & Newsletter */}
+          {}
           <div className="md:col-span-1">
             <h4 className="font-outfit text-2xl font-black tracking-widest uppercase mb-6">TrekMate</h4>
             <p className="text-xs text-gray-400 mb-6 font-light leading-relaxed">Join our newsletter to get the latest updates on expeditions and gear.</p>
@@ -612,7 +612,7 @@ const Explore = () => {
             </div>
           </div>
 
-          {/* Links: RESOURCES */}
+          {}
           <div>
             <h5 className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-6">Resources</h5>
             <ul className="flex flex-col gap-4 text-xs text-gray-400 font-light">
@@ -623,7 +623,7 @@ const Explore = () => {
             </ul>
           </div>
 
-          {/* Links: COMPANY */}
+          {}
           <div>
             <h5 className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-6">Company</h5>
             <ul className="flex flex-col gap-4 text-xs text-gray-400 font-light">
@@ -634,7 +634,7 @@ const Explore = () => {
             </ul>
           </div>
 
-          {/* Links: CONNECT */}
+          {}
           <div>
             <h5 className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-6">Connect</h5>
             <ul className="flex flex-col gap-4 text-xs text-gray-400 font-light">

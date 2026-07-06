@@ -6,7 +6,7 @@ const organizerSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User',
       required: [true, 'Please link to a user account'],
-      unique: true, // One organizer profile per user
+      unique: true, 
     },
     organization_name: {
       type: String,
@@ -20,11 +20,11 @@ const organizerSchema = new mongoose.Schema(
     },
     experience: {
       type: Number,
-      default: 0, // Years of experience
+      default: 0, 
       min: [0, 'Experience cannot be negative'],
     },
     documents: {
-      type: String, // URL or path to uploaded documents
+      type: String, 
       default: '',
     },
     status: {
@@ -32,7 +32,7 @@ const organizerSchema = new mongoose.Schema(
       enum: ['pending', 'approved', 'rejected', 'suspended'],
       default: 'pending',
     },
-    // Extra useful fields
+    
     phone: {
       type: String,
       trim: true,
@@ -106,7 +106,7 @@ const organizerSchema = new mongoose.Schema(
   }
 );
 
-// Virtual to populate user details
+
 organizerSchema.virtual('user', {
   ref: 'User',
   localField: 'user_id',

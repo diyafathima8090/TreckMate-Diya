@@ -5,8 +5,8 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useSearchParams, Link, useNavigate, useLocation } from '../../../components/RouterCompatibility';
 import { useAuth } from '../../../context/AuthContext';
 import Navbar from '../../../components/Navbar';
-import { getTrekById } from '../../../utils/trekStorage';
-import axios from '../../../utils/axios';
+import { getTrekById } from '../../../services/trekStorage';
+import axios from '../../../lib/axios';
 import { ChatLayout } from '../../../components/chat/ChatLayout';
 
 const BookingConfirmation = () => {
@@ -31,7 +31,7 @@ const BookingConfirmation = () => {
       const data = await getTrekById(id);
       setTrek(data);
       
-      // Fetch booking to get QR code if not provided in state
+      
       if (!qrCodeDataUrl && ticketId) {
         try {
           const res = await axios.get(`/bookings/ticket/${ticketId}`);
@@ -48,13 +48,13 @@ const BookingConfirmation = () => {
     fetchTrekAndBooking();
   }, [id, ticketId, qrCodeDataUrl]);
 
-  // Interactive Call, Chat states
+  
   const [isCalling, setIsCalling] = useState(false);
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [toastMessage, setToastMessage] = useState('');
   const [chatInput, setChatInput] = useState('');
 
-  // Safe helper variables derived after load
+  
   const baseTotal = trek ? trek.baseRate * seats : 0;
   const guideTotal = trek ? trek.guideRate * seats : 0;
   const gstTotal = Math.round((baseTotal + guideTotal) * 0.18);
@@ -485,7 +485,7 @@ const BookingConfirmation = () => {
         </div>
       )}
 
-      {/* INTERACTIVE GROUP CHAT OVERLAY MODAL */}
+      {}
       {isChatOpen && (
         <div className="fixed inset-0 z-[110] flex items-center justify-center p-0 md:p-6 bg-black/95 backdrop-blur-md select-none animate-fadeIn">
           <div className="max-w-3xl w-full h-full md:h-[80vh] relative animate-slideUp">

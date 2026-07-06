@@ -10,7 +10,7 @@ import L from 'leaflet';
 import { io } from 'socket.io-client';
 import EmojiPicker from 'emoji-picker-react';
 import 'leaflet/dist/leaflet.css';
-import axiosInstance from '../utils/axios';
+import axiosInstance from '../lib/axios';
 
 const MapUpdater = ({ center, isRecentering, isNavigating }) => {
   const map = useMap();

@@ -8,12 +8,12 @@ const Login = () => {
   const { login, loginWithGoogle } = useAuth();
   const navigate = useNavigate();
 
-  // Form states
+  
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
 
-  // UI States
+  
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
   const [formError, setFormError] = useState('');
@@ -70,9 +70,9 @@ const Login = () => {
   return (
     <div className="font-sans text-white bg-trek-dark min-h-screen flex items-stretch select-none relative overflow-hidden">
 
-      {/* LEFT COLUMN: Cinematic Hero Video Panel */}
+      {}
       <section className="hidden lg:flex lg:w-1/2 relative items-end p-16 overflow-hidden">
-        {/* Background Video */}
+        {}
         <div className="absolute inset-0 z-0 bg-trek-dark">
           <video
             autoPlay
@@ -84,11 +84,11 @@ const Login = () => {
             poster="/explore_glowing_tent.png"
           />
         </div>
-        {/* Heavy overlays */}
+        {}
         <div className="absolute inset-0 bg-black/60 z-10"></div>
         <div className="absolute inset-0 bg-gradient-to-t from-trek-dark via-transparent to-black/35 z-10"></div>
 
-        {/* Cinematic branding & quote */}
+        {}
         <div className="relative z-20 max-w-md">
           <Link to="/" className="flex items-center gap-3 text-white mb-8 group w-fit">
             <svg className="w-8 h-8 text-white transition-transform duration-500 group-hover:rotate-12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
@@ -110,15 +110,15 @@ const Login = () => {
         </div>
       </section>
 
-      {/* RIGHT COLUMN: Form Panel */}
+      {}
       <section className="w-full lg:w-1/2 flex items-center justify-center p-8 md:p-16 bg-[#0a0a0a]/95 relative z-20 overflow-y-auto min-h-screen py-12">
 
-        {/* Floating background gradient light source */}
+        {}
         <div className="absolute top-1/4 right-1/4 h-[300px] w-[300px] bg-trek-brown/5 blur-[120px] rounded-full pointer-events-none" />
 
         <div className="max-w-md w-full z-10">
 
-          {/* Header */}
+          {}
           <div className="mb-8">
             <div className="flex lg:hidden items-center gap-2 text-white mb-6">
               <svg className="w-7 h-7 text-trek-brown" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
@@ -134,10 +134,10 @@ const Login = () => {
             </p>
           </div>
 
-          {/* Form */}
+          {}
           <form onSubmit={handleSubmit} className="flex flex-col gap-5 select-text">
 
-            {/* Error Message Box */}
+            {}
             {formError && (
               <div className="bg-red-500/10 border border-red-500/20 text-red-400 rounded-xl p-4 flex items-center gap-3 text-xs animate-pulse">
                 <span className="h-1.5 w-1.5 rounded-full bg-red-500 flex-shrink-0" />
@@ -145,7 +145,7 @@ const Login = () => {
               </div>
             )}
 
-            {/* Email Field */}
+            {}
             <div className="flex flex-col gap-1.5">
               <label className="text-[10px] text-gray-500 uppercase tracking-widest font-black flex items-center gap-1.5 select-none">
                 <svg className="w-3.5 h-3.5 text-gray-500" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
@@ -163,7 +163,7 @@ const Login = () => {
               />
             </div>
 
-            {/* Password Field */}
+            {}
             <div className="flex flex-col gap-1.5 relative">
               <div className="flex justify-between items-center select-none">
                 <label className="text-[10px] text-gray-500 uppercase tracking-widest font-black flex items-center gap-1.5">
@@ -204,7 +204,7 @@ const Login = () => {
               </div>
             </div>
 
-            {/* Remember Me */}
+            {}
             <div className="flex items-center gap-2 select-none">
               <input
                 type="checkbox"
@@ -216,7 +216,7 @@ const Login = () => {
               </label>
             </div>
 
-            {/* Login CTA Button */}
+            {}
             <button
               type="submit"
               disabled={isSubmitting}
@@ -236,14 +236,14 @@ const Login = () => {
             </button>
           </form>
 
-          {/* Divider */}
+          {}
           <div className="flex items-center gap-4 my-6 select-none opacity-50">
             <div className="h-px bg-white/10 flex-1"></div>
             <span className="text-[10px] text-gray-500 uppercase tracking-widest font-black">OR</span>
             <div className="h-px bg-white/10 flex-1"></div>
           </div>
 
-          {/* Google Login Button */}
+          {}
           <button
             type="button"
             onClick={handleGoogleLogin}
@@ -271,7 +271,7 @@ const Login = () => {
             )}
           </button>
 
-          {/* Register Link Toggle */}
+          {}
           <div className="mt-8 text-center border-t border-white/5 pt-6 text-xs font-light text-gray-400">
             New to TrekMate?{' '}
             <Link to="/register" className="text-trek-brown hover:text-white font-extrabold uppercase tracking-widest transition-colors ml-1">

@@ -39,7 +39,7 @@ export default function LoginPage() {
     dispatch(loginStart());
 
     try {
-      // 1. Try to connect to backend
+      
       const response = await axios.post("http://localhost:5000/api/auth/login", {
         email,
         password,
@@ -66,9 +66,9 @@ export default function LoginPage() {
     } catch (err: any) {
       console.warn("Backend login failed or unavailable. Testing local admin credential fallback.");
 
-      // 2. Fallback to offline credentials for demonstration purposes
+      
       if (email === "admin@trekmate.com" && password === "admin123") {
-        // Successful mock login
+        
         setTimeout(() => {
           dispatch(
             loginSuccess({
@@ -92,7 +92,7 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-slate-950 p-6 relative overflow-hidden">
-      {/* Background Gradients */}
+      {}
       <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary/20 rounded-full blur-[120px] animate-pulse"></div>
       <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-indigo-500/15 rounded-full blur-[120px]"></div>
 
@@ -108,7 +108,7 @@ export default function LoginPage() {
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
-            {/* Input field: Email */}
+            {}
             <div className="space-y-1.5">
               <label className="text-xs font-semibold text-slate-300">Admin Email Address</label>
               <div className="relative">
@@ -125,7 +125,7 @@ export default function LoginPage() {
               </div>
             </div>
 
-            {/* Input field: Password */}
+            {}
             <div className="space-y-1.5">
               <label className="text-xs font-semibold text-slate-300">Password</label>
               <div className="relative">
@@ -142,7 +142,7 @@ export default function LoginPage() {
               </div>
             </div>
 
-            {/* Validation & Auth Errors */}
+            {}
             {(validationError || error) && (
               <div className="p-3 bg-rose-500/10 border border-rose-500/25 rounded-lg flex items-start gap-2.5 text-xs text-rose-400">
                 <ShieldAlert className="h-4.5 w-4.5 shrink-0 mt-0.5" />
@@ -159,7 +159,7 @@ export default function LoginPage() {
             </Button>
           </form>
 
-          {/* Quick Sandbox Help Info */}
+          {}
           <div className="mt-6 border-t border-slate-800 pt-4 text-[10px] text-slate-500 leading-relaxed text-center">
             Default sandbox credentials: <br />
             <span className="text-primary/70 font-mono">admin@trekmate.com</span> / <span className="text-primary/70 font-mono">admin123</span>

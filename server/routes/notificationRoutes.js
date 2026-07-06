@@ -12,7 +12,7 @@ import { protect, admin } from '../middleware/authMiddleware.js';
 
 const router = express.Router();
 
-// All notification routes require authentication
+
 router.use(protect);
 
 router.get('/', getNotifications);

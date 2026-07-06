@@ -1,4 +1,4 @@
-// Stateful mock database for TrekMate Admin Dashboard
+
 
 const getStorageItem = <T>(key: string, defaultValue: T): T => {
   if (typeof window !== "undefined") {
@@ -20,7 +20,7 @@ const setStorageItem = <T>(key: string, value: T): void => {
   }
 };
 
-// --- Initial Data Seeds ---
+
 
 const initialUsers = [
   {
@@ -31,7 +31,7 @@ const initialUsers = [
     phone: "+1 (555) 019-2834",
     role: "trekker",
     is_verified: true,
-    status: "active", // active, suspended
+    status: "active", 
     profileImage: "https://api.dicebear.com/7.x/adventurer/svg?seed=alex",
     bio: "Outdoor enthusiast, weekend trekker, and photography lover. Always seeking the next summit.",
     createdAt: "2026-01-15T08:30:00Z",
@@ -115,7 +115,7 @@ const initialUsers = [
     phone: "+977-9841-123456",
     role: "organizer",
     is_verified: false,
-    status: "pending", // Pending approval as organizer
+    status: "pending", 
     profileImage: "https://api.dicebear.com/7.x/bottts/svg?seed=sherpa",
     bio: "Local Sherpa guides with combined 40+ years experience climbing Everest, Annapurna, and K2.",
     createdAt: "2026-06-01T15:20:00Z",
@@ -149,7 +149,7 @@ const initialOrganizers = [
     license_number: "LIC-SUMMIT-2025-9981",
     experience: 8,
     documents: "https://example.com/docs/summit_license.pdf",
-    status: "approved", // pending, approved, rejected, suspended
+    status: "approved", 
     phone: "+1 (555) 011-8899",
     description: "Alpine specialized mountaineering organizers.",
     rating: 4.8,
@@ -196,7 +196,7 @@ const initialTrips = [
     duration: "4 Days",
     organizer_id: "u3",
     organizer_name: "Summit Adventures LLC",
-    status: "approved", // pending, approved, rejected, completed, cancelled
+    status: "approved", 
     price: 450,
     banner: "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=800&q=80",
     description: "Conquer peak elevations up to 14,000 feet with experienced mountain guides. Breathtaking panoramas and alpine meadow camp sites.",
@@ -228,7 +228,7 @@ const initialTrips = [
     duration: "3 Days",
     organizer_id: "u3",
     organizer_name: "Summit Adventures LLC",
-    status: "pending", // Pending admin approval
+    status: "pending", 
     price: 650,
     banner: "https://images.unsplash.com/photo-1517022812141-23620dba5c23?auto=format&fit=crop&w=800&q=80",
     description: "Strap on ice crampons and explore deep blue crevasses, ice caves, and glacial streams. Moderate-high physical fitness required.",
@@ -278,7 +278,7 @@ const initialBookings = [
     trip_name: "Alpine Summit Hiker",
     organizer_id: "u3",
     organizer_name: "Summit Adventures LLC",
-    booking_status: "confirmed", // pending, confirmed, cancelled, refunded
+    booking_status: "confirmed", 
     amount: 450,
     pax: 1,
     booking_date: "2026-06-05T14:20:00Z"
@@ -292,7 +292,7 @@ const initialBookings = [
     organizer_id: "u4",
     organizer_name: "Wilderness Trails",
     booking_status: "confirmed",
-    amount: 760, // 2 pax * 380
+    amount: 760, 
     pax: 2,
     booking_date: "2026-05-18T10:15:00Z"
   },
@@ -335,7 +335,7 @@ const initialPayments = [
     amount: 450,
     payment_method: "credit_card",
     transaction_id: "tx_8819283749",
-    payment_status: "success", // success, pending, refunded
+    payment_status: "success", 
     createdAt: "2026-06-05T14:21:00Z"
   },
   {
@@ -369,14 +369,14 @@ const initialPayments = [
 const initialReports = [
   {
     _id: "r1",
-    type: "review", // review, user, organizer
+    type: "review", 
     reported_item_id: "rev101",
     reported_name: "Trek was terrible, guide ran off",
     reported_by_name: "Hiker Joe",
     offender_id: "u3",
     offender_name: "Summit Adventures LLC",
     reason: "Abusive review and false allegations",
-    status: "pending", // pending, resolved, dismissed
+    status: "pending", 
     createdAt: "2026-06-03T11:00:00Z"
   },
   {
@@ -398,7 +398,7 @@ const initialNotifications = [
     _id: "n1",
     title: "System Maintenance Schedule",
     message: "TrekMate portal will be offline for 2 hours on June 15 at 02:00 UTC.",
-    target: "all", // all, organizers, trekkers
+    target: "all", 
     sentBy: "Diya Fathima",
     createdAt: "2026-06-05T08:00:00Z"
   },
@@ -437,14 +437,14 @@ const initialSettings = {
   contactEmail: "support@trekmate.com",
   smtpServer: "smtp.mailgun.org",
   smtpPort: 587,
-  paymentGateway: "stripe", // stripe, razorpay
+  paymentGateway: "stripe", 
   allowGoogleAuth: true,
   allowRegistration: true,
   requireOrganizerVerification: true,
   enableSmsAlerts: true
 };
 
-// --- DB Stateful Getters & Setters ---
+
 
 export class MockDB {
   static getUsers() {

@@ -24,7 +24,7 @@ const bannerSchema = new mongoose.Schema(
     timestamps: true,
   }
 );
-// Map _id to id so it matches MockDB format without huge refactoring in Admin
+
 bannerSchema.set('toJSON', {
   virtuals: true,
   versionKey: false,

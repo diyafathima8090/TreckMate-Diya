@@ -5,9 +5,9 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useLocation, Link, useNavigate } from '../../../components/RouterCompatibility';
 import { useAuth } from '../../../context/AuthContext';
 import Navbar from '../../../components/Navbar';
-import { getTrekById, addBooking, addPayment, createRazorpayOrder, verifyRazorpayPayment, getUserBookings } from '../../../utils/trekStorage';
+import { getTrekById, addBooking, addPayment, createRazorpayOrder, verifyRazorpayPayment, getUserBookings } from '../../../services/trekStorage';
 
-// Tell TypeScript that window.Razorpay exists (injected by Razorpay's checkout.js script)
+
 declare global {
   interface Window {
     Razorpay: new (options: Record<string, unknown>) => { open: () => void };
@@ -21,7 +21,7 @@ const ConfirmBooking = () => {
   const user = sessions.trekker;
   const navigate = useNavigate();
 
-  // Retrieve state from router navigation
+  
   const bookingState = location.state || {};
   const seats = bookingState.seats || 1;
   const fullName = bookingState.fullName || user?.name || 'Trekker';
@@ -41,12 +41,12 @@ const ConfirmBooking = () => {
     fetchTrek();
   }, [id]);
 
-  // UI Flow States
+  
   const [isProcessing, setIsProcessing] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
 
-  // Billing calculation — prefer values passed from /book page via state.
-  // Fall back to computing from trek price if state is missing (e.g. direct URL access).
+  
+  
   const _trekPriceNum = trek ? (trek.price_num || parseInt(String(trek.price).replace(/[^0-9]/g, '')) || 0) : 0;
   const baseTotal = (bookingState.baseTotal != null) ? bookingState.baseTotal : (trek ? (trek.baseRate || _trekPriceNum) * seats : 0);
   const guideTotal = (bookingState.guideTotal != null) ? bookingState.guideTotal : (trek ? (trek.guideRate || 0) * seats : 0);
@@ -74,7 +74,7 @@ const ConfirmBooking = () => {
     });
   };
 
-  // Submit payment handler
+  
   const handlePaymentSubmit = async (e) => {
     e.preventDefault();
     
@@ -201,7 +201,7 @@ const ConfirmBooking = () => {
   return (
     <div className="font-sans text-white bg-trek-dark min-h-screen selection:bg-trek-brown selection:text-white pt-20 relative overflow-hidden flex flex-col justify-between">
 
-      {/* Wilderness Background overlay */}
+      {}
       <div
         className="absolute inset-0 bg-cover bg-center z-0"
         style={{ backgroundImage: "url('/trips_details_bg.png')" }}
@@ -214,7 +214,7 @@ const ConfirmBooking = () => {
 
       <main className="relative z-20 max-w-7xl mx-auto px-6 md:px-12 lg:px-24 py-12 flex-grow w-full flex flex-col justify-center">
 
-        {/* Page title header */}
+        {}
         <div className="mb-8 border-b border-white/10 pb-4 flex items-center justify-between">
           <div>
             <span className="text-trek-brown text-xs font-bold tracking-widest uppercase mb-1.5 block">Payment Gateway</span>
@@ -231,11 +231,11 @@ const ConfirmBooking = () => {
 
         <div className="flex flex-col lg:flex-row gap-10 items-stretch">
 
-          {/* LEFT COLUMN: Booking Details Summary & Billing */}
+          {}
           <section className="flex-1 bg-[#121317]/90 border border-white/10 rounded-2xl p-6 shadow-2xl flex flex-col justify-between select-text">
 
             <div>
-              {/* Header Info */}
+              {}
               <div className="flex items-center gap-4 mb-6 border-b border-white/5 pb-4">
                 <div className="h-16 w-20 rounded-xl overflow-hidden relative select-none flex-shrink-0">
                   <div
@@ -251,7 +251,7 @@ const ConfirmBooking = () => {
                 </div>
               </div>
 
-              {/* Booking Summary Details block */}
+              {}
               <div className="flex flex-col gap-4 mb-6">
                 <span className="text-[10px] text-gray-500 font-black uppercase tracking-widest">Adventure details</span>
 
@@ -297,7 +297,7 @@ const ConfirmBooking = () => {
                 </div>
               </div>
 
-              {/* Billing Itemized List */}
+              {}
               <div className="border-t border-white/5 pt-4 flex flex-col gap-2.5">
                 <span className="text-[10px] text-gray-500 font-black uppercase tracking-widest">Pricing Summary</span>
 
@@ -318,7 +318,7 @@ const ConfirmBooking = () => {
               </div>
             </div>
 
-            {/* Total Payable Row */}
+            {}
             <div className="border-t border-white/10 pt-5 mt-6 flex items-center justify-between">
               <div className="flex flex-col">
                 <span className="text-[10px] text-gray-500 uppercase font-black leading-none">Total Payable</span>
@@ -329,7 +329,7 @@ const ConfirmBooking = () => {
 
           </section>
 
-          {/* RIGHT COLUMN: Payment Checkout Portal */}
+          {}
           <section className="flex-1 bg-[#121317]/95 border border-white/10 rounded-2xl p-6 shadow-2xl flex flex-col justify-between min-h-[420px]">
 
             <form onSubmit={handlePaymentSubmit} className="h-full flex flex-col justify-between select-text">
@@ -347,7 +347,7 @@ const ConfirmBooking = () => {
                   </p>
                 </div>
 
-                {/* Form Error Banner */}
+                {}
                 {errorMsg && (
                   <div className="bg-red-500/10 border border-red-500/20 text-red-400 rounded-xl p-3.5 flex items-center gap-2 text-xs mb-4 animate-pulse select-none">
                     <span className="h-1.5 w-1.5 rounded-full bg-red-500 flex-shrink-0" />
@@ -355,7 +355,7 @@ const ConfirmBooking = () => {
                   </div>
                 )}
 
-                {/* Terms check */}
+                {}
                 <div className="flex items-start gap-2.5 mt-5 select-none">
                   <input
                     type="checkbox"
@@ -369,7 +369,7 @@ const ConfirmBooking = () => {
                 </div>
               </div>
 
-              {/* Submit button */}
+              {}
               <button
                 type="submit"
                 disabled={isProcessing}
@@ -396,7 +396,7 @@ const ConfirmBooking = () => {
 
       </main>
 
-      {/* FOOTER */}
+      {}
       <footer className="relative z-20 px-6 md:px-12 lg:px-24 py-6 bg-[#050505] border-t border-white/5 flex items-center justify-between select-none">
         <div className="flex items-center gap-3">
           <svg className="w-6 h-6 text-trek-brown" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">

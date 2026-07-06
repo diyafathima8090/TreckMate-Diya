@@ -24,7 +24,7 @@ import {
   Cell 
 } from "recharts";
 
-// Mock Growth Data
+
 const growthData = [
   { name: "Jan", trekkers: 80, organizers: 5 },
   { name: "Feb", trekkers: 120, organizers: 6 },
@@ -34,7 +34,7 @@ const growthData = [
   { name: "Jun", trekkers: 510, organizers: 15 }
 ];
 
-// Mock Destination Share
+
 const destinationShare = [
   { name: "Himalayas", value: 45 },
   { name: "Rocky Mountains", value: 25 },
@@ -47,7 +47,7 @@ const COLORS = ["#6366f1", "#10b981", "#f59e0b", "#06b6d4"];
 export default function DeepAnalytics() {
   const [mounted, setMounted] = useState(false);
 
-  // Fetch Organizers to list top ones
+  
   const { data: orgsResponse, isLoading } = useQuery({
     queryKey: ["organizers"],
     queryFn: OrganizerService.getAllOrganizers
@@ -58,14 +58,14 @@ export default function DeepAnalytics() {
   }, []);
 
   const organizers: any[] = orgsResponse?.data || [];
-  // Sort organizers by earnings to find top performing
+  
   const topOrganizers = [...organizers]
     .sort((a: any, b: any) => b.earnings - a.earnings)
     .slice(0, 5);
 
   return (
     <div className="space-y-6">
-      {/* Title */}
+      {}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
           <h1 className="text-3xl font-extrabold tracking-tight">System Performance & Analytics</h1>
@@ -76,7 +76,7 @@ export default function DeepAnalytics() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* User Growth Line Chart */}
+        {}
         <Card className="lg:col-span-2">
           <CardHeader>
             <CardTitle>User & Partner Acquisition</CardTitle>
@@ -108,7 +108,7 @@ export default function DeepAnalytics() {
           </CardContent>
         </Card>
 
-        {/* Regional Popularity Share Pie Chart */}
+        {}
         <Card>
           <CardHeader>
             <CardTitle>Spotlight Popularity</CardTitle>
@@ -137,7 +137,7 @@ export default function DeepAnalytics() {
                     </PieChart>
                   </ResponsiveContainer>
                 </div>
-                {/* Legend list */}
+                {}
                 <div className="grid grid-cols-2 gap-2 text-xs">
                   {destinationShare.map((item: any, idx: number) => (
                     <div key={item.name} className="flex items-center gap-1.5">
@@ -155,7 +155,7 @@ export default function DeepAnalytics() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Top Organizers Leaderboard */}
+        {}
         <Card className="lg:col-span-2">
           <CardHeader>
             <CardTitle>Partner Leaderboard</CardTitle>
@@ -198,7 +198,7 @@ export default function DeepAnalytics() {
           </CardContent>
         </Card>
 
-        {/* Platform health KPI summary */}
+        {}
         <Card>
           <CardHeader>
             <CardTitle>Ecosystem Health Indicators</CardTitle>

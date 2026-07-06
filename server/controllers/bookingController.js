@@ -6,18 +6,18 @@ import Trek from '../models/Trek.js';
 import QRCode from 'qrcode';
 import sendEmail from '../utils/sendEmail.js';
 
-//   Create a new trek booking
-//   POST /api/bookings
-//   Public/Private
+
+
+
 export const createBooking = async (req, res, next) => {
   try {
     const bookingData = { ...req.body };
 
-    // If user is logged in, link user id
+    
     if (req.user) {
       bookingData.user = req.user._id;
 
-      // Prevent duplicate bookings for the same trip
+      
       const trekQuery = [];
       if (bookingData.trip_id) trekQuery.push({ trip_id: bookingData.trip_id });
       if (bookingData.trekId) trekQuery.push({ trekId: bookingData.trekId });
@@ -40,12 +40,12 @@ export const createBooking = async (req, res, next) => {
 
     const booking = await Booking.create(bookingData);
 
-    // Generate ticketCode if not provided (fallback)
+    
     const tripIdStr = booking.trekId ? booking.trekId.substring(0, 3).toUpperCase() : 'TRP';
     const randomNum = Math.floor(1000 + Math.random() * 9000);
     const generatedTicketCode = booking.ticketId || `TM-${tripIdStr}-${randomNum}`;
     
-    // Generate QR Code containing verification JSON
+    
     const qrPayload = JSON.stringify({
       bookingId: booking._id,
       ticketCode: generatedTicketCode,
@@ -55,13 +55,13 @@ export const createBooking = async (req, res, next) => {
     
     const qrCodeBase64 = await QRCode.toDataURL(qrPayload);
 
-    // Update Booking
+    
     booking.ticketCode = generatedTicketCode;
     booking.ticketId = generatedTicketCode;
     booking.qrCode = qrCodeBase64;
     await booking.save();
 
-    // Create Ticket entry
+    
     await Ticket.create({
       userId: booking.user || null,
       tripId: booking.trip_id || booking.trekId || 'unknown',
@@ -70,7 +70,7 @@ export const createBooking = async (req, res, next) => {
       qrCode: qrCodeBase64
     });
 
-    // Decrement availability in Trek
+    
     try {
       const trekQuery = booking.trip_id ? { _id: booking.trip_id } : { id: booking.trekId };
       const trek = await Trek.findOne(trekQuery);
@@ -88,11 +88,11 @@ export const createBooking = async (req, res, next) => {
       console.error("Error decrementing trek availability:", err);
     }
 
-    // Find the organizer to send email/notification
+    
     if (bookingData.trekOrganizer) {
       const organizer = await User.findOne({ name: bookingData.trekOrganizer, role: { $in: ['organizer', 'admin'] } });
       if (organizer) {
-        // Create Notification
+        
         await Notification.create({
           user_id: organizer._id,
           title: 'New Trip Booking Request',
@@ -102,7 +102,7 @@ export const createBooking = async (req, res, next) => {
           reference_type: 'booking'
         });
 
-        // Send Email
+        
         await sendEmail({
           email: organizer.email,
           subject: 'New Booking Request - Trekmate',
@@ -120,9 +120,9 @@ export const createBooking = async (req, res, next) => {
   }
 };
 
-//    Update booking status (Accept / Reject)
-//    PUT /api/bookings/:id/status
-//    Private (Organizer/Admin)
+
+
+
 export const updateBookingStatus = async (req, res, next) => {
   try {
     if (!req.user || (req.user.role !== 'organizer' && req.user.role !== 'admin')) {
@@ -140,7 +140,7 @@ export const updateBookingStatus = async (req, res, next) => {
       return res.status(404).json({ success: false, message: 'Booking not found' });
     }
 
-    // Verify organizer owns this trip
+    
     if (booking.trekOrganizer && booking.trekOrganizer.toLowerCase() !== req.user.name.toLowerCase() && req.user.role !== 'admin') {
       return res.status(403).json({ success: false, message: 'Not your trip' });
     }
@@ -150,7 +150,7 @@ export const updateBookingStatus = async (req, res, next) => {
     if (status === 'confirmed') booking.approved_at = new Date();
     await booking.save();
 
-    // Restore availability in Trek if cancelled/rejected
+    
     if (status === 'cancelled' || status === 'rejected') {
       try {
         const trekQuery = booking.trip_id ? { _id: booking.trip_id } : { id: booking.trekId };
@@ -168,7 +168,7 @@ export const updateBookingStatus = async (req, res, next) => {
       }
     }
 
-    // Send email to trekker if email exists
+    
     if (booking.email) {
       const subject = status === 'confirmed' ? 'Trip Booking Accepted!' : 'Trip Booking Update';
       const html = status === 'confirmed' 
@@ -178,7 +178,7 @@ export const updateBookingStatus = async (req, res, next) => {
       await sendEmail({ email: booking.email, subject, html });
     }
 
-    // Create Notification for trekker if user id exists
+    
     if (booking.user) {
       await Notification.create({
         user_id: booking.user,
@@ -196,9 +196,9 @@ export const updateBookingStatus = async (req, res, next) => {
   }
 };
 
-//     Get bookings for organizer treks
-//    GET /api/bookings/organizer
-//   Private (Organizer)
+
+
+
 export const getOrganizerBookings = async (req, res, next) => {
   try {
     if (!req.user || (req.user.role !== 'organizer' && req.user.role !== 'admin')) {
@@ -208,7 +208,7 @@ export const getOrganizerBookings = async (req, res, next) => {
       });
     }
 
-    // Match bookings where trekOrganizer is the logged in user name (case insensitive)
+    
     const bookings = await Booking.find({
       trekOrganizer: { $regex: new RegExp('^' + req.user.name + '$', 'i') }
     }).sort({ createdAt: -1 });
@@ -223,9 +223,9 @@ export const getOrganizerBookings = async (req, res, next) => {
   }
 };
 
-//     Get pending bookings for organizer treks
-//    GET /api/bookings/organizer/requests
-//   Private (Organizer)
+
+
+
 export const getOrganizerRequests = async (req, res, next) => {
   try {
     if (!req.user || (req.user.role !== 'organizer' && req.user.role !== 'admin')) {
@@ -243,9 +243,9 @@ export const getOrganizerRequests = async (req, res, next) => {
   }
 };
 
-//     Get bookings made by logged in user (hiker)
-//    GET /api/bookings/my-bookings
-//   Private (Trekker)
+
+
+
 export const getUserBookings = async (req, res, next) => {
   try {
     if (!req.user) {
@@ -255,7 +255,7 @@ export const getUserBookings = async (req, res, next) => {
       });
     }
 
-    // Match by user ObjectId or email
+    
     const bookings = await Booking.find({
       $or: [
         { user: req.user._id },
@@ -273,9 +273,9 @@ export const getUserBookings = async (req, res, next) => {
   }
 };
 
-//     Get a single booking by ticketId
-//    GET /api/bookings/ticket/:ticketId
-//   Public or Private
+
+
+
 export const getBookingByTicketId = async (req, res, next) => {
   try {
     const booking = await Booking.findOne({ ticketId: req.params.ticketId });
@@ -288,9 +288,9 @@ export const getBookingByTicketId = async (req, res, next) => {
   }
 };
 
-//     Get all bookings for Admin
-//    GET /api/bookings/admin
-//   Private (Admin)
+
+
+
 export const getAllBookingsAdmin = async (req, res, next) => {
   try {
     const bookings = await Booking.find()

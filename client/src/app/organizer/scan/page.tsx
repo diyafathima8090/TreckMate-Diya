@@ -1,7 +1,7 @@
 'use client';
 import React, { useState } from 'react';
 import { Scanner } from '@yudiel/react-qr-scanner';
-import axios from '../../../utils/axios';
+import axios from '../../../lib/axios';
 import { ProtectedRoute, OrganizerRoute } from '../../../components/RouteGuard';
 import Navbar from '../../../components/Navbar';
 import { useNavigate } from '../../../components/RouterCompatibility';
@@ -23,7 +23,7 @@ const ScanTicketPage = () => {
       setErrorMsg('');
       setScanResult(null);
 
-      // We expect JSON containing ticketCode, or raw ticketCode
+      
       let ticketCode = qrData;
       try {
         const parsed = JSON.parse(qrData);
@@ -31,7 +31,7 @@ const ScanTicketPage = () => {
           ticketCode = parsed.ticketCode;
         }
       } catch (e) {
-        // Not JSON, treat as raw ticket code
+        
       }
 
       const response = await axios.post('/tickets/verify', { ticketCode });
@@ -138,7 +138,6 @@ const ScanTicketPage = () => {
                 allowMultiple={false}
                 scanDelay={2000}
                 components={{
-                  audio: false,
                   onOff: true,
                   torch: true,
                   zoom: false,

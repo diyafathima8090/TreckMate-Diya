@@ -4,7 +4,7 @@ import multer from 'multer';
 import path from 'path';
 import fs from 'fs';
 
-// Configure secure directory for documents
+
 const uploadDir = 'uploads/verification_docs';
 if (!fs.existsSync(uploadDir)) {
   fs.mkdirSync(uploadDir, { recursive: true });
@@ -31,7 +31,7 @@ const fileFilter = (req, file, cb) => {
 
 export const documentUpload = multer({
   storage,
-  limits: { fileSize: 10 * 1024 * 1024 }, // 10MB limit
+  limits: { fileSize: 10 * 1024 * 1024 }, 
   fileFilter
 });
 
@@ -76,7 +76,7 @@ export const createOrganizerProfile = async (req, res) => {
       status: 'pending',
     });
 
-    // Update user role to organizer
+    
     await User.findByIdAndUpdate(req.user._id, { role: 'organizer' });
 
     res.status(201).json({ success: true, data: organizer });
@@ -108,31 +108,27 @@ export const updateOrganizerProfile = async (req, res) => {
 
 export const getAllOrganizers = async (req, res) => {
   try {
-    // Get all users who have the role 'organizer'
-    const organizerUsers = await User.find({ role: 'organizer' }).sort({ createdAt: -1 });
-    
-    // Get all organizer profiles
-    const organizerProfiles = await Organizer.find();
-    
-    // Map them together for the admin dashboard
-    const formattedOrganizers = organizerUsers.map((user) => {
-      const profile = organizerProfiles.find(p => p.user_id.toString() === user._id.toString());
+    const users = await User.find({ role: 'organizer' }).lean();
+    const profiles = await Organizer.find().lean();
+    const profileMap = new Map(profiles.map(p => [p.user_id.toString(), p]));
+
+    const formattedOrganizers = users.map((user) => {
+      const profile = profileMap.get(user._id.toString()) || {};
       
       return {
-        _id: profile ? profile._id : user._id, // use profile id if exists, fallback to user id
+        _id: profile._id || user._id, 
         user_id: user._id,
-        organization_name: profile ? profile.organization_name : user.name,
-        license_number: profile ? profile.license_number : 'Not submitted',
-        experience: profile ? profile.experience : 0,
-        documents: profile ? profile.documents : '',
-        phone: profile ? profile.phone : user.phone,
-        status: profile ? profile.status : 'pending',
-        rating: profile ? profile.rating : 0,
-        total_treks: profile ? profile.total_treks : 0,
-        earnings: profile ? profile.earnings : 0,
-        createdAt: profile ? profile.createdAt : user.createdAt,
-        updatedAt: profile ? profile.updatedAt : user.updatedAt,
-        // The frontend expects user_id to be populated object sometimes
+        organization_name: profile.organization_name || user.name,
+        license_number: profile.license_number || 'Not submitted',
+        experience: profile.experience || 0,
+        documents: profile.documents || '',
+        phone: profile.phone || user.phone,
+        status: profile.status || 'pending',
+        rating: profile.rating || 0,
+        total_treks: profile.total_treks || 0,
+        earnings: profile.earnings || 0,
+        createdAt: profile.createdAt || user.createdAt,
+        updatedAt: profile.updatedAt || user.updatedAt,
         user_id_populated: {
           name: user.name,
           email: user.email,
@@ -170,7 +166,7 @@ export const updateOrganizerStatus = async (req, res) => {
       { new: true }
     );
 
-    // If not found by Organizer ID, try by User ID
+    
     if (!organizer) {
       organizer = await Organizer.findOneAndUpdate(
         { user_id: req.params.id },
@@ -179,7 +175,7 @@ export const updateOrganizerStatus = async (req, res) => {
       );
     }
 
-    // If still not found, they don't have a profile yet, so create one (legacy user)
+    
     if (!organizer) {
       const user = await User.findById(req.params.id);
       if (user && user.role === 'organizer') {
@@ -222,7 +218,7 @@ export const serveSecureDocument = async (req, res) => {
   try {
     const { filename } = req.params;
 
-    // Admin can access all documents
+    
     if (req.user.role === 'admin') {
       const filePath = path.resolve('uploads/verification_docs', filename);
       if (!fs.existsSync(filePath)) {
@@ -231,14 +227,14 @@ export const serveSecureDocument = async (req, res) => {
       return res.sendFile(filePath);
     }
 
-    // Organizer can access their own uploaded documents
+    
     if (req.user.role === 'organizer') {
       const organizer = await Organizer.findOne({ user_id: req.user._id });
       if (!organizer) {
         return res.status(403).json({ success: false, message: 'Not authorized' });
       }
 
-      // Check if filename matches any document submitted by this organizer
+      
       const ownsDoc =
         organizer.submitted_documents.some((doc) => doc.filename === filename) ||
         organizer.documents.includes(filename);
@@ -281,22 +277,22 @@ export const resubmitOrganizerDocuments = async (req, res) => {
       return res.status(404).json({ success: false, message: 'Organizer profile not found' });
     }
 
-    // Reset status and notes
+    
     organizer.status = 'pending';
     organizer.submission_date = Date.now();
     organizer.rejection_reason = '';
     organizer.admin_notes = '';
 
-    // Update fields if provided
+    
     if (organization_name) organizer.organization_name = organization_name;
     if (phone) organizer.phone = phone;
     if (address) organizer.address = address;
     if (additional_notes) organizer.additional_notes = additional_notes;
 
-    // Backwards compatible legacy field
+    
     organizer.documents = document_url;
 
-    // Append to submitted documents history
+    
     organizer.submitted_documents.push({
       document_type,
       url: document_url,
@@ -304,7 +300,7 @@ export const resubmitOrganizerDocuments = async (req, res) => {
       submitted_at: Date.now(),
     });
     await organizer.save();
-    // Sync phone to User profile as well
+    
     if (phone) {
       await User.findByIdAndUpdate(req.user._id, { phone });
     }

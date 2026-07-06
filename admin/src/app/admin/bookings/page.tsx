@@ -17,13 +17,13 @@ export default function BookingManagement() {
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
 
-  // 1. Fetch Bookings
+  
   const { data: bookingsResponse, isLoading } = useQuery({
     queryKey: ["bookings"],
     queryFn: BookingService.getAllBookings
   });
 
-  // 2. Status Mutation (Cancel or Refund)
+  
   const statusMutation = useMutation({
     mutationFn: ({ id, status }: { id: string; status: "confirmed" | "cancelled" | "refunded" | "rejected" }) =>
       BookingService.updateBookingStatus(id, status),
@@ -39,8 +39,8 @@ export default function BookingManagement() {
       text: `Do you want to mark booking #${bookingId} as ${status}?`,
       icon: 'warning',
       showCancelButton: true,
-      confirmButtonColor: '#10b981', // emerald-500
-      cancelButtonColor: '#ef4444', // rose-500
+      confirmButtonColor: '#10b981', 
+      cancelButtonColor: '#ef4444', 
       confirmButtonText: 'Yes, update it!'
     }).then((result) => {
       if (result.isConfirmed) {
@@ -56,16 +56,16 @@ export default function BookingManagement() {
 
   const bookings: any[] = bookingsResponse?.data || [];
 
-  // Calculate Metrics
+  
   const totalBookings = bookings.length;
   const confirmedCount = bookings.filter((b: any) => b.booking_status === "confirmed").length;
   const cancelledCount = bookings.filter((b: any) => b.booking_status === "cancelled").length;
   const pendingCount = bookings.filter((b: any) => b.booking_status === "pending").length;
   const refundPipelineVal = bookings
-    .filter((b: any) => b.booking_status === "cancelled") // cancelled triggers refund request
+    .filter((b: any) => b.booking_status === "cancelled") 
     .reduce((sum: number, b: any) => sum + b.amount, 0);
 
-  // Filter list
+  
   const filteredBookings = bookings.filter((b: any) => {
     const matchesSearch = 
       b.user_name.toLowerCase().includes(search.toLowerCase()) ||
@@ -79,7 +79,7 @@ export default function BookingManagement() {
 
   return (
     <div className="space-y-6">
-      {/* Title */}
+      {}
       <div>
         <h1 className="text-3xl font-extrabold tracking-tight">Booking Management</h1>
         <p className="text-muted-foreground text-sm mt-1">
@@ -87,7 +87,7 @@ export default function BookingManagement() {
         </p>
       </div>
 
-      {/* Analytics KPI Block */}
+      {}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <Card>
           <CardContent className="pt-4 flex items-center justify-between">
@@ -140,11 +140,11 @@ export default function BookingManagement() {
         </Card>
       </div>
 
-      {/* Filter and Search */}
+      {}
       <Card>
         <CardContent className="pt-6">
           <div className="flex flex-col md:flex-row gap-4 items-center justify-between">
-            {/* Search */}
+            {}
             <div className="relative w-full md:max-w-xs">
               <span className="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400 pointer-events-none">
                 <Search className="h-4 w-4" />
@@ -158,7 +158,7 @@ export default function BookingManagement() {
               />
             </div>
 
-            {/* Filter controls */}
+            {}
             <div className="flex items-center gap-2 w-full md:w-auto justify-end">
               <span className="text-xs text-slate-500 font-semibold uppercase">Status</span>
               <select
@@ -178,7 +178,7 @@ export default function BookingManagement() {
         </CardContent>
       </Card>
 
-      {/* Bookings Ledger */}
+      {}
       <Card>
         <CardHeader>
           <CardTitle>Bookings Directory</CardTitle>

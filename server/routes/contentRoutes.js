@@ -4,7 +4,7 @@ import { protect, admin } from '../middleware/authMiddleware.js';
 
 const router = express.Router();
 
-// Banners routes
+
 router.route('/banners')
   .get(getBanners)
   .post(protect, admin, createBanner);

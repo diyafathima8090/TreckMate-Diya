@@ -2,20 +2,20 @@ import jwt from 'jsonwebtoken';
 import User from '../models/User.js';
 import Organizer from '../models/Organizer.js';
 
-// Protect routes - Verify JWT cookie or Bearer token
+
 export const protect = async (req, res, next) => {
   let token;
   const activeRole = req.headers['x-active-role'];
 
-  // Check if token exists in headers
+  
   if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
     token = req.headers.authorization.split(' ')[1];
   } 
-  // Fallback to cookie based on active role
+  
   else if (activeRole && req.cookies && req.cookies[`token_${activeRole}`]) {
     token = req.cookies[`token_${activeRole}`];
   }
-  // Legacy fallback
+  
   else if (req.cookies && req.cookies.token) {
     token = req.cookies.token;
   }
@@ -27,9 +27,9 @@ export const protect = async (req, res, next) => {
     });
   }
   try {
-    // Verify token
+    
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    // Get user from the token, excluding the password
+    
     req.user = await User.findById(decoded.id).select('-password');
 
     if (!req.user) {
@@ -49,7 +49,7 @@ export const protect = async (req, res, next) => {
   }
 };
 
-// Admin route protection
+
 export const admin = (req, res, next) => {
   if (req.user && req.user.role === 'admin') {
     next();
@@ -60,11 +60,11 @@ export const admin = (req, res, next) => {
     });
   }
 };
-// Verified Organizer route protection
+
 export const verifiedOrganizer = async (req, res, next) => {
   try {
     if (req.user && req.user.role === 'admin') {
-      return next(); // Admins can bypass
+      return next(); 
     }
 
     if (req.user && req.user.role === 'organizer') {

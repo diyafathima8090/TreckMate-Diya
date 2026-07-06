@@ -13,7 +13,7 @@ import Swal from 'sweetalert2';
 export default function PlatformSettings() {
   const queryClient = useQueryClient();
 
-  // Settings State Form
+  
   const [platformName, setPlatformName] = useState("");
   const [commissionPercentage, setCommissionPercentage] = useState(10);
   const [contactEmail, setContactEmail] = useState("");
@@ -24,7 +24,7 @@ export default function PlatformSettings() {
   const [allowRegistration, setAllowRegistration] = useState(true);
   const [requireOrganizerVerification, setRequireOrganizerVerification] = useState(true);
 
-  // 1. Fetch current settings
+  
   const { data: settingsResponse, isSuccess } = useQuery({
     queryKey: ["settings"],
     queryFn: SettingsService.getSettings
@@ -44,12 +44,12 @@ export default function PlatformSettings() {
     }
   }, [isSuccess, settingsResponse]);
 
-  // 2. Save Mutation
+  
   const saveMutation = useMutation({
     mutationFn: SettingsService.saveSettings,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["settings"] });
-      queryClient.invalidateQueries({ queryKey: ["payments"] }); // recalculates payouts
+      queryClient.invalidateQueries({ queryKey: ["payments"] }); 
       Swal.fire(
         'Success!',
         'Platform configurations updated successfully!',
@@ -74,7 +74,7 @@ export default function PlatformSettings() {
 
   return (
     <div className="space-y-6">
-      {/* Title */}
+      {}
       <div>
         <h1 className="text-3xl font-extrabold tracking-tight">Platform Settings</h1>
         <p className="text-muted-foreground text-sm mt-1">
@@ -84,7 +84,7 @@ export default function PlatformSettings() {
 
       <form onSubmit={handleSave} className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div className="lg:col-span-2 space-y-6">
-          {/* Platform General Config */}
+          {}
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
@@ -105,7 +105,7 @@ export default function PlatformSettings() {
                 </div>
               </div>
 
-              {/* Commission input */}
+              {}
               <div className="space-y-1.5 max-w-xs">
                 <label className="text-xs font-semibold text-slate-500">Global Payout Commission Fee (%)</label>
                 <div className="relative">
@@ -124,7 +124,7 @@ export default function PlatformSettings() {
             </CardContent>
           </Card>
 
-          {/* Email configuration */}
+          {}
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
@@ -147,7 +147,7 @@ export default function PlatformSettings() {
             </CardContent>
           </Card>
 
-          {/* Gateways config */}
+          {}
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
@@ -197,7 +197,7 @@ export default function PlatformSettings() {
           </Card>
         </div>
 
-        {/* Security / System policies */}
+        {}
         <div className="space-y-6">
           <Card>
             <CardHeader>
@@ -208,7 +208,7 @@ export default function PlatformSettings() {
               <CardDescription>Adjust authorization profiles and verification flows.</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4 text-xs">
-              {/* Allow signup toggling */}
+              {}
               <div className="flex items-center justify-between border-b border-border pb-3">
                 <div>
                   <span className="font-bold block text-slate-800 dark:text-slate-200">Public Registration</span>
@@ -227,7 +227,7 @@ export default function PlatformSettings() {
                 </button>
               </div>
 
-              {/* Require license approval toggling */}
+              {}
               <div className="flex items-center justify-between">
                 <div>
                   <span className="font-bold block text-slate-800 dark:text-slate-200">Organizer Verification</span>

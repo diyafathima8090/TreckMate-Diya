@@ -21,7 +21,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       if (!isAuthenticated) {
         router.replace("/login");
       } else if (user && user.role !== "admin") {
-        // Not authorized as admin, redirect out
+        
         console.error("Access denied: role is not admin");
         router.replace("/login");
       }
@@ -41,15 +41,15 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
   return (
     <div className="min-h-screen flex bg-background text-foreground transition-colors duration-300">
-      {/* Sidebar */}
+      {}
       <DashboardSidebar />
 
-      {/* Main Content Area */}
+      {}
       <div className="flex-1 flex flex-col min-w-0 min-h-screen overflow-hidden">
-        {/* Top Navbar */}
+        {}
         <DashboardNavbar />
 
-        {/* Scrollable Main Screen */}
+        {}
         <main className="flex-1 overflow-y-auto p-8 bg-slate-50/50 dark:bg-slate-950/20">
           <div className="max-w-7xl mx-auto animate-in fade-in-30 slide-in-from-bottom-2 duration-300">
             {children}

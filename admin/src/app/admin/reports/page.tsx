@@ -15,13 +15,13 @@ import Swal from 'sweetalert2';
 export default function ReportsManagement() {
   const queryClient = useQueryClient();
 
-  // 1. Fetch Reports
+  
   const { data: reportsResponse, isLoading } = useQuery({
     queryKey: ["reports"],
     queryFn: ReportService.getAllReports
   });
 
-  // 2. Resolve Report Mutation
+  
   const resolveMutation = useMutation({
     mutationFn: ({ id, status }: { id: string; status: "resolved" | "dismissed" }) =>
       ReportService.updateReportStatus(id, status),
@@ -30,7 +30,7 @@ export default function ReportsManagement() {
     }
   });
 
-  // 3. Optional: Suspend Offending User directly from here
+  
   const suspendUserMutation = useMutation({
     mutationFn: UserService.toggleUserSuspension,
     onSuccess: () => {
@@ -70,7 +70,7 @@ export default function ReportsManagement() {
 
   return (
     <div className="space-y-6">
-      {/* Title */}
+      {}
       <div>
         <h1 className="text-3xl font-extrabold tracking-tight">Reviews & Reports</h1>
         <p className="text-muted-foreground text-sm mt-1">
@@ -91,7 +91,7 @@ export default function ReportsManagement() {
           <TabsTrigger value="resolved">Resolved Log</TabsTrigger>
         </TabsList>
 
-        {/* Tab 1: Pending */}
+        {}
         <TabsContent value="pending">
           <Card>
             <CardHeader>
@@ -176,7 +176,7 @@ export default function ReportsManagement() {
           </Card>
         </TabsContent>
 
-        {/* Tab 2: Resolved */}
+        {}
         <TabsContent value="resolved">
           <Card>
             <CardHeader>

@@ -32,7 +32,7 @@ const paymentSchema = new mongoose.Schema(
       enum: ['pending', 'success', 'failed', 'refunded'],
       default: 'success',
     },
-    // Extra metadata
+    
     currency: {
       type: String,
       default: 'INR',

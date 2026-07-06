@@ -37,7 +37,7 @@ const notificationSchema = new mongoose.Schema(
       default: false,
       index: true,
     },
-    // Extra context data (e.g. trip ID, booking ID, etc.)
+    
     reference_id: {
       type: String,
       default: '',

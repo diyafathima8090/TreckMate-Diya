@@ -1,4 +1,4 @@
-/** @type {import('tailwindcss').Config} */
+
 export default {
   content: [
     "./src/**/*.{js,ts,jsx,tsx}",
@@ -11,15 +11,15 @@ export default {
       },
       colors: {
         trek: {
-          dark: '#091515', // Deep slate/forest green base
-          card: '#112220', // Forest green card background
-          border: '#1a332d', // Lighter forest green border
-          green: '#064e3b', // Deep forest green accent
-          'green-light': '#047857', // Lighter green
-          orange: '#ff6b35', // Sunset orange accent
-          'orange-hover': '#e85b25', // Sunset orange hover
-          brown: '#ff6b35', // Legacy brown mapping to sunset orange
-          'brown-hover': '#e85b25', // Legacy brown mapping to sunset orange
+          dark: '#091515', 
+          card: '#112220', 
+          border: '#1a332d', 
+          green: '#064e3b', 
+          'green-light': '#047857', 
+          orange: '#ff6b35', 
+          'orange-hover': '#e85b25', 
+          brown: '#ff6b35', 
+          'brown-hover': '#e85b25', 
         }
       }
     },

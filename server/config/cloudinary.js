@@ -14,7 +14,7 @@ cloudinary.config({
 const storage = new CloudinaryStorage({
   cloudinary: cloudinary,
   params: {
-    folder: 'trekmate', // folder in cloudinary
+    folder: 'trekmate', 
     allowed_formats: ['jpg', 'png', 'jpeg', 'webp'],
   },
 });

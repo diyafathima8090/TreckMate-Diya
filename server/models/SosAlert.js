@@ -34,7 +34,7 @@ const sosAlertSchema = new mongoose.Schema(
       enum: ['active', 'resolved'],
       default: 'active',
     },
-    // Legacy support fields if needed temporarily:
+    
     trekId: { type: String },
     trekName: { type: String },
   },

@@ -12,13 +12,13 @@ import { formatCurrency, formatDate } from "@/lib/utils";
 export default function PaymentManagement() {
   const [search, setSearch] = useState("");
 
-  // 1. Fetch Transactions
+  
   const { data: paymentsResponse, isLoading } = useQuery({
     queryKey: ["payments"],
     queryFn: PaymentService.getAllPayments
   });
 
-  // 2. Fetch Settings for Commission rate
+  
   const { data: settingsResponse } = useQuery({
     queryKey: ["settings"],
     queryFn: SettingsService.getSettings
@@ -28,7 +28,7 @@ export default function PaymentManagement() {
   const settings = settingsResponse?.data || { commissionPercentage: 10 };
   const commissionRate = settings.commissionPercentage / 100;
 
-  // Calculations
+  
   const successfulPayments = payments.filter((p: any) => p.payment_status === "success");
   const grossVolume = successfulPayments.reduce((sum: number, p: any) => sum + p.amount, 0);
   const platformEarnings = grossVolume * commissionRate;
@@ -37,7 +37,7 @@ export default function PaymentManagement() {
     .filter((p: any) => p.payment_status === "refunded")
     .reduce((sum: number, p: any) => sum + p.amount, 0);
 
-  // Filter
+  
   const filteredPayments = payments.filter((p: any) => {
     return (
       p.user_name.toLowerCase().includes(search.toLowerCase()) ||
@@ -48,7 +48,7 @@ export default function PaymentManagement() {
 
   return (
     <div className="space-y-6">
-      {/* Title */}
+      {}
       <div>
         <h1 className="text-3xl font-extrabold tracking-tight">Payment & Payouts</h1>
         <p className="text-muted-foreground text-sm mt-1">
@@ -56,9 +56,9 @@ export default function PaymentManagement() {
         </p>
       </div>
 
-      {/* Financial Splits Grid */}
+      {}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        {/* Gross Volume */}
+        {}
         <Card className="border-l-4 border-l-primary">
           <CardContent className="pt-4 flex items-center justify-between">
             <div>
@@ -69,7 +69,7 @@ export default function PaymentManagement() {
           </CardContent>
         </Card>
 
-        {/* Platform Share */}
+        {}
         <Card className="border-l-4 border-l-emerald-500 bg-emerald-500/5">
           <CardContent className="pt-4 flex items-center justify-between">
             <div>
@@ -82,7 +82,7 @@ export default function PaymentManagement() {
           </CardContent>
         </Card>
 
-        {/* Organizer Splits */}
+        {}
         <Card className="border-l-4 border-l-indigo-500">
           <CardContent className="pt-4 flex items-center justify-between">
             <div>
@@ -93,7 +93,7 @@ export default function PaymentManagement() {
           </CardContent>
         </Card>
 
-        {/* Refunded volume */}
+        {}
         <Card className="border-l-4 border-l-rose-500 bg-rose-500/5">
           <CardContent className="pt-4 flex items-center justify-between">
             <div>
@@ -105,7 +105,7 @@ export default function PaymentManagement() {
         </Card>
       </div>
 
-      {/* Filter and Search */}
+      {}
       <Card>
         <CardContent className="pt-6">
           <div className="relative w-full md:max-w-xs">
@@ -123,7 +123,7 @@ export default function PaymentManagement() {
         </CardContent>
       </Card>
 
-      {/* Ledger Table */}
+      {}
       <Card>
         <CardHeader>
           <CardTitle>Transaction Ledger</CardTitle>

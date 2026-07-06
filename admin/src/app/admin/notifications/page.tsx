@@ -18,19 +18,19 @@ export default function NotificationsCenter() {
   const [message, setMessage] = useState("");
   const [target, setTarget] = useState<"all" | "organizers" | "trekkers">("all");
 
-  // 1. Fetch Announcement History
+  
   const { data: noticesResponse, isLoading } = useQuery({
     queryKey: ["announcements"],
     queryFn: NotificationService.getSentAnnouncements
   });
 
-  // 2. Broadcast Mutation
+  
   const sendMutation = useMutation({
     mutationFn: (args: { title: string; message: string; target: "all" | "organizers" | "trekkers" }) =>
       NotificationService.sendAnnouncement(args.title, args.message, args.target),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["announcements"] });
-      // Reset form
+      
       setTitle("");
       setMessage("");
       setTarget("all");
@@ -59,7 +59,7 @@ export default function NotificationsCenter() {
 
   return (
     <div className="space-y-6">
-      {/* Title */}
+      {}
       <div>
         <h1 className="text-3xl font-extrabold tracking-tight">Notifications Center</h1>
         <p className="text-muted-foreground text-sm mt-1">
@@ -68,7 +68,7 @@ export default function NotificationsCenter() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-5 gap-8">
-        {/* Broadcast Form */}
+        {}
         <Card className="lg:col-span-2 h-fit">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
@@ -81,7 +81,7 @@ export default function NotificationsCenter() {
           </CardHeader>
           <CardContent>
             <form onSubmit={handleBroadcast} className="space-y-4">
-              {/* Target Scope */}
+              {}
               <div className="space-y-1.5">
                 <label className="text-xs font-semibold text-slate-500 block uppercase">Target Audience</label>
                 <div className="grid grid-cols-3 gap-2">
@@ -121,7 +121,7 @@ export default function NotificationsCenter() {
                 </div>
               </div>
 
-              {/* Title */}
+              {}
               <div className="space-y-1.5">
                 <label className="text-xs font-semibold text-slate-500 block uppercase">Alert Heading</label>
                 <Input
@@ -132,7 +132,7 @@ export default function NotificationsCenter() {
                 />
               </div>
 
-              {/* Message */}
+              {}
               <div className="space-y-1.5">
                 <label className="text-xs font-semibold text-slate-500 block uppercase">Message Description</label>
                 <textarea
@@ -155,7 +155,7 @@ export default function NotificationsCenter() {
           </CardContent>
         </Card>
 
-        {/* Sent history log */}
+        {}
         <Card className="lg:col-span-3">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <div>

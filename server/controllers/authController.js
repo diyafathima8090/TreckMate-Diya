@@ -22,7 +22,7 @@ export const registerUser = async (req, res) => {
   } = req.body;
 
   try {
-    // Basic validation
+    
     if (!name || !username || !email || !password) {
       return res.status(400).json({
         success: false,
@@ -30,7 +30,7 @@ export const registerUser = async (req, res) => {
       });
     }
 
-    // Additional validations for organizer registration
+    
     if (role === 'organizer') {
       if (!document_url || !document_filename) {
         return res.status(400).json({
@@ -40,7 +40,7 @@ export const registerUser = async (req, res) => {
       }
     }
 
-    // Check if user email already exists
+    
     const emailExists = await User.findOne({ email });
     if (emailExists) {
       return res.status(400).json({
@@ -48,7 +48,7 @@ export const registerUser = async (req, res) => {
         message: 'User already exists with this email',
       });
     }
-    // Check if username already exists
+    
     const usernameExists = await User.findOne({ username: username.toLowerCase() });
     if (usernameExists) {
       return res.status(400).json({
@@ -57,10 +57,10 @@ export const registerUser = async (req, res) => {
       });
     }
 
-    // Generate nice default avatar
+    
     const profileImage = `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(name)}`;
 
-    // Create new user
+    
     const user = await User.create({
       name,
       username: username.toLowerCase(),
@@ -72,7 +72,7 @@ export const registerUser = async (req, res) => {
     });
     
     if (user) {
-      // If role is organizer, create Organizer profile immediately
+      
       if (role === 'organizer') {
         await Organizer.create({
           user_id: user._id,
@@ -94,7 +94,7 @@ export const registerUser = async (req, res) => {
         });
       }
 
-      // Generate token and set cookie
+      
       const token = generateToken(res, user._id, user.role);
 
       return res.status(201).json({
@@ -130,7 +130,7 @@ export const loginUser = async (req, res) => {
   const { email, password } = req.body;
 
   try {
-    // Basic validation
+    
     if (!email || !password) {
       return res.status(400).json({
         success: false,
@@ -138,7 +138,7 @@ export const loginUser = async (req, res) => {
       });
     }
 
-    // Find user by email 
+    
     const user = await User.findOne({ email }).select('+password');
     if (!user) {
       return res.status(401).json({
@@ -147,7 +147,7 @@ export const loginUser = async (req, res) => {
       });
     }
 
-    // Match password
+    
     const isMatch = await user.matchPassword(password);
     if (!isMatch) {
       return res.status(401).json({
@@ -156,7 +156,7 @@ export const loginUser = async (req, res) => {
       });
     }
 
-    // Generate token and set cookie
+    
     const token = generateToken(res, user._id, user.role);
 
     return res.status(200).json({
@@ -188,7 +188,7 @@ export const getMe = async (req, res) => {
     let token;
     const activeRole = req.headers['x-active-role'] || 'trekker';
 
-    // Check if token exists in headers
+    
     if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
       token = req.headers.authorization.split(' ')[1];
     } 
@@ -200,10 +200,10 @@ export const getMe = async (req, res) => {
       });
     }
 
-    // Verify token
+    
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-    // Get user from the token, excluding the password
+    
     const user = await User.findById(decoded.id).select('-password');
 
     if (!user) {
@@ -218,7 +218,7 @@ export const getMe = async (req, res) => {
       data: user,
     });
   } catch (error) {
-    // If token verification fails or any other error, just return null user (200 OK) to avoid console errors on initial load
+    
     return res.status(200).json({
       success: true,
       data: null,
@@ -282,15 +282,15 @@ export const updateProfile = async (req, res) => {
   }
 };
 
-//    Logout user & clear cookie
-//    POST /api/auth/logout
-//   Public
+
+
+
 export const logoutUser = async (req, res) => {
   const activeRole = req.headers['x-active-role'] || 'trekker';
   try {
     res.cookie(`token_${activeRole}`, '', {
       httpOnly: true,
-      expires: new Date(0), // Set expiration to past date to immediately invalidate
+      expires: new Date(0), 
     });
 
     return res.status(200).json({
@@ -318,11 +318,11 @@ export const googleAuth = async (req, res) => {
       });
     }
 
-    // Verify the Firebase ID token
+    
     const decodedToken = await admin.auth().verifyIdToken(idToken);
     const { email, name, picture } = decodedToken;
 
-    // Check if user already exists
+    
     let user = await User.findOne({ email });
 
     if (!user) {
@@ -343,14 +343,14 @@ export const googleAuth = async (req, res) => {
         profileImage: picture || `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(name || 'User')}`,
       });
     } else {
-      // If user exists but used a different provider originally, update profile picture if missing
+      
       if (!user.profileImage && picture) {
         user.profileImage = picture;
         await user.save({ validateBeforeSave: false });
       }
     }
 
-    // Generate token
+    
     const token = generateToken(res, user._id, user.role);
 
     return res.status(200).json({

@@ -1,8 +1,8 @@
 import Report from '../models/Report.js';
 
-// @desc    Create a report
-// @route   POST /api/reports
-// @access  Private
+
+
+
 export const createReport = async (req, res) => {
   try {
     const { reported_user_id, reason, description, evidence_urls } = req.body;
@@ -14,7 +14,7 @@ export const createReport = async (req, res) => {
       });
     }
 
-    // Prevent self-reporting
+    
     if (reported_user_id === req.user._id.toString()) {
       return res.status(400).json({ success: false, message: 'You cannot report yourself' });
     }
@@ -34,9 +34,9 @@ export const createReport = async (req, res) => {
   }
 };
 
-// @desc    Get all reports (admin only)
-// @route   GET /api/reports
-// @access  Private/Admin
+
+
+
 export const getAllReports = async (req, res) => {
   try {
     const reports = await Report.find()
@@ -50,9 +50,9 @@ export const getAllReports = async (req, res) => {
   }
 };
 
-// @desc    Update report status (admin)
-// @route   PUT /api/reports/:id/status
-// @access  Private/Admin
+
+
+
 export const updateReportStatus = async (req, res) => {
   try {
     const { status, admin_notes } = req.body;
@@ -78,9 +78,9 @@ export const updateReportStatus = async (req, res) => {
   }
 };
 
-// @desc    Get reports I submitted
-// @route   GET /api/reports/mine
-// @access  Private
+
+
+
 export const getMyReports = async (req, res) => {
   try {
     const reports = await Report.find({ reported_by: req.user._id })

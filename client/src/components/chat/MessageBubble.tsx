@@ -34,7 +34,7 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({ message, isOwnMess
         </div>
       )}
       
-      {!isOwnMessage && !showAvatar && <div className="w-11" />} {/* Spacer for alignment */}
+      {!isOwnMessage && !showAvatar && <div className="w-11" />} {}
 
       <div className={`flex flex-col ${isOwnMessage ? 'items-end' : 'items-start'} max-w-[75%]`}>
         {!isOwnMessage && showAvatar && (

@@ -5,12 +5,12 @@ import Trek from '../models/Trek.js';
 import mongoose from 'mongoose';
 import Booking from '../models/Booking.js';
 
-// Ensure a chat room exists for a trip
+
 export const getOrCreateTripRoom = async (req, res) => {
   try {
     const { trekId } = req.params;
     
-    // Validate trek
+    
     const trek = await Trek.findOne({ id: trekId });
     if (!trek) return res.status(404).json({ success: false, message: 'Trip not found' });
 
@@ -23,7 +23,7 @@ export const getOrCreateTripRoom = async (req, res) => {
         type: 'trip_group'
       });
       
-      // Auto-add organizer if exists
+      
       if (trek.organizer_id) {
         await Participant.create({
           room_id: room._id,
@@ -33,11 +33,11 @@ export const getOrCreateTripRoom = async (req, res) => {
       }
     }
     
-    // Check if current user is participant
+    
     let participant = await Participant.findOne({ room_id: room._id, user_id: req.user._id });
     
     if (!participant) {
-      // Determine role (organizer check vs member)
+      
       let role = 'member';
       let isAuthorized = false;
 
@@ -48,7 +48,7 @@ export const getOrCreateTripRoom = async (req, res) => {
         role = 'organizer';
         isAuthorized = true;
       } else {
-        // For standard users, verify they actually have a booking for this trek
+        
         const booking = await Booking.findOne({ 
           $and: [
             { $or: [{ user_id: req.user._id }, { user: req.user._id }, { email: req.user.email }] },
@@ -81,10 +81,10 @@ export const getOrCreateTripRoom = async (req, res) => {
   }
 };
 
-// Get all rooms the user is part of
+
 export const getUserRooms = async (req, res) => {
   try {
-    // Auto-heal missing participant records for organizers
+    
     if (req.user.role === 'organizer') {
       const myTreks = await Trek.find({
         $or: [
@@ -107,12 +107,12 @@ export const getUserRooms = async (req, res) => {
       populate: { path: 'trip_id', select: 'title image organizer status' }
     });
     
-    // Format response
+    
     const rooms = await Promise.all(participants.map(async p => {
       const room = p.room_id;
       if (!room) return null;
       
-      // Get latest message
+      
       const lastMessage = await Message.findOne({ room_id: room._id }).sort({ createdAt: -1 });
       
       return {
@@ -120,7 +120,7 @@ export const getUserRooms = async (req, res) => {
         name: room.name,
         trip: room.trip_id,
         lastMessage: lastMessage ? { text: lastMessage.message, createdAt: lastMessage.createdAt } : null,
-        unreadCount: 0 // Will implement later with last_read_message_id logic
+        unreadCount: 0 
       };
     }));
 
@@ -131,12 +131,12 @@ export const getUserRooms = async (req, res) => {
   }
 };
 
-// Get messages for a specific room
+
 export const getRoomMessages = async (req, res) => {
   try {
     const { roomId } = req.params;
     
-    // Verify participation
+    
     const participant = await Participant.findOne({ room_id: roomId, user_id: req.user._id });
     if (!participant && req.user.role !== 'admin') {
       return res.status(403).json({ success: false, message: 'Not authorized to view this room' });

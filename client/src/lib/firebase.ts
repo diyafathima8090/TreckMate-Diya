@@ -15,7 +15,7 @@ let auth;
 let googleProvider;
 
 try {
-  // Only initialize if an API key is provided, or let it attempt and catch the error
+  
   if (firebaseConfig.apiKey) {
     app = initializeApp(firebaseConfig);
     auth = getAuth(app);

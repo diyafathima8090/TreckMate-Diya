@@ -5,10 +5,10 @@ const ticketSchema = new mongoose.Schema(
     userId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User',
-      required: false, // For legacy or non-registered users
+      required: false, 
     },
     tripId: {
-      type: String, // String to support both ObjectId and legacy slug IDs
+      type: String, 
       required: true,
     },
     bookingId: {
@@ -23,7 +23,7 @@ const ticketSchema = new mongoose.Schema(
       trim: true,
     },
     qrCode: {
-      type: String, // Store base64 data URL
+      type: String, 
       required: true,
     },
     scanned: {

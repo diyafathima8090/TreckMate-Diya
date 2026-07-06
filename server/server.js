@@ -1,5 +1,5 @@
 import express from 'express';
-// fr-bck comuntcte
+
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import dotenv from 'dotenv';
@@ -24,10 +24,10 @@ import chatRoutes from './routes/chatRoutes.js';
 import Message from './models/Message.js';
 import SosAlert from './models/SosAlert.js';
 
-// Load env variables
+
 dotenv.config();
 
-// Connect to Database
+
 connectDB();
 
 const app = express();
@@ -39,7 +39,7 @@ const allowedOrigins = [
   'http://localhost:3005',
 ];
 
-// sockect io 
+
 const io = new Server(httpServer, {
   cors: {
     origin: allowedOrigins,
@@ -55,8 +55,8 @@ import Booking from './models/Booking.js';
 import ChatRoom from './models/ChatRoom.js';
 import Participant from './models/Participant.js';
 
-// --- SOCKET.IO LOGIC ---
-// Middleware for Socket.IO Auth usersndjwt-verfyservr-findusrdtbse-allowcnnctin
+
+
 io.use(async (socket, next) => {
   try {
     const token = socket.handshake.auth.token;
@@ -78,13 +78,13 @@ io.use(async (socket, next) => {
 io.on('connection', (socket) => {
   console.log(`Socket Connected: ${socket.id} (User: ${socket.user.name}, Role: ${socket.user.role})`);
 
-  // Organizers join their specific master room
+  
   if (socket.user.role === 'organizer' || socket.user.role === 'admin') {
     socket.join(`organizer_${socket.user._id}`);
     console.log(`Socket ${socket.id} joined organizer_${socket.user._id}`);
   }
 
-  // Join specific trek rooms
+  
   socket.on('join_trek', async (trekId) => {
     try {
       let isAuthorized = false;
@@ -97,7 +97,7 @@ io.on('connection', (socket) => {
       } else if (socket.user.role === 'organizer' && trek.organizer.toLowerCase() === socket.user.name.toLowerCase()) {
         isAuthorized = true;
       } else {
-        // Trekker must have a confirmed booking
+        
         const booking = await Booking.findOne({ 
           user: socket.user._id, 
           trip_id: trek._id, 
@@ -125,20 +125,20 @@ io.on('connection', (socket) => {
     }
   });
 
-  // Relay telemetry to trek room (both participants and organizer are in trek_${trekId} if they joined)
-  // Also send directly to organizer's personal room just in case
+  
+  
   socket.on('send_telemetry', async (data) => {
     const { trekId } = data;
     io.to(`trek_${trekId}`).emit('receive_telemetry', data);
     
-    // Find organizer and emit to their room
+    
     const trek = await Trek.findOne({ id: trekId });
     if (trek && trek.organizer_id) {
       io.to(`organizer_${trek.organizer_id}`).emit('receive_telemetry', data);
     }
 
     try {
-      // Import dynamic so it avoids hoisting issues if not at top level
+      
       const { default: LiveLocation } = await import('./models/LiveLocation.js');
       await LiveLocation.create({
         trekId: trekId,
@@ -154,13 +154,13 @@ io.on('connection', (socket) => {
     }
   });
 
-  // Relay SOS alerts
+  
   socket.on('trigger_sos', async (data) => {
     try {
       const trek = await Trek.findOne({ id: data.trekId });
       if (!trek) return;
 
-      // Save SOS alert to database
+      
       await SosAlert.create({
         user_id: socket.user._id,
         trip_id: trek._id,
@@ -173,7 +173,7 @@ io.on('connection', (socket) => {
         status: 'active'
       });
       
-      // Emit to organizer's specific room
+      
       if (trek.organizer_id) {
         io.to(`organizer_${trek.organizer_id}`).emit('sos_alert', data);
       }
@@ -182,14 +182,14 @@ io.on('connection', (socket) => {
     }
   });
   
-  // Chat messaging
+  
   socket.on('send_chat', async (data) => {
     try {
-      // Find Trek ObjectId
+      
       const trek = await Trek.findOne({ id: data.trekId });
       if (!trek) return;
 
-      // Save message to database
+      
       const newMessage = await Message.create({
         trip_id: trek._id,
         sender_id: socket.user._id,
@@ -197,18 +197,18 @@ io.on('connection', (socket) => {
         senderName: data.sender || socket.user.name,
         senderRole: socket.user.role === 'organizer' ? 'organizer' : 'hiker',
         text: data.text,
-        message: data.text // the new schema field
+        message: data.text 
       });
 
-      // Attach DB ID to the broadcasted data so frontend gets a unique key
-      data.id = newMessage._id;
-      data.sender = socket.user.name; // enforce real name
-      data.role = socket.user.role === 'organizer' ? 'Guide' : 'Trekker'; // UI expected formatting
       
-      // Emit only to the specific trek room
+      data.id = newMessage._id;
+      data.sender = socket.user.name; 
+      data.role = socket.user.role === 'organizer' ? 'Guide' : 'Trekker'; 
+      
+      
       io.to(`trek_${data.trekId}`).emit('chat_message', data);
       
-      // Ensure organizer gets it too
+      
       if (trek.organizer_id) {
         io.to(`organizer_${trek.organizer_id}`).emit('chat_message', data);
       }
@@ -217,7 +217,7 @@ io.on('connection', (socket) => {
     }
   });
 
-  // --- NEW CHAT SYSTEM EVENTS ---
+  
   socket.on('join_room', async ({ roomId }) => {
     try {
       if (!roomId) return;
@@ -276,7 +276,7 @@ io.on('connection', (socket) => {
     console.log(`Socket Disconnected: ${socket.id}`);
   });
 });
-// Middleware
+
 app.use(
   cors({
     origin: function (origin, callback) {
@@ -292,12 +292,12 @@ app.use(
 app.use(express.json());
 app.use(cookieParser());
 
-// Base Route
+
 app.get('/', (req, res) => {
   res.send('TrekMate API Running ✅');
 });
 
-// API Routes
+
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/treks', trekRoutes);
@@ -313,7 +313,7 @@ app.use('/api/tickets', ticketRoutes);
 app.use('/api/content', contentRoutes);
 app.use('/api/chat', chatRoutes);
 
-// Error Handling Middleware
+
 app.use((err, req, res, next) => {
   const statusCode = res.statusCode === 200 ? 500 : res.statusCode;
   console.error(`Global Error: ${err.message}`);
@@ -326,7 +326,7 @@ app.use((err, req, res, next) => {
 
 const PORT = process.env.PORT || 5000;
 
-// Resilient server start — handles EADDRINUSE caused by OneDrive sync / nodemon restarts
+
 const startServer = (port) => {
   httpServer.listen(port, () => {
     console.log(`Server running in ${process.env.NODE_ENV || 'development'} mode on port ${port}`);

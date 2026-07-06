@@ -26,19 +26,19 @@ export default function OrganizerManagement() {
   const [adminNotesInput, setAdminNotesInput] = useState("");
   const [rejectionReasonInput, setRejectionReasonInput] = useState("");
 
-  // 1. Fetch Organizers
+  
   const { data: orgsResponse, isLoading } = useQuery({
     queryKey: ["organizers"],
     queryFn: OrganizerService.getAllOrganizers
   });
 
-  // 2. Fetch Trips for listing in details
+  
   const { data: tripsResponse } = useQuery({
     queryKey: ["trips"],
     queryFn: TripService.getAllTrips
   });
 
-  // 3. Status Change Mutation
+  
   const statusMutation = useMutation({
     mutationFn: ({
       id,
@@ -55,7 +55,7 @@ export default function OrganizerManagement() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["organizers"] });
       queryClient.invalidateQueries({ queryKey: ["users"] });
-      // Update selectedOrg if open
+      
       if (selectedOrg) {
         const updated = queryClient
           .getQueryData<{ success: boolean; data: any[] }>(["organizers"])
@@ -85,19 +85,19 @@ export default function OrganizerManagement() {
   const organizers: any[] = orgsResponse?.data || [];
   const trips: any[] = tripsResponse?.data || [];
 
-  // Filter groups
+  
   const pendingOrgs = organizers.filter((org: any) => org.status === "pending");
   const approvedOrgs = organizers.filter((org: any) => org.status === "approved");
   const inactiveOrgs = organizers.filter((org: any) => org.status === "rejected" || org.status === "suspended");
 
-  // Get trips created by the selected organizer
+  
   const orgTrips = selectedOrg 
     ? trips.filter((t: any) => t.organizer_id === selectedOrg.user_id || t.organizer_name === selectedOrg.organization_name)
     : [];
 
   return (
     <div className="space-y-6">
-      {/* Title */}
+      {}
       <div>
         <h1 className="text-3xl font-extrabold tracking-tight">Organizer Management</h1>
         <p className="text-muted-foreground text-sm mt-1">
@@ -105,9 +105,9 @@ export default function OrganizerManagement() {
         </p>
       </div>
 
-      {/* Dashboard Summary Cards */}
+      {}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        {/* Pending Verifications */}
+        {}
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Pending Verifications</CardTitle>
@@ -119,7 +119,7 @@ export default function OrganizerManagement() {
           </CardContent>
         </Card>
 
-        {/* Approved Organizers */}
+        {}
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Approved Organizers</CardTitle>
@@ -131,7 +131,7 @@ export default function OrganizerManagement() {
           </CardContent>
         </Card>
 
-        {/* Rejected/Suspended Organizers */}
+        {}
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Rejected/Suspended</CardTitle>
@@ -159,7 +159,7 @@ export default function OrganizerManagement() {
           <TabsTrigger value="suspended">Suspended / Rejected</TabsTrigger>
         </TabsList>
 
-        {/* Tab 1: Pending */}
+        {}
         <TabsContent value="pending">
           <Card>
             <CardHeader>
@@ -218,7 +218,7 @@ export default function OrganizerManagement() {
           </Card>
         </TabsContent>
 
-        {/* Tab 2: Approved */}
+        {}
         <TabsContent value="approved">
           <Card>
             <CardHeader>
@@ -282,7 +282,7 @@ export default function OrganizerManagement() {
           </Card>
         </TabsContent>
 
-        {/* Tab 3: Suspended / Rejected */}
+        {}
         <TabsContent value="suspended">
           <Card>
             <CardHeader>
@@ -342,7 +342,7 @@ export default function OrganizerManagement() {
         </TabsContent>
       </Tabs>
 
-      {/* Organizer Detail Dialog */}
+      {}
       <Dialog open={detailModalOpen} onOpenChange={setDetailModalOpen}>
         {selectedOrg && (
           <DialogContent onClose={() => setDetailModalOpen(false)} className="max-w-2xl">
@@ -354,7 +354,7 @@ export default function OrganizerManagement() {
             </DialogHeader>
 
             <div className="space-y-6 mt-4">
-              {/* Partner Summary Row */}
+              {}
               <div className="flex gap-4 items-center">
                 <div className="p-4 bg-primary/10 rounded-2xl border border-primary/20 text-primary">
                   <Award className="h-10 w-10" />
@@ -374,7 +374,7 @@ export default function OrganizerManagement() {
                 </div>
               </div>
 
-              {/* Stats Block */}
+              {}
               <div className="grid grid-cols-3 gap-4 text-center">
                 <div className="bg-muted/30 border border-border/40 p-3 rounded-xl">
                   <span className="text-[10px] text-slate-500 block uppercase font-bold tracking-wider">Rating</span>
@@ -396,7 +396,7 @@ export default function OrganizerManagement() {
                 </div>
               </div>
 
-              {/* Address & Notes */}
+              {}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
                 <div className="bg-muted/10 border border-border/40 p-3.5 rounded-xl">
                   <span className="text-[10px] text-slate-500 block uppercase font-bold tracking-wider mb-1">Business Address</span>
@@ -408,7 +408,7 @@ export default function OrganizerManagement() {
                 </div>
               </div>
 
-              {/* Document Check */}
+              {}
               <div className="space-y-2">
                 <h4 className="text-xs font-bold uppercase tracking-wider text-slate-500">Business Licenses & Verification Dossier</h4>
                 {selectedOrg.submitted_documents && selectedOrg.submitted_documents.length > 0 ? (
@@ -444,7 +444,7 @@ export default function OrganizerManagement() {
                 )}
               </div>
 
-              {/* Administrator Notes Inputs */}
+              {}
               <div className="space-y-4 border-t border-border/60 pt-4 text-xs">
                 <h4 className="text-xs font-bold uppercase tracking-wider text-slate-500">Administrator Review Notes</h4>
                 
@@ -472,7 +472,7 @@ export default function OrganizerManagement() {
               </div>
 
 
-              {/* Organizer Treks listing */}
+              {}
               <div className="space-y-2">
                 <h4 className="text-xs font-bold uppercase tracking-wider text-slate-500">Created Hikes & Expeditions ({orgTrips.length})</h4>
                 <div className="max-h-40 overflow-y-auto space-y-2 pr-1 border border-border/40 rounded-xl p-3 bg-muted/10">

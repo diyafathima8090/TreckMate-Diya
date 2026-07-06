@@ -1,8 +1,8 @@
 import User from '../models/User.js';
 
-// @desc    Get all users (admin)
-// @route   GET /api/users
-// @access  Private/Admin
+
+
+
 export const getAllUsers = async (req, res) => {
   try {
     const users = await User.find().select('-password').sort({ createdAt: -1 });
@@ -12,9 +12,9 @@ export const getAllUsers = async (req, res) => {
   }
 };
 
-// @desc    Update user status (suspend/activate)
-// @route   PUT /api/users/:id/suspend
-// @access  Private/Admin
+
+
+
 export const suspendUser = async (req, res) => {
   try {
     const user = await User.findById(req.params.id);
@@ -23,7 +23,7 @@ export const suspendUser = async (req, res) => {
       return res.status(404).json({ success: false, message: 'User not found' });
     }
 
-    // Toggle status between active and suspended
+    
     user.status = user.status === 'suspended' ? 'active' : 'suspended';
     await user.save();
 
@@ -40,9 +40,9 @@ import Message from '../models/Message.js';
 import SosAlert from '../models/SosAlert.js';
 import Trek from '../models/Trek.js';
 
-// @desc    Delete a user
-// @route   DELETE /api/users/:id
-// @access  Private/Admin
+
+
+
 export const deleteUser = async (req, res) => {
   try {
     const user = await User.findById(req.params.id);
@@ -51,24 +51,24 @@ export const deleteUser = async (req, res) => {
       return res.status(404).json({ success: false, message: 'User not found' });
     }
 
-    // Cascade delete user data
+    
     await Booking.deleteMany({ user: user._id });
     await Payment.deleteMany({ user_id: user._id });
     await Notification.deleteMany({ user_id: user._id });
     await Message.deleteMany({ sender_id: user._id });
     await SosAlert.deleteMany({ user_id: user._id });
     
-    // If user is an organizer, delete their treks
+    
     if (user.role === 'organizer') {
       const treks = await Trek.find({ organizer_id: user._id });
       for (const trek of treks) {
-        // Also delete bookings related to these treks
+        
         await Booking.deleteMany({ trekId: trek.id });
         await Trek.findByIdAndDelete(trek._id);
       }
     }
 
-    // Finally delete the user
+    
     await User.findByIdAndDelete(req.params.id);
 
     res.json({ success: true, message: 'User and all associated data deleted successfully' });

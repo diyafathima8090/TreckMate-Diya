@@ -4,7 +4,7 @@ import { protect } from '../middleware/authMiddleware.js';
 
 const router = express.Router();
 
-router.use(protect); // Ensure all routes are protected
+router.use(protect); 
 
 router.get('/rooms', getUserRooms);
 router.get('/trip/:trekId/room', getOrCreateTripRoom);

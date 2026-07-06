@@ -18,14 +18,14 @@ export default function DashboardNavbar() {
   const [unreadCount, setUnreadCount] = useState(2);
 
   useEffect(() => {
-    // Standard mock alerts for admin console
+    
     setNotifications([
       {
         id: "nt1",
         title: "New Application",
         message: "Himalayan Sherpa Guides submitted an organizer request.",
         type: "application",
-        time: new Date(Date.now() - 1000 * 60 * 30), // 30m ago
+        time: new Date(Date.now() - 1000 * 60 * 30), 
         read: false
       },
       {
@@ -33,7 +33,7 @@ export default function DashboardNavbar() {
         title: "SOS Alert Active",
         message: "SOS triggered on 'Glacier Trekking Pro' trek.",
         type: "sos",
-        time: new Date(Date.now() - 1000 * 60 * 120), // 2h ago
+        time: new Date(Date.now() - 1000 * 60 * 120), 
         read: false
       },
       {
@@ -41,7 +41,7 @@ export default function DashboardNavbar() {
         title: "Refund Request",
         message: "Booking #b3 requested a refund of $380.",
         type: "refund",
-        time: new Date(Date.now() - 1000 * 60 * 1440), // 1d ago
+        time: new Date(Date.now() - 1000 * 60 * 1440), 
         read: true
       }
     ]);
@@ -58,7 +58,7 @@ export default function DashboardNavbar() {
 
   return (
     <header className="h-16 sticky top-0 bg-background/80 backdrop-blur-md border-b border-border/80 flex items-center justify-between px-8 z-30 shadow-xs">
-      {/* Search Bar */}
+      {}
       <div className="relative w-72 max-w-lg hidden sm:block">
         <span className="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400 pointer-events-none">
           <Search className="h-4 w-4" />
@@ -71,9 +71,9 @@ export default function DashboardNavbar() {
       </div>
       <div className="sm:hidden font-bold text-lg text-primary tracking-tight">TrekMate</div>
 
-      {/* Action Buttons */}
+      {}
       <div className="flex items-center gap-4">
-        {/* Dark Mode Switcher */}
+        {}
         <button
           onClick={handleToggleTheme}
           className="p-2 border border-border/40 hover:bg-muted/70 rounded-full text-slate-600 dark:text-slate-300 transition-all cursor-pointer hover:scale-105 active:scale-95"
@@ -82,7 +82,7 @@ export default function DashboardNavbar() {
           {theme === "dark" ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
         </button>
 
-        {/* Notifications Popover */}
+        {}
         <div className="relative">
           <button
             onClick={() => setNotifOpen(!notifOpen)}
@@ -98,7 +98,7 @@ export default function DashboardNavbar() {
 
           {notifOpen && (
             <>
-              {/* Overlay backdrop to close */}
+              {}
               <div className="fixed inset-0 z-40 cursor-default" onClick={() => setNotifOpen(false)} />
               
               <div className="absolute right-0 mt-3 w-80 max-w-xs sm:w-96 rounded-xl border border-border bg-card p-4 shadow-xl z-50 animate-in fade-in-50 duration-200">
@@ -156,7 +156,7 @@ export default function DashboardNavbar() {
           )}
         </div>
 
-        {/* User Info Capsule */}
+        {}
         {user && (
           <div className="flex items-center gap-2 border border-border/40 pl-2 pr-3 py-1 rounded-full bg-muted/20">
             <img

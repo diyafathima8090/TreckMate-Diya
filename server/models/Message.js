@@ -2,7 +2,7 @@ import mongoose from 'mongoose';
 
 const messageSchema = new mongoose.Schema(
   {
-    // ── DB Design Fields ─────────────────────────────────────────────
+    
     room_id: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'ChatRoom',
@@ -29,14 +29,14 @@ const messageSchema = new mongoose.Schema(
       default: '',
     },
 
-    // ── Legacy Fields ────────────────────────────────────────────────
+    
     trip_id: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Trek',
       default: null,
     },
     trekId: {
-      type: String, // Slug ID (legacy)
+      type: String, 
       trim: true,
     },
     senderName: {
@@ -49,7 +49,7 @@ const messageSchema = new mongoose.Schema(
       default: 'hiker',
     },
     text: {
-      type: String, // Legacy field, use 'message' for new records
+      type: String, 
       trim: true,
     },
     isReadByOrganizer: {

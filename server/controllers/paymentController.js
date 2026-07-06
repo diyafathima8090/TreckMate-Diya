@@ -2,7 +2,7 @@ import Payment from '../models/Payment.js';
 import Razorpay from 'razorpay';
 import crypto from 'crypto';
 
-// GET /api/payments/mine — get all my payments
+
 export const getMyPayments = async (req, res) => {
   try {
     const payments = await Payment.find({ user_id: req.user._id })
@@ -14,7 +14,7 @@ export const getMyPayments = async (req, res) => {
   }
 };
 
-// GET /api/payments — admin: all payments
+
 export const getAllPayments = async (req, res) => {
   try {
     const payments = await Payment.find()
@@ -39,7 +39,7 @@ export const getAllPayments = async (req, res) => {
   }
 };
 
-// POST /api/payments — create a payment record
+
 export const createPayment = async (req, res) => {
   try {
     const { trip_id, amount, payment_method, transaction_id } = req.body;
@@ -57,7 +57,7 @@ export const createPayment = async (req, res) => {
   }
 };
 
-// POST /api/payments/razorpay/order — create a Razorpay order
+
 export const createRazorpayOrder = async (req, res) => {
   try {
     const { amount } = req.body;
@@ -68,7 +68,7 @@ export const createRazorpayOrder = async (req, res) => {
     });
 
     const options = {
-      amount: amount * 100, // amount in smallest currency unit (paise)
+      amount: amount * 100, 
       currency: "INR",
       receipt: `receipt_order_${Date.now()}`
     };
@@ -83,7 +83,7 @@ export const createRazorpayOrder = async (req, res) => {
   }
 };
 
-// POST /api/payments/razorpay/verify — verify Razorpay payment
+
 export const verifyRazorpayPayment = async (req, res) => {
   try {
     const { razorpay_order_id, razorpay_payment_id, razorpay_signature } = req.body;

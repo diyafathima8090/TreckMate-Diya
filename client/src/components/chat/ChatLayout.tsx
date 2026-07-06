@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import io from 'socket.io-client';
-import axios from '../../utils/axios';
+import axios from '../../lib/axios';
 import { useAuth } from '../../context/AuthContext';
 import { MessageBubble } from './MessageBubble';
 import { ChatInput } from './ChatInput';
@@ -24,10 +24,10 @@ export const ChatLayout: React.FC<ChatLayoutProps> = ({ singleRoomId }) => {
   const [authError, setAuthError] = useState<string | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  // Initialize rooms
+  
   useEffect(() => {
     if (singleRoomId) {
-      // Single room mode, we don't fetch all rooms
+      
       setLoadingRooms(false);
       
       const fetchRoom = async () => {
@@ -73,7 +73,7 @@ export const ChatLayout: React.FC<ChatLayoutProps> = ({ singleRoomId }) => {
     if (user) fetchRooms();
   }, [user, singleRoomId]);
 
-  // Fetch messages when room changes
+  
   useEffect(() => {
     const fetchMessages = async () => {
       if (!activeRoomId) return;
@@ -92,7 +92,7 @@ export const ChatLayout: React.FC<ChatLayoutProps> = ({ singleRoomId }) => {
     fetchMessages();
   }, [activeRoomId]);
 
-  // Socket connection
+  
   useEffect(() => {
     if (!activeRoomId || !user) return;
 
@@ -143,7 +143,7 @@ export const ChatLayout: React.FC<ChatLayoutProps> = ({ singleRoomId }) => {
 
   return (
     <div className={`flex ${singleRoomId ? 'h-full min-h-[360px]' : 'h-[600px]'} bg-[#070708] border border-[#1f2937] rounded-xl overflow-hidden shadow-2xl`}>
-      {/* Sidebar - Hide in single room mode */}
+      {}
       {!singleRoomId && (
         <div className="w-72 bg-[#0a0f16] border-r border-[#1f2937] flex flex-col hidden md:flex">
           <div className="p-4 border-b border-[#1f2937] bg-[#0f172a]">
@@ -180,7 +180,7 @@ export const ChatLayout: React.FC<ChatLayoutProps> = ({ singleRoomId }) => {
         </div>
       )}
 
-      {/* Main Chat Area */}
+      {}
       <div className="flex-1 flex flex-col min-w-0 bg-[#070708]">
         {authError ? (
           <div className="flex-1 flex flex-col items-center justify-center text-gray-500 p-6 text-center">

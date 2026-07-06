@@ -2,8 +2,8 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, Link } from './RouterCompatibility';
 import { io } from 'socket.io-client';
 import { useAuth } from '../context/AuthContext';
-import { getAllTreks, addTrek, updateTrek, getBookingsForOrganizer, updateBookingStatus } from '../utils/trekStorage';
-import axios from '../utils/axios';
+import { getAllTreks, addTrek, updateTrek, getBookingsForOrganizer, updateBookingStatus } from '../services/trekStorage';
+import axios from '../lib/axios';
 import { MapContainer as LeafletMapContainer, TileLayer as LeafletTileLayer, Marker as LeafletMarker, Popup as LeafletPopup, useMap } from 'react-leaflet';
 const MapContainer = LeafletMapContainer as any;
 const TileLayer = LeafletTileLayer as any;
@@ -14,7 +14,7 @@ import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
 import { ChatLayout } from './chat/ChatLayout';
 
-// Fix leaflet icon issue
+
 import icon from 'leaflet/dist/images/marker-icon.png';
 import iconShadow from 'leaflet/dist/images/marker-shadow.png';
 let DefaultIcon = L.icon({
@@ -25,7 +25,7 @@ let DefaultIcon = L.icon({
 });
 L.Marker.prototype.options.icon = DefaultIcon;
 
-// Helper component to auto-pan the map when location changes
+
 function MapAutoPan({ location }) {
   const map = useMap();
   useEffect(() => {
@@ -41,7 +41,7 @@ const OrganizerDashboard = () => {
   const user = sessions.organizer || sessions.admin;
   const navigate = useNavigate();
 
-  // Verification profile status state
+  
   const [orgProfile, setOrgProfile] = useState<any>(null);
   const [profileLoading, setProfileLoading] = useState(true);
   const [resubmitDocType, setResubmitDocType] = useState('Government ID Card');
@@ -54,7 +54,7 @@ const OrganizerDashboard = () => {
   const [resubmitSuccess, setResubmitSuccess] = useState('');
   const [isResubmitting, setIsResubmitting] = useState(false);
 
-  // Active view: 'dashboard' | 'create-trip' | 'manage-trips' | 'bookings' | 'members' | 'live-tracking' | 'chat' | 'payments' | 'analytics'
+  
   const [activeView, setActiveView] = useState(() => {
     return sessionStorage.getItem('trekmate_org_view') || 'dashboard';
   });
@@ -63,7 +63,7 @@ const OrganizerDashboard = () => {
     sessionStorage.setItem('trekmate_org_view', activeView);
   }, [activeView]);
 
-  // Stats states
+  
   const [stats, setStats] = useState({
     totalTreks: 0,
     totalBookings: 0,
@@ -71,14 +71,14 @@ const OrganizerDashboard = () => {
     totalRevenue: 0
   });
 
-  // Treks and bookings lists
+  
   const [myTreks, setMyTreks] = useState([]);
   const [bookings, setBookings] = useState([]);
   const [notifications, setNotifications] = useState([]);
   const [notificationsLoading, setNotificationsLoading] = useState(false);
   const [notificationsError, setNotificationsError] = useState('');
 
-  // Notification Switch States for Organizer
+  
   const [showUnreadOnly, setShowUnreadOnly] = useState(() => {
     return localStorage.getItem('trekmate_org_unread_only') === 'true';
   });
@@ -89,7 +89,7 @@ const OrganizerDashboard = () => {
     return localStorage.getItem('trekmate_org_email') !== 'false';
   });
 
-  // Persist changes
+  
   useEffect(() => {
     localStorage.setItem('trekmate_org_unread_only', String(showUnreadOnly));
   }, [showUnreadOnly]);
@@ -107,7 +107,7 @@ const OrganizerDashboard = () => {
     return true;
   });
 
-  // Create Trek Form States
+  
   const [title, setTitle] = useState('');
   const [location, setLocation] = useState('');
   const [price, setPrice] = useState('');
@@ -117,24 +117,25 @@ const OrganizerDashboard = () => {
   const [pickup, setPickup] = useState('');
   const [temp, setTemp] = useState('18°C Sunny');
   const [description, setDescription] = useState('');
-  const [image, setImage] = useState('/explore_glowing_tent.png'); // default preset
+  const [image, setImage] = useState('/explore_glowing_tent.png'); 
   const [imageFile, setImageFile] = useState(null);
   const [uploadingImage, setUploadingImage] = useState(false);
 
-  // UI States
+  
   const [errorMsg, setErrorMsg] = useState('');
   const [successMsg, setSuccessMsg] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Chat State
+  
   const [chatMessages, setChatMessages] = useState([]);
   const [activeChatTrekId, setActiveChatTrekId] = useState('munnar');
   
-  // Fetch historical chat from MongoDB whenever active room changes
+  
   useEffect(() => {
     const fetchChatHistory = async () => {
       try {
-        const res = await fetch(`/api/messages/${activeChatTrekId || 'munnar'}`);
+        const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+        const res = await fetch(`${API_URL}/api/messages/${activeChatTrekId || 'munnar'}`);
         if (res.ok) {
           const data = await res.json();
           setChatMessages(data);
@@ -165,7 +166,7 @@ const OrganizerDashboard = () => {
     activeViewRef.current = activeView;
   }, [activeView]);
 
-  // Live Telemetry Logs
+  
   const [telemetryLogs, setTelemetryLogs] = useState([
     'SYSTEM: Initializing telemetry channels...',
     'SYSTEM: Waiting for field operations link...'
@@ -174,18 +175,17 @@ const OrganizerDashboard = () => {
   const [liveLocation, setLiveLocation] = useState({ lat: 10.088931, lng: 77.059524 });
   const socketRef = useRef(null);
 
-  // Fetch active SOS alerts from DB
+  
   useEffect(() => {
     const fetchSosHistory = async () => {
       try {
-        const res = await fetch('/api/sos');
-        if (res.ok) {
-          const data = await res.json();
-          if (data.length > 0) {
-            setEmergencyAlerts(data.length);
-            const logs = data.map(sos => `CRITICAL SOS: ${sos.trekName} at ${sos.time} - [${sos.lat.toFixed(4)}°, ${sos.lng.toFixed(4)}°]`);
-            setTelemetryLogs(prev => [...prev, ...logs]);
-          }
+        const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+        const res = await fetch(`${API_URL}/api/sos`);
+        const data = await res.json();
+        if (data.length > 0) {
+          setEmergencyAlerts(data.length);
+          const logs = data.map(sos => `CRITICAL SOS: ${sos.trekName} at ${sos.time} - [${sos.lat.toFixed(4)}°, ${sos.lng.toFixed(4)}°]`);
+          setTelemetryLogs(prev => [...prev, ...logs]);
         }
       } catch (err) {
         console.error('Failed to fetch SOS history', err);
@@ -213,7 +213,7 @@ const OrganizerDashboard = () => {
       setEmergencyAlerts(prev => prev + 1);
       setTelemetryLogs(logs => [...logs.slice(-20), `CRITICAL SOS: ${data.trekName} at ${data.time} - [${data.lat.toFixed(4)}°, ${data.lng.toFixed(4)}°]`]);
       setToastMessage(` SOS EMERGENCY: ${data.trekName} at LAT: ${data.lat.toFixed(4)}°, LNG: ${data.lng.toFixed(4)}° `);
-      setTimeout(() => setToastMessage(''), 10000); // 10 seconds for SOS
+      setTimeout(() => setToastMessage(''), 10000); 
     });
 
     socketRef.current.on('chat_message', (msg) => {
@@ -232,7 +232,7 @@ const OrganizerDashboard = () => {
     };
   }, []);
 
-  // Redirect if not logged in or not an organizer
+  
   useEffect(() => {
     if (!user) {
       navigate('/login');
@@ -241,7 +241,7 @@ const OrganizerDashboard = () => {
     }
   }, [user, navigate]);
 
-  // Load Dashboard Data
+  
   const loadDashboardData = async () => {
     if (!user) return;
 
@@ -255,7 +255,7 @@ const OrganizerDashboard = () => {
       const organizerBookings = await getBookingsForOrganizer(user.name);
       setBookings(organizerBookings);
 
-      // Calculate Stats
+      
       const totalBookingsCount = organizerBookings.length;
       const totalHikersCount = organizerBookings.reduce((sum, b) => sum + (b.seats || 1), 0);
       const revenueSum = organizerBookings.reduce((sum, b) => sum + (b.payableAmount || 0), 0);
@@ -324,7 +324,7 @@ const OrganizerDashboard = () => {
       const success = await updateBookingStatus(bookingId, status);
       if (success) {
         setToastMessage(`Booking ${status === 'confirmed' ? 'Accepted' : 'Rejected'} successfully!`);
-        loadDashboardData(); // Refresh list
+        loadDashboardData(); 
       } else {
         setToastMessage('Failed to update booking status.');
       }
@@ -353,10 +353,13 @@ const OrganizerDashboard = () => {
     const fetchChatMessages = async () => {
       if (activeChatTrekId) {
         try {
-          const res = await fetch(`/api/messages/${activeChatTrekId}`);
-          const data = await res.json();
-          if (Array.isArray(data)) {
-            setChatMessages(data);
+          const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+          const res = await fetch(`${API_URL}/api/messages/${activeChatTrekId}`);
+          if (res.ok) {
+            const data = await res.json();
+            if (Array.isArray(data)) {
+              setChatMessages(data);
+            }
           }
         } catch (err) {
           console.error('Failed to fetch chat messages:', err);
@@ -366,7 +369,7 @@ const OrganizerDashboard = () => {
     fetchChatMessages();
   }, [activeChatTrekId]);
 
-  // Handle Trek Creation
+  
   const handleCreateTrekSubmit = async (e) => {
     e.preventDefault();
     setErrorMsg('');
@@ -387,7 +390,8 @@ const OrganizerDashboard = () => {
       formData.append('image', imageFile);
 
       try {
-        const uploadRes = await fetch('/api/upload', {
+        const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+        const uploadRes = await fetch(`${API_URL}/api/upload`, {
           method: 'POST',
           body: formData,
         });
@@ -514,7 +518,7 @@ const OrganizerDashboard = () => {
     if (!newMsgText.trim() || !socketRef.current) return;
 
     const newMessage = {
-      trekId: activeChatTrekId, // Dynamically target the active trek chat
+      trekId: activeChatTrekId, 
       sender: 'System Command',
       text: newMsgText.trim(),
       time: new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false }),
@@ -531,14 +535,14 @@ const OrganizerDashboard = () => {
       const res = await axios.get('/organizer/me');
       if (res.data.success && res.data.data) {
         setOrgProfile(res.data.data);
-        // Pre-fill resubmission fields with existing data
+        
         setResubmitOrgName(res.data.data.organization_name || '');
         setResubmitPhone(res.data.data.phone || '');
         setResubmitAddress(res.data.data.address || '');
       }
     } catch (err: any) {
       console.error('Error fetching organizer profile status:', err);
-      // If profile not found, maybe they are a legacy organizer user without profile
+      
       if (err.response && err.response.status === 404) {
         setOrgProfile({ status: 'not_applied' });
       } else {
@@ -569,7 +573,7 @@ const OrganizerDashboard = () => {
 
     setIsResubmitting(true);
     try {
-      // 1. Upload new document
+      
       const formData = new FormData();
       formData.append('document', resubmitFile);
 
@@ -587,7 +591,7 @@ const OrganizerDashboard = () => {
 
       const { url, filename } = uploadRes.data;
 
-      // 2. Submit new verification request
+      
       const resubmitData = {
         document_type: resubmitDocType,
         document_url: url,
@@ -603,7 +607,7 @@ const OrganizerDashboard = () => {
         setResubmitSuccess('Documents resubmitted successfully! Your account is now pending review.');
         setResubmitFile(null);
         setResubmitNotes('');
-        // Reload profile status
+        
         fetchOrgProfile();
       } else {
         setResubmitError(res.data.message || 'Resubmission failed.');
@@ -630,16 +634,16 @@ const OrganizerDashboard = () => {
     );
   }
 
-  // If the logged-in user is an organizer, but their profile status is NOT approved, block access and render status views
+  
   if (user && activeRole === 'organizer' && orgProfile && orgProfile.status !== 'approved') {
     return (
       <div className="min-h-screen bg-[#070708] text-white flex items-center justify-center p-6 select-none relative overflow-hidden">
-        {/* Background glow light */}
+        {}
         <div className="absolute top-1/4 left-1/4 h-[400px] w-[400px] bg-trek-brown/5 blur-[150px] rounded-full pointer-events-none" />
 
         <div className="max-w-xl w-full z-10 bg-[#0d0d0f]/90 border border-white/5 rounded-2xl p-8 backdrop-blur-md shadow-2xl relative">
           
-          {/* Logo / Brand */}
+          {}
           <div className="flex items-center gap-2 mb-8">
             <svg className="w-6 h-6 text-trek-brown" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <path d="m8 3 4 8 5-5 5 15H2L8 3z" />
@@ -696,7 +700,7 @@ const OrganizerDashboard = () => {
                 Your verification was rejected. Please upload valid documents and resubmit.
               </p>
 
-              {/* Resubmission Form */}
+              {}
               <form onSubmit={handleResubmit} className="mt-6 flex flex-col gap-4 border-t border-white/5 pt-6 select-text max-h-[300px] overflow-y-auto pr-2">
                 <h3 className="text-xs font-black uppercase tracking-wider text-trek-brown">
                   Resubmit Credentials
@@ -716,7 +720,7 @@ const OrganizerDashboard = () => {
                   </div>
                 )}
 
-                {/* Organization Name & Phone */}
+                {}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="flex flex-col gap-1.5">
                     <label className="text-[9px] text-gray-500 uppercase tracking-widest font-black">
@@ -746,7 +750,7 @@ const OrganizerDashboard = () => {
                   </div>
                 </div>
 
-                {/* Address */}
+                {}
                 <div className="flex flex-col gap-1.5">
                   <label className="text-[9px] text-gray-500 uppercase tracking-widest font-black">
                     Office / Business Address *
@@ -761,7 +765,7 @@ const OrganizerDashboard = () => {
                   />
                 </div>
 
-                {/* Document Type Dropdown */}
+                {}
                 <div className="flex flex-col gap-1.5">
                   <label className="text-[9px] text-gray-500 uppercase tracking-widest font-black">
                     Verification Document Type *
@@ -783,7 +787,7 @@ const OrganizerDashboard = () => {
                   </select>
                 </div>
 
-                {/* File Upload */}
+                {}
                 <div className="flex flex-col gap-1.5">
                   <label className="text-[9px] text-gray-500 uppercase tracking-widest font-black">
                     Upload Verification Proof (PDF, JPG, PNG - Max 10MB) *
@@ -820,7 +824,7 @@ const OrganizerDashboard = () => {
                   </div>
                 </div>
 
-                {/* Additional Notes */}
+                {}
                 <div className="flex flex-col gap-1.5">
                   <label className="text-[9px] text-gray-500 uppercase tracking-widest font-black">
                     Notes for Admin Review
@@ -855,7 +859,7 @@ const OrganizerDashboard = () => {
             </div>
           )}
 
-          {/* Suspended view */}
+          {}
           {orgProfile.status === 'suspended' && (
             <div className="flex flex-col gap-4 text-center py-6 select-text">
               <div className="h-16 w-16 bg-red-500/10 border border-red-500/20 text-red-500 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -879,7 +883,7 @@ const OrganizerDashboard = () => {
             </div>
           )}
 
-          {/* Log Out option */}
+          {}
           <div className="mt-8 pt-4 border-t border-white/5 text-center">
             <button
               onClick={() => logout(activeRole)}
@@ -896,18 +900,18 @@ const OrganizerDashboard = () => {
 
   if (!user) return null;
 
-  // Visual statistics fallbacks to match Figma layout defaults if empty
+  
   const activeExpeditionsCount = stats.totalTreks || 8;
   const fieldPersonnelCount = stats.totalHikers || 42;
   const pendingBookingsCount = stats.totalBookings || 15;
   const emergencyAlertsCount = emergencyAlerts;
 
-  // Get user initials for top-right avatar
+  
   const userInitials = user.name
     ? user.name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase()
     : 'CMD';
 
-  // Calculate Trip Participants
+  
   const tripParticipants: Record<string, any> = {};
   bookings.forEach((b: any) => {
     if (!tripParticipants[b.trekTitle]) {
@@ -925,10 +929,10 @@ const OrganizerDashboard = () => {
         </div>
       )}
 
-      {/* TOP HEADER BAR */}
+      {}
       <header className="h-14 bg-[#0c0c0e] border-b border-white/5 flex items-center justify-between px-6 shrink-0 z-30 select-none">
 
-        {/* Left Side: Logo */}
+        {}
         <div className="flex items-center gap-2.5">
           <Link to="/" className="flex items-center gap-2.5 text-white group">
             <div className="h-6 w-6 rounded-full bg-orange-500/10 border border-orange-500/30 flex items-center justify-center text-orange-500">
@@ -941,12 +945,12 @@ const OrganizerDashboard = () => {
           </Link>
         </div>
 
-        {/* Center: Dynamic Active Title */}
+        {}
         <div className="hidden md:block text-[11px] font-bold text-orange-500/80 uppercase tracking-widest font-mono">
           {activeView === 'dashboard' ? 'Dashboard' : activeView.replace('-', ' ')}
         </div>
 
-        {/* Right Side: Operations indicators & initials avatar */}
+        {}
         <div className="flex items-center gap-4">
           <button
             onClick={() => setActiveView('notifications')}
@@ -968,13 +972,13 @@ const OrganizerDashboard = () => {
 
       </header>
 
-      {/* LOWER PANEL: SIDEBAR + MAIN PANELS */}
+      {}
       <div className="flex-grow flex overflow-hidden">
 
-        {/* LEFT SIDEBAR PANEL (COMPACT w-52) */}
+        {}
         <aside className="w-52 bg-[#0c0c0e] border-r border-white/5 flex flex-col justify-between shrink-0 h-full select-none z-20">
 
-          {/* Navigation Links */}
+          {}
           <div className="p-3 space-y-1 overflow-y-auto flex-grow">
 
             <button
@@ -1062,7 +1066,7 @@ const OrganizerDashboard = () => {
               )}
             </button>
 
-            {/* Field Ops Category */}
+            {}
             <div className="pt-3 pb-1 px-3 text-[9px] font-black tracking-widest text-gray-600 uppercase">Field Ops</div>
 
             <button
@@ -1078,7 +1082,7 @@ const OrganizerDashboard = () => {
               Live Tracking
             </button>
 
-            {/* Backoffice Category */}
+            {}
             <div className="pt-3 pb-1 px-3 text-[9px] font-black tracking-widest text-gray-600 uppercase">Backoffice</div>
 
             <button
@@ -1122,7 +1126,7 @@ const OrganizerDashboard = () => {
 
           </div>
 
-          {/* Sidebar Footer: Compact Sign Out only */}
+          {}
           <div className="p-3 border-t border-white/5 bg-[#09090b]">
             <button
               onClick={() => logout(user?.role || 'organizer')}
@@ -1137,26 +1141,26 @@ const OrganizerDashboard = () => {
 
         </aside>
 
-        {/* RIGHT MAIN PANEL (WITH COMPACT PADDING) */}
+        {}
         <main className="flex-1 h-full overflow-y-auto z-10 flex flex-col justify-between relative bg-[#070708]">
 
-          {/* Ambient glows inside content panel */}
+          {}
           <div className="absolute top-0 right-0 h-[300px] w-[300px] bg-trek-brown/5 blur-[120px] rounded-full pointer-events-none z-0" />
           <div className="absolute bottom-0 left-0 h-[300px] w-[300px] bg-orange-600/5 blur-[120px] rounded-full pointer-events-none z-0" />
 
-          {/* Content Wrapper */}
+          {}
           <div className="p-6 md:p-8 relative z-10 w-full max-w-7xl mx-auto flex-grow">
 
-            {/* SWITCH CASE FOR VIEW PANELS */}
+            {}
             {activeView === 'dashboard' && (
               <div className="space-y-6 animate-fadeIn">
 
-                {/* Tactical Banner */}
+                {}
                 <div
                   className="relative rounded-2xl overflow-hidden border border-white/5 shadow-2xl min-h-[200px] flex items-center p-6 md:p-8 bg-cover bg-center select-none"
                   style={{ backgroundImage: "url('/lake_mountain_hero.png')" }}
                 >
-                  {/* Visual Gradients Overlay */}
+                  {}
                   <div className="absolute inset-0 bg-[#070708]/85 md:bg-gradient-to-r md:from-[#070708] md:via-[#070708]/80 md:to-transparent z-0" />
 
                   <div className="relative z-10 max-w-xl">
@@ -1173,10 +1177,10 @@ const OrganizerDashboard = () => {
                   </div>
                 </div>
 
-                {/* Stats Cards Row */}
+                {}
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 select-none">
 
-                  {/* Active Expeditions Card */}
+                  {}
                   <div className="bg-[#121317]/85 border border-white/5 rounded-2xl p-4.5 hover:border-white/10 transition duration-300 shadow-xl flex flex-col justify-between min-h-[110px]">
                     <div className="flex justify-between items-start">
                       <span className="text-[8px] text-gray-500 uppercase font-black tracking-widest">Active Expeditions</span>
@@ -1185,7 +1189,7 @@ const OrganizerDashboard = () => {
                     <span className="font-outfit text-3.5xl font-black text-white leading-none mt-3">{activeExpeditionsCount}</span>
                   </div>
 
-                  {/* Field Personnel Card */}
+                  {}
                   <div className="bg-[#121317]/85 border border-white/5 rounded-2xl p-4.5 hover:border-white/10 transition duration-300 shadow-xl flex flex-col justify-between min-h-[110px]">
                     <div className="flex justify-between items-start">
                       <span className="text-[8px] text-gray-500 uppercase font-black tracking-widest">Field Personnel</span>
@@ -1194,7 +1198,7 @@ const OrganizerDashboard = () => {
                     <span className="font-outfit text-3.5xl font-black text-white leading-none mt-3">{fieldPersonnelCount}</span>
                   </div>
 
-                  {/* Pending Bookings Card */}
+                  {}
                   <div className="bg-[#121317]/85 border border-white/5 rounded-2xl p-4.5 hover:border-white/10 transition duration-300 shadow-xl flex flex-col justify-between min-h-[110px]">
                     <div className="flex justify-between items-start">
                       <span className="text-[8px] text-gray-500 uppercase font-black tracking-widest">Pending Bookings</span>
@@ -1203,7 +1207,7 @@ const OrganizerDashboard = () => {
                     <span className="font-outfit text-3.5xl font-black text-white leading-none mt-3">{pendingBookingsCount}</span>
                   </div>
 
-                  {/* Emergency Alerts Card */}
+                  {}
                   <div className="bg-[#1b1213]/85 border border-red-500/30 shadow-[0_0_12px_rgba(239,68,68,0.04)] rounded-2xl p-4.5 hover:border-red-500/50 transition duration-300 flex flex-col justify-between min-h-[110px]">
                     <div className="flex justify-between items-start">
                       <span className="text-[8px] text-red-400 uppercase font-black tracking-widest">Emergency Alerts</span>
@@ -1214,10 +1218,10 @@ const OrganizerDashboard = () => {
 
                 </div>
 
-                {/* Graphical Performance Grid */}
+                {}
                 <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
 
-                  {/* Revenue Performance Chart Column */}
+                  {}
                   <div className="xl:col-span-2 bg-[#0c0c0e] border border-white/5 rounded-2xl p-5 shadow-2xl flex flex-col justify-between min-h-[350px]">
                     <div className="flex justify-between items-center select-none mb-4">
                       <div>
@@ -1231,10 +1235,10 @@ const OrganizerDashboard = () => {
                       </select>
                     </div>
 
-                    {/* HTML/CSS Bar Chart */}
+                    {}
                     <div className="flex-1 flex flex-col justify-end mt-2">
 
-                      {/* Y-Axis guide lines overlay */}
+                      {}
                       <div className="relative w-full flex-grow flex flex-col justify-between text-[8px] text-gray-600 font-mono select-none h-40 pb-2 border-b border-white/10">
 
                         <div className="absolute inset-0 flex flex-col justify-between pointer-events-none">
@@ -1244,40 +1248,40 @@ const OrganizerDashboard = () => {
                           <div className="border-t border-white/[0.03] w-full" />
                         </div>
 
-                        {/* Bar columns */}
+                        {}
                         <div className="absolute inset-x-8 bottom-0 top-2 flex items-end justify-between px-2">
-                          {/* W1 */}
+                          {}
                           <div className="flex flex-col items-center group w-9">
                             <div className="w-5 bg-white/10 group-hover:bg-white/20 rounded-t transition-all duration-500" style={{ height: '30%' }} />
                           </div>
-                          {/* W2 */}
+                          {}
                           <div className="flex flex-col items-center group w-9">
                             <div className="w-5 bg-white/10 group-hover:bg-white/20 rounded-t transition-all duration-500" style={{ height: '42%' }} />
                           </div>
-                          {/* W3 */}
+                          {}
                           <div className="flex flex-col items-center group w-9">
                             <div className="w-5 bg-white/10 group-hover:bg-white/20 rounded-t transition-all duration-500" style={{ height: '35%' }} />
                           </div>
-                          {/* W4 */}
+                          {}
                           <div className="flex flex-col items-center group w-9">
                             <div className="w-5 bg-white/10 group-hover:bg-white/20 rounded-t transition-all duration-500" style={{ height: '55%' }} />
                           </div>
-                          {/* W5 (HIGHLIGHTED ACTIVE VALUE) */}
+                          {}
                           <div className="flex flex-col items-center group w-9 relative">
                             <div className="absolute -top-7 z-10 bg-orange-500 text-black text-[9px] font-black font-mono px-1.5 py-0.5 rounded shadow-[0_0_10px_rgba(249,115,22,0.3)] animate-bounce select-none">
                               $42k
                             </div>
                             <div className="w-5 bg-orange-500 rounded-t transition-all duration-500 shadow-[0_0_15px_rgba(249,115,22,0.4)]" style={{ height: '88%' }} />
                           </div>
-                          {/* W6 */}
+                          {}
                           <div className="flex flex-col items-center group w-9">
                             <div className="w-5 bg-white/10 group-hover:bg-white/20 rounded-t transition-all duration-500" style={{ height: '62%' }} />
                           </div>
-                          {/* W7 */}
+                          {}
                           <div className="flex flex-col items-center group w-9">
                             <div className="w-5 bg-white/10 group-hover:bg-white/20 rounded-t transition-all duration-500" style={{ height: '78%' }} />
                           </div>
-                          {/* W8 */}
+                          {}
                           <div className="flex flex-col items-center group w-9">
                             <div className="w-5 bg-white/10 group-hover:bg-white/20 rounded-t transition-all duration-500" style={{ height: '50%' }} />
                           </div>
@@ -1285,7 +1289,7 @@ const OrganizerDashboard = () => {
 
                       </div>
 
-                      {/* X-Axis labels */}
+                      {}
                       <div className="flex justify-between px-10 text-[9px] font-mono text-gray-500 font-bold select-none pt-2">
                         <span>W1</span>
                         <span>W2</span>
@@ -1300,17 +1304,17 @@ const OrganizerDashboard = () => {
                     </div>
                   </div>
 
-                  {/* Active Missions Status Column */}
+                  {}
                   <div className="bg-[#0c0c0e] border border-white/5 rounded-2xl p-5 shadow-2xl flex flex-col justify-between min-h-[350px]">
                     <div className="select-none mb-4">
                       <span className="text-[8px] text-gray-500 uppercase font-black tracking-widest block">Expedition Status</span>
                       <h3 className="font-outfit text-md font-bold text-white uppercase mt-0.5">Active Missions</h3>
                     </div>
 
-                    {/* Missions Checklist */}
+                    {}
                     <div className="flex-1 space-y-4">
 
-                      {/* Mission 1 */}
+                      {}
                       <div className="space-y-1.5 group">
                         <div className="flex justify-between items-center text-xs">
                           <span className="font-bold text-gray-200 group-hover:text-orange-400 transition-colors">Munnar Sky Trek</span>
@@ -1324,7 +1328,7 @@ const OrganizerDashboard = () => {
                         </div>
                       </div>
 
-                      {/* Mission 2 */}
+                      {}
                       <div className="space-y-1.5 group">
                         <div className="flex justify-between items-center text-xs">
                           <span className="font-bold text-gray-200 group-hover:text-orange-400 transition-colors">Zanskar Ice Path</span>
@@ -1339,7 +1343,7 @@ const OrganizerDashboard = () => {
                         </div>
                       </div>
 
-                      {/* Mission 3 */}
+                      {}
                       <div className="space-y-1.5 group">
                         <div className="flex justify-between items-center text-xs">
                           <span className="font-bold text-gray-200 group-hover:text-orange-400 transition-colors">Nilgiri Ridge</span>
@@ -1356,7 +1360,7 @@ const OrganizerDashboard = () => {
 
                     </div>
 
-                    {/* Action CTA */}
+                    {}
                     <button
                       onClick={() => setActiveView('manage-trips')}
                       className="w-full mt-4 py-2 border border-white/10 hover:border-orange-500/30 hover:bg-orange-500/[0.02] text-[10px] font-bold uppercase tracking-wider text-gray-300 hover:text-white rounded-xl transition active:scale-95 cursor-pointer"
@@ -1371,7 +1375,7 @@ const OrganizerDashboard = () => {
               </div>
             )}
 
-            {/* VIEW: CREATE TRIP */}
+            {}
             {activeView === 'create-trip' && (
               <div className="bg-[#0c0c0e] border border-white/5 rounded-2xl p-6 shadow-2xl max-w-4xl mx-auto animate-fadeIn">
                 <h2 className="font-outfit text-xl font-black uppercase text-white mb-1.5 tracking-tight">Publish New Expedition</h2>
@@ -1379,7 +1383,7 @@ const OrganizerDashboard = () => {
                   Create a customized trail itinerary. Once published, your expedition will go live on the Explore feed and will be bookable by trekkers.
                 </p>
 
-                {/* Status messages */}
+                {}
                 {errorMsg && (
                   <div className="bg-red-500/10 border border-red-500/20 text-red-400 rounded-xl p-4.5 flex items-center gap-3 text-xs mb-6 animate-pulse select-none">
                     <span className="h-1.5 w-1.5 rounded-full bg-red-500 flex-shrink-0" />
@@ -1395,7 +1399,7 @@ const OrganizerDashboard = () => {
 
                 <form onSubmit={handleCreateTrekSubmit} className="flex flex-col gap-5 select-text">
 
-                  {/* Row 1: Title and Location */}
+                  {}
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                     <div className="flex flex-col gap-1.5">
                       <label className="text-[9px] text-gray-500 uppercase tracking-widest font-black select-none">Trek Title</label>
@@ -1421,7 +1425,7 @@ const OrganizerDashboard = () => {
                     </div>
                   </div>
 
-                  {/* Row 2: Price and Duration */}
+                  {}
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
                     <div className="flex flex-col gap-1.5">
                       <label className="text-[9px] text-gray-500 uppercase tracking-widest font-black select-none">Rate per Person (₹)</label>
@@ -1461,7 +1465,7 @@ const OrganizerDashboard = () => {
                     </div>
                   </div>
 
-                  {/* Row 3: Dates, Pickup and Weather preset */}
+                  {}
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
                     <div className="flex flex-col gap-1.5">
                       <label className="text-[9px] text-gray-500 uppercase tracking-widest font-black select-none">Expedition Dates</label>
@@ -1497,7 +1501,7 @@ const OrganizerDashboard = () => {
                     </div>
                   </div>
 
-                  {/* Description */}
+                  {}
                   <div className="flex flex-col gap-1.5">
                     <label className="text-[9px] text-gray-500 uppercase tracking-widest font-black select-none">Expedition Details / Description</label>
                     <textarea
@@ -1510,7 +1514,7 @@ const OrganizerDashboard = () => {
                     />
                   </div>
 
-                  {/* Cover Image Upload */}
+                  {}
                   <div className="flex flex-col gap-2.5">
                     <span className="text-[9px] text-gray-500 uppercase tracking-widest font-black select-none">Upload Cover Image</span>
                     <div className="flex items-center gap-4">
@@ -1526,12 +1530,12 @@ const OrganizerDashboard = () => {
                           onChange={(e) => {
                             if (e.target.files && e.target.files[0]) {
                               setImageFile(e.target.files[0]);
-                              // We can also create a local preview URL if we want, but for now just showing name
+                              
                             }
                           }}
                         />
                       </label>
-                      {/* Optional: Show current image if editing or show preset fallback */}
+                      {}
                       {image && !imageFile && (
                         <div className="h-20 w-24 rounded-xl overflow-hidden shrink-0 border border-white/10">
                           <img src={image} alt="Current cover" className="w-full h-full object-cover" />
@@ -1545,7 +1549,7 @@ const OrganizerDashboard = () => {
                     </div>
                   </div>
 
-                  {/* Form CTA Button */}
+                  {}
                   <button
                     type="submit"
                     disabled={isSubmitting}
@@ -1567,7 +1571,7 @@ const OrganizerDashboard = () => {
               </div>
             )}
 
-            {/* VIEW: MANAGE TRIPS */}
+            {}
             {activeView === 'manage-trips' && (
               <div className="space-y-6 animate-fadeIn">
                 <div className="flex justify-between items-center select-none">
@@ -1598,7 +1602,7 @@ const OrganizerDashboard = () => {
                         key={trek.id}
                         className="bg-[#0c0c0e] border border-white/5 rounded-2xl overflow-hidden shadow-2xl flex flex-col justify-between group hover:border-white/10 transition-all duration-300"
                       >
-                        {/* Cover Image Banner */}
+                        {}
                         <div className="h-40 w-full relative overflow-hidden select-none">
                           <div
                             className="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover:scale-105"
@@ -1613,7 +1617,7 @@ const OrganizerDashboard = () => {
                           </span>
                         </div>
 
-                        {/* Content details */}
+                        {}
                         <div className="p-5 flex-grow flex flex-col justify-between">
                           <div>
                             <h3 className="font-outfit text-lg font-black uppercase text-white leading-none group-hover:text-orange-400 transition-colors duration-300">
@@ -1627,7 +1631,7 @@ const OrganizerDashboard = () => {
                             </p>
                           </div>
 
-                          {/* Booking Footer */}
+                          {}
                           <div className="border-t border-white/5 pt-4 mt-5 flex items-center justify-between">
                             <div className="flex flex-col">
                               <span className="text-[8px] text-gray-500 uppercase font-black leading-none">Rate per Hiker</span>
@@ -1657,7 +1661,7 @@ const OrganizerDashboard = () => {
               </div>
             )}
 
-            {/* VIEW: BOOKINGS TABLE */}
+            {}
             {activeView === 'bookings' && (
               <div className="bg-[#0c0c0e] border border-white/5 rounded-2xl p-6 shadow-2xl space-y-6 animate-fadeIn">
                 <div className="flex justify-between items-center select-none">
@@ -1737,7 +1741,7 @@ const OrganizerDashboard = () => {
               </div>
             )}
 
-            {/* VIEW: MEMBERS DIRECTORY */}
+            {}
             {activeView === 'members' && (
               <div className="space-y-6 animate-fadeIn">
                 <div>
@@ -1747,7 +1751,7 @@ const OrganizerDashboard = () => {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 select-none">
 
-                  {/* Guide 1 */}
+                  {}
                   <div className="bg-[#0c0c0e] border border-white/5 rounded-2xl p-4.5 shadow-lg flex flex-col justify-between">
                     <div className="flex items-start gap-3.5">
                       <div className="h-10 w-10 rounded-xl bg-orange-600/10 border border-orange-500/30 flex items-center justify-center text-orange-500 text-md font-black">
@@ -1767,7 +1771,7 @@ const OrganizerDashboard = () => {
                     </div>
                   </div>
 
-                  {/* Guide 2 */}
+                  {}
                   <div className="bg-[#0c0c0e] border border-white/5 rounded-2xl p-4.5 shadow-lg flex flex-col justify-between">
                     <div className="flex items-start gap-3.5">
                       <div className="h-10 w-10 rounded-xl bg-gray-500/10 border border-white/10 flex items-center justify-center text-gray-400 text-md font-black">
@@ -1787,7 +1791,7 @@ const OrganizerDashboard = () => {
                     </div>
                   </div>
 
-                  {/* Guide 3 (Organizer user themselves) */}
+                  {}
                   <div className="bg-[#0c0c0e] border border-orange-500/20 rounded-2xl p-4.5 shadow-[0_0_15px_rgba(249,115,22,0.02)] flex flex-col justify-between">
                     <div className="flex items-start gap-3.5">
                       <div className="h-10 w-10 rounded-xl bg-orange-500/20 border border-orange-500 flex items-center justify-center text-white text-md font-black shadow-md">
@@ -1809,7 +1813,7 @@ const OrganizerDashboard = () => {
 
                 </div>
 
-                {/* Trip Participants Section */}
+                {}
                 <div className="mt-10">
                   <h2 className="font-outfit text-xl font-black uppercase text-white tracking-tight">Trip Participants</h2>
                   <p className="text-gray-400 text-xs font-light mt-0.5 mb-5">Overview of members joined per trip.</p>
@@ -1849,11 +1853,11 @@ const OrganizerDashboard = () => {
               </div>
             )}
 
-            {/* VIEW: LIVE TRACKING */}
+            {}
             {activeView === 'live-tracking' && (
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 animate-fadeIn">
 
-                {/* Telemetry Control Center (Left/Center) */}
+                {}
                 <div className="lg:col-span-2 space-y-6">
                   <div className="bg-[#0c0c0e] border border-white/5 rounded-2xl p-5 shadow-2xl">
                     <div className="flex justify-between items-center select-none mb-4">
@@ -1866,7 +1870,7 @@ const OrganizerDashboard = () => {
                       </span>
                     </div>
 
-                    {/* Interactive Leaflet Map */}
+                    {}
                     <div className="relative aspect-video rounded-xl border border-white/5 overflow-hidden z-0">
                       <MapContainer center={[liveLocation.lat, liveLocation.lng]} zoom={14} scrollWheelZoom={false} className="w-full h-full">
                         <TileLayer
@@ -1881,7 +1885,7 @@ const OrganizerDashboard = () => {
                         <MapAutoPan location={liveLocation} />
                       </MapContainer>
 
-                      {/* GPS Coordinates overlay */}
+                      {}
                       <div className="absolute bottom-3 left-3 bg-[#0c0c0e]/90 px-3 py-1.5 rounded border border-white/10 font-mono text-[8px] text-orange-500 space-y-0.5 z-[1000]">
                         <div>LAT: {liveLocation.lat.toFixed(6)}° N</div>
                         <div>LON: {liveLocation.lng.toFixed(6)}° E</div>
@@ -1890,7 +1894,7 @@ const OrganizerDashboard = () => {
                     </div>
                   </div>
 
-                  {/* Live Console Logs */}
+                  {}
                   <div className="bg-[#0c0c0e] border border-white/5 rounded-2xl p-5 shadow-2xl">
                     <h3 className="text-[10px] font-bold uppercase text-white font-mono tracking-wider mb-3">Command Logs Feed</h3>
                     <div className="bg-[#070708] rounded-xl p-3.5 font-mono text-[9px] text-gray-400 space-y-1.5 h-36 overflow-y-auto border border-white/5">
@@ -1904,7 +1908,7 @@ const OrganizerDashboard = () => {
                   </div>
                 </div>
 
-                {/* Status Columns (Right side) */}
+                {}
                 <div className="space-y-6">
                   <div className="bg-[#0c0c0e] border border-white/5 rounded-2xl p-5 shadow-2xl">
                     <h3 className="text-[10px] font-bold uppercase text-white tracking-widest font-mono mb-3">Channel Details</h3>
@@ -1941,14 +1945,14 @@ const OrganizerDashboard = () => {
               </div>
             )}
 
-            {/* VIEW: CHAT CENTER */}
+            {}
             {activeView === 'chat' && (
               <div className="animate-fadeIn">
                 <ChatLayout />
               </div>
             )}
 
-            {/* VIEW: PAYMENTS */}
+            {}
             {activeView === 'payments' && (
               <div className="space-y-6 animate-fadeIn">
                 <div>
@@ -1956,10 +1960,10 @@ const OrganizerDashboard = () => {
                   <p className="text-gray-400 text-xs font-light mt-0.5">Track gross volume earnings, bookings volume, and recent payout transfers.</p>
                 </div>
 
-                {/* Grid ledger status */}
+                {}
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 select-none">
 
-                  {/* Gross Earnings Box */}
+                  {}
                   <div className="bg-[#0c0c0e] border border-white/5 rounded-2xl p-5 shadow flex flex-col justify-between min-h-[120px]">
                     <div>
                       <span className="text-[8px] text-gray-500 uppercase font-black tracking-widest block font-mono">Gross Earnings</span>
@@ -1970,7 +1974,7 @@ const OrganizerDashboard = () => {
                     <span className="text-[8px] text-orange-500 font-bold block mt-1.5">All times combined volume</span>
                   </div>
 
-                  {/* Platform Payout Ledger */}
+                  {}
                   <div className="bg-[#0c0c0e] border border-white/5 rounded-2xl p-5 shadow flex flex-col justify-between min-h-[120px]">
                     <div>
                       <span className="text-[8px] text-gray-500 uppercase font-black tracking-widest block font-mono">Ready for Payout</span>
@@ -1981,7 +1985,7 @@ const OrganizerDashboard = () => {
                     <span className="text-[8px] text-emerald-400 font-bold block mt-1.5">85% Revenue Share Payout Rate</span>
                   </div>
 
-                  {/* Next Payout timer */}
+                  {}
                   <div className="bg-[#0c0c0e] border border-white/5 rounded-2xl p-5 shadow flex flex-col justify-between min-h-[120px]">
                     <div>
                       <span className="text-[8px] text-gray-500 uppercase font-black tracking-widest block font-mono">Next Transfer</span>
@@ -1994,7 +1998,7 @@ const OrganizerDashboard = () => {
 
                 </div>
 
-                {/* Transactions Ledger */}
+                {}
                 <div className="bg-[#0c0c0e] border border-white/5 rounded-2xl p-5 shadow-2xl select-text">
                   <h3 className="text-[10px] font-bold uppercase text-white font-mono tracking-widest mb-3.5">Transaction Ledger</h3>
 
@@ -2023,7 +2027,7 @@ const OrganizerDashboard = () => {
               </div>
             )}
 
-            {/* VIEW: ANALYTICS */}
+            {}
             {activeView === 'analytics' && (
               <div className="space-y-6 animate-fadeIn">
                 <div>
@@ -2033,7 +2037,7 @@ const OrganizerDashboard = () => {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-5 select-none">
 
-                  {/* Popularity Bar Chart */}
+                  {}
                   <div className="bg-[#0c0c0e] border border-white/5 rounded-2xl p-5 shadow-2xl">
                     <h3 className="text-[10px] font-bold uppercase text-white font-mono tracking-wider mb-5">Expedition Popularity</h3>
                     <div className="space-y-3.5">
@@ -2067,7 +2071,7 @@ const OrganizerDashboard = () => {
                     </div>
                   </div>
 
-                  {/* Rating Distribution */}
+                  {}
                   <div className="bg-[#0c0c0e] border border-white/5 rounded-2xl p-5 shadow-2xl flex flex-col justify-between">
                     <div>
                       <h3 className="text-[10px] font-bold uppercase text-white font-mono tracking-wider mb-5">User Satisfaction Rating</h3>
@@ -2094,7 +2098,7 @@ const OrganizerDashboard = () => {
               </div>
             )}
 
-            {/* VIEW: NOTIFICATIONS */}
+            {}
             {activeView === 'notifications' && (
               <div className="space-y-6 animate-fadeIn">
                 <div className="flex justify-between items-center select-none">
@@ -2123,7 +2127,7 @@ const OrganizerDashboard = () => {
                 )}
 
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                  {/* Notifications List */}
+                  {}
                   <div className="lg:col-span-2 space-y-3">
                     {notificationsLoading && notifications.length === 0 ? (
                       <div className="space-y-4">
@@ -2157,19 +2161,19 @@ const OrganizerDashboard = () => {
                                   : 'border-white/5 hover:border-white/10 hover:bg-white/[0.01]'
                               }`}
                             >
-                              {/* Unread indicator bar */}
+                              {}
                               {unread && (
                                 <span className="absolute top-0 left-0 h-full w-1 bg-orange-500" />
                               )}
 
-                              {/* Icon panel */}
+                              {}
                               <div className={`h-9 w-9 shrink-0 rounded-lg border flex items-center justify-center text-md ${
                                 unread ? 'bg-orange-500/10 border-orange-500/20 text-orange-400' : 'bg-white/5 border-white/10 text-gray-400'
                               }`}>
                                 {notif.type === 'booking_confirmed' ? '' : notif.type === 'booking_cancelled' ? '' : ''}
                               </div>
 
-                              {/* Details */}
+                              {}
                               <div className="flex-grow min-w-0 pr-4">
                                 <div className="flex items-start justify-between gap-2">
                                   <h4 className={`text-xs font-bold truncate ${unread ? 'text-white font-black' : 'text-gray-300'}`}>
@@ -2184,7 +2188,7 @@ const OrganizerDashboard = () => {
                                 </p>
                               </div>
 
-                              {/* Delete button */}
+                              {}
                               <div className="flex items-center self-center shrink-0">
                                 <button
                                   onClick={(e) => handleDeleteNotification(e, notif._id)}
@@ -2203,7 +2207,7 @@ const OrganizerDashboard = () => {
                     )}
                   </div>
 
-                  {/* Switches Card */}
+                  {}
                   <div className="space-y-4">
                     <div className="bg-[#0c0c0e] border border-white/5 rounded-2xl p-5 shadow-2xl relative overflow-hidden flex flex-col justify-between">
                       <div className="absolute top-0 right-0 w-24 h-24 bg-orange-500/5 rounded-full blur-2xl -translate-y-1/2 translate-x-1/2 pointer-events-none"></div>
@@ -2214,7 +2218,7 @@ const OrganizerDashboard = () => {
                         </h3>
 
                         <div className="space-y-3.5">
-                          {/* Switch 1: Show Unread Only */}
+                          {}
                           <div className="flex items-center justify-between pb-3 border-b border-white/5 select-none">
                             <div>
                               <div className="text-[11px] font-bold text-gray-200">Unread Only</div>
@@ -2228,7 +2232,7 @@ const OrganizerDashboard = () => {
                             </button>
                           </div>
 
-                          {/* Switch 2: Mute Alerts */}
+                          {}
                           <div className="flex items-center justify-between pb-3 border-b border-white/5 select-none">
                             <div>
                               <div className="text-[11px] font-bold text-gray-200">Mute Alerts</div>
@@ -2242,7 +2246,7 @@ const OrganizerDashboard = () => {
                             </button>
                           </div>
 
-                          {/* Switch 3: Email Alerts */}
+                          {}
                           <div className="flex items-center justify-between select-none">
                             <div>
                               <div className="text-[11px] font-bold text-gray-200">Email Alerts</div>
@@ -2259,7 +2263,7 @@ const OrganizerDashboard = () => {
                       </div>
 
                       <div className="border-t border-white/5 pt-3.5 mt-5 text-[8px] text-gray-500 leading-relaxed font-mono select-none">
-                        DASHBOARD SYNC: ENABLED // SETTINGS PERSISTED
+                        DASHBOARD SYNC: ENABLED 
                       </div>
                     </div>
                   </div>
@@ -2269,7 +2273,7 @@ const OrganizerDashboard = () => {
 
           </div>
 
-          {/* Tactical Footer */}
+          {}
           <footer className="px-8 py-5 bg-[#09090b] border-t border-white/5 flex items-center justify-between select-none z-10">
             <div className="flex items-center gap-1.5">
               <svg className="w-4 h-4 text-orange-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
@@ -2278,7 +2282,7 @@ const OrganizerDashboard = () => {
               <span className="font-outfit font-black tracking-widest text-[10px] uppercase text-gray-400">TrekMate HQ</span>
             </div>
             <div className="text-[8px] text-gray-600 font-mono font-bold">
-              HQ TERMINAL STATUS: OPERATIONAL // PORTAL © {new Date().getFullYear()} TREKMATE
+              HQ TERMINAL STATUS: OPERATIONAL 
             </div>
           </footer>
 

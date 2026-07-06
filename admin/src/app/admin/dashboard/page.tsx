@@ -18,7 +18,7 @@ import { formatCurrency, formatDate } from "@/lib/utils";
 import { MockDB } from "@/services/mock-data";
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, Legend } from "recharts";
 
-// Mock chart data
+
 const revenueData = [
   { name: "Jan", revenue: 4000, bookings: 12 },
   { name: "Feb", revenue: 5500, bookings: 16 },
@@ -44,7 +44,7 @@ export default function DashboardOverview() {
   useEffect(() => {
     setMounted(true);
     
-    // Load dynamic figures from MockDB
+    
     const users: any[] = MockDB.getUsers();
     const organizers: any[] = MockDB.getOrganizers();
     const trips: any[] = MockDB.getTrips();
@@ -69,7 +69,7 @@ export default function DashboardOverview() {
       revenue
     });
 
-    // Compile recent activities from logs
+    
     const activitiesList: any[] = [];
     users.forEach((u: any) => {
       u.activities.forEach((act: any) => {
@@ -83,11 +83,11 @@ export default function DashboardOverview() {
         });
       });
     });
-    // Sort activities descending
+    
     activitiesList.sort((a: any, b: any) => b.time.getTime() - a.time.getTime());
     setRecentActivities(activitiesList.slice(0, 5));
 
-    // Get latest bookings
+    
     const bookingsCopy = [...bookings];
     bookingsCopy.sort((a: any, b: any) => new Date(b.booking_date).getTime() - new Date(a.booking_date).getTime());
     setRecentBookings(bookingsCopy.slice(0, 4));
@@ -95,7 +95,7 @@ export default function DashboardOverview() {
 
   return (
     <div className="space-y-8">
-      {/* Welcome Heading */}
+      {}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
           <h1 className="text-3xl font-extrabold tracking-tight">Platform Command Center</h1>
@@ -109,9 +109,9 @@ export default function DashboardOverview() {
         </div>
       </div>
 
-      {/* KPI Cards Grid */}
+      {}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
-        {/* Total Users */}
+        {}
         <Card className="hover:scale-[1.02] cursor-default transition-all duration-300">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Total Users</CardTitle>
@@ -123,7 +123,7 @@ export default function DashboardOverview() {
           </CardContent>
         </Card>
 
-        {/* Total Organizers */}
+        {}
         <Card className="hover:scale-[1.02] cursor-default transition-all duration-300">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Organizers</CardTitle>
@@ -135,7 +135,7 @@ export default function DashboardOverview() {
           </CardContent>
         </Card>
 
-        {/* Total Trips */}
+        {}
         <Card className="hover:scale-[1.02] cursor-default transition-all duration-300">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Total Trips</CardTitle>
@@ -147,7 +147,7 @@ export default function DashboardOverview() {
           </CardContent>
         </Card>
 
-        {/* Active Trips */}
+        {}
         <Card className="hover:scale-[1.02] cursor-default transition-all duration-300">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Active Trips</CardTitle>
@@ -159,7 +159,7 @@ export default function DashboardOverview() {
           </CardContent>
         </Card>
 
-        {/* Total Bookings */}
+        {}
         <Card className="hover:scale-[1.02] cursor-default transition-all duration-300">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Bookings</CardTitle>
@@ -171,7 +171,7 @@ export default function DashboardOverview() {
           </CardContent>
         </Card>
 
-        {/* Total Revenue */}
+        {}
         <Card className="hover:scale-[1.02] cursor-default transition-all duration-300 bg-primary/5 border-primary/20">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-xs font-semibold uppercase tracking-wider text-primary dark:text-primary-foreground">Total Revenue</CardTitle>
@@ -184,9 +184,9 @@ export default function DashboardOverview() {
         </Card>
       </div>
 
-      {/* Visual Analytics Charts */}
+      {}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* Monthly Revenue Area Chart */}
+        {}
         <Card className="lg:col-span-2">
           <CardHeader>
             <CardTitle>Monthly Revenue Growth</CardTitle>
@@ -222,7 +222,7 @@ export default function DashboardOverview() {
           </CardContent>
         </Card>
 
-        {/* Booking Statistics Bar Chart */}
+        {}
         <Card>
           <CardHeader>
             <CardTitle>Booking Trends</CardTitle>
@@ -253,9 +253,9 @@ export default function DashboardOverview() {
         </Card>
       </div>
 
-      {/* Recent Activity Ticker and Booking Table */}
+      {}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        {/* Recent Transactions Table */}
+        {}
         <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <div>
@@ -297,7 +297,7 @@ export default function DashboardOverview() {
           </CardContent>
         </Card>
 
-        {/* Live Activity Ticker */}
+        {}
         <Card>
           <CardHeader>
             <CardTitle>Recent Activity History</CardTitle>

@@ -20,7 +20,7 @@ export default function Home() {
   return (
     <div className="h-screen w-screen flex items-center justify-center bg-slate-950 text-white">
       <div className="flex flex-col items-center gap-4">
-        {/* Loading Spinner */}
+        {}
         <div className="h-10 w-10 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
         <p className="text-slate-400 text-sm font-semibold tracking-wider">Verifying Session Security...</p>
       </div>

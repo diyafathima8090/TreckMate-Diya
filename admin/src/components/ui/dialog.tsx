@@ -10,7 +10,7 @@ interface DialogProps {
 }
 
 const Dialog: React.FC<DialogProps> = ({ open, onOpenChange, children }) => {
-  // Lock scroll when open
+  
   React.useEffect(() => {
     if (open) {
       document.body.style.overflow = "hidden";
@@ -26,7 +26,7 @@ const Dialog: React.FC<DialogProps> = ({ open, onOpenChange, children }) => {
     <AnimatePresence>
       {open && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-          {/* Backdrop */}
+          {}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -34,7 +34,7 @@ const Dialog: React.FC<DialogProps> = ({ open, onOpenChange, children }) => {
             onClick={() => onOpenChange(false)}
             className="fixed inset-0 bg-slate-950/60 backdrop-blur-xs cursor-pointer"
           />
-          {/* Dialog Container */}
+          {}
           {children}
         </div>
       )}

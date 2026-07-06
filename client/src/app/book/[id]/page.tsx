@@ -5,7 +5,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from '../../../components/RouterCompatibility';
 import { useAuth } from '../../../context/AuthContext';
 import Navbar from '../../../components/Navbar';
-import { getTrekById } from '../../../utils/trekStorage';
+import { getTrekById } from '../../../services/trekStorage';
 
 
 const BookTrip = () => {
@@ -16,24 +16,21 @@ const BookTrip = () => {
   const [trek, setTrek] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // States
+  
   const [seats, setSeats] = useState(1);
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
   const [emergencyPhone, setEmergencyPhone] = useState('');
   const [errorMsg, setErrorMsg] = useState('');
-  // Load user name and email into defaults
+  
   useEffect(() => {
     if (user) {
       setFullName(user.name || '');
       setEmail(user.email || '');
     }
   }, [user]);
-useEffect(()=>{
-  const 
-})
-  useEffect(() => { const responce in 
+  useEffect(() => {
     const fetchTrek = async () => {
       const data = await getTrekById(id);
       setTrek(data);
@@ -53,13 +50,13 @@ useEffect(()=>{
     );
   }
 
-  // Billing calculation values
+  
   const baseTotal = trek ? trek.baseRate * seats : 0;
   const guideTotal = trek ? trek.guideRate * seats : 0;
   const gstTotal = Math.round((baseTotal + guideTotal) * 0.18);
   const payableAmount = baseTotal + guideTotal + gstTotal;
 
-  // Submit handler
+  
   const handleProceedSubmit = (e) => {
     e.preventDefault();
     setErrorMsg('');
@@ -94,7 +91,7 @@ useEffect(()=>{
   return (
     <div className="font-sans text-white bg-trek-dark min-h-screen selection:bg-trek-brown selection:text-white pt-20 relative overflow-hidden flex flex-col justify-between">
 
-      {/* Wilderness Background overlay */}
+      {}
       <div
         className="absolute inset-0 bg-cover bg-center z-0"
         style={{ backgroundImage: "url('/trips_details_bg.png')" }}
@@ -107,7 +104,7 @@ useEffect(()=>{
 
       <main className="relative z-20 max-w-7xl mx-auto px-6 md:px-12 lg:px-24 py-12 flex-grow w-full flex flex-col justify-center">
 
-        {/* Page title header */}
+        {}
         <div className="mb-8 border-b border-white/10 pb-4">
           <span className="text-trek-brown text-xs font-bold tracking-widest uppercase mb-1.5 block">Booking Portal</span>
           <h1 className="font-outfit text-3xl md:text-4xl font-black uppercase tracking-tight text-white leading-none">Enter Booking Details</h1>
@@ -115,11 +112,11 @@ useEffect(()=>{
 
         <div className="flex flex-col lg:flex-row gap-10 items-stretch">
 
-          {/* LEFT COLUMN: Booking Details & Billing Summary */}
+          {}
           <section className="flex-1 bg-[#121317]/90 border border-white/10 rounded-2xl p-6 shadow-2xl flex flex-col justify-between select-text">
 
             <div>
-              {/* Image banner */}
+              {}
               <div className="h-44 w-full rounded-xl overflow-hidden relative mb-5 select-none">
                 <div
                   className="absolute inset-0 bg-cover bg-center"
@@ -131,7 +128,7 @@ useEffect(()=>{
                 </span>
               </div>
 
-              {/* Title & Host */}
+              {}
               <div className="flex items-start justify-between mb-4">
                 <div>
                   <h3 className="font-outfit text-2xl font-black uppercase text-white leading-none tracking-wide">{trek.title}</h3>
@@ -144,7 +141,7 @@ useEffect(()=>{
                 </div>
               </div>
 
-              {/* Interactive Seats Selector */}
+              {}
               <div className="bg-white/[0.02] border border-white/5 rounded-xl p-4 mb-6 select-none flex items-center justify-between">
                 <div>
                   <span className="text-[10px] text-gray-400 uppercase font-black tracking-widest block leading-none">Trek Participants</span>
@@ -169,7 +166,7 @@ useEffect(()=>{
                 </div>
               </div>
 
-              {/* Billing Itemized List */}
+              {}
               <div className="border-t border-white/5 pt-4 flex flex-col gap-2.5">
                 <span className="text-[10px] text-gray-500 font-black uppercase tracking-widest">Pricing Breakdown</span>
 
@@ -190,7 +187,7 @@ useEffect(()=>{
               </div>
             </div>
 
-            {/* Total Payable Row */}
+            {}
             <div className="border-t border-white/10 pt-5 mt-6 flex items-center justify-between">
               <div className="flex flex-col">
                 <span className="text-[10px] text-gray-500 uppercase font-black leading-none">Total Payable</span>
@@ -201,11 +198,11 @@ useEffect(()=>{
 
           </section>
 
-          {/* RIGHT COLUMN: Participant details form / Sign in Gate */}
+          {}
           <section className="flex-1 bg-[#121317]/95 border border-white/10 rounded-2xl p-6 shadow-2xl flex flex-col justify-between min-h-[420px]">
 
             {!user ? (
-              /* SIGN IN GATE */
+              
               <div className="h-full flex flex-col justify-center items-center text-center p-4 select-none">
                 <span className="text-4xl block mb-4"></span>
                 <h3 className="font-outfit text-xl font-bold uppercase tracking-wide text-white mb-2">Authentication Required</h3>
@@ -220,7 +217,7 @@ useEffect(()=>{
                 </Link>
               </div>
             ) : (
-              /* PARTICIPANT DETAILS FORM */
+              
               <form onSubmit={handleProceedSubmit} className="h-full flex flex-col justify-between select-text gap-6">
 
                 <div>
@@ -229,7 +226,7 @@ useEffect(()=>{
                     Please provide your contact information. These details will be verified by the lead guide.
                   </p>
 
-                  {/* Form Error Banner */}
+                  {}
                   {errorMsg && (
                     <div className="bg-red-500/10 border border-red-500/20 text-red-400 rounded-xl p-3.5 flex items-center gap-2 text-xs mb-4 animate-pulse select-none">
                       <span className="h-1.5 w-1.5 rounded-full bg-red-500 flex-shrink-0" />
@@ -238,7 +235,7 @@ useEffect(()=>{
                   )}
 
                   <div className="flex flex-col gap-4">
-                    {/* Full Name */}
+                    {}
                     <div className="flex flex-col gap-1.5">
                       <label className="text-[9px] text-gray-500 uppercase tracking-widest font-black select-none">Full Name</label>
                       <input
@@ -251,7 +248,7 @@ useEffect(()=>{
                       />
                     </div>
 
-                    {/* Email Address */}
+                    {}
                     <div className="flex flex-col gap-1.5">
                       <label className="text-[9px] text-gray-500 uppercase tracking-widest font-black select-none">Email Address</label>
                       <input
@@ -264,9 +261,9 @@ useEffect(()=>{
                       />
                     </div>
 
-                    {/* Phone Number & Emergency Phone */}
+                    {}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      {/* Phone Number */}
+                      {}
                       <div className="flex flex-col gap-1.5">
                         <label className="text-[9px] text-gray-500 uppercase tracking-widest font-black select-none">Phone Number</label>
                         <input
@@ -279,7 +276,7 @@ useEffect(()=>{
                         />
                       </div>
 
-                      {/* Emergency Phone */}
+                      {}
                       <div className="flex flex-col gap-1.5">
                         <label className="text-[9px] text-gray-500 uppercase tracking-widest font-black select-none">Emergency Contact</label>
                         <input
@@ -294,7 +291,7 @@ useEffect(()=>{
                   </div>
                 </div>
 
-                {/* Submit button */}
+                {}
                 <button
                   type="submit"
                   className="w-full bg-trek-brown hover:bg-trek-brown-hover text-white font-bold py-4 rounded-xl uppercase tracking-wider text-xs shadow-[0_0_20px_rgba(139,90,43,0.35)] hover:shadow-[0_0_25px_rgba(139,90,43,0.55)] transition-all duration-300 select-none flex items-center justify-center gap-2 mt-8 active:scale-[0.98] cursor-pointer border-none"
@@ -311,7 +308,7 @@ useEffect(()=>{
 
       </main>
 
-      {/* FOOTER */}
+      {}
       <footer className="relative z-20 px-6 md:px-12 lg:px-24 py-6 bg-[#050505] border-t border-white/5 flex items-center justify-between select-none">
         <div className="flex items-center gap-3">
           <svg className="w-6 h-6 text-trek-brown" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">

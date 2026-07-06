@@ -25,26 +25,26 @@ export default function UserManagement() {
   const [roleFilter, setRoleFilter] = useState("all");
   const [statusFilter, setStatusFilter] = useState("all");
   
-  // Selected user for details modal
+  
   const [selectedUser, setSelectedUser] = useState<any | null>(null);
   const [detailModalOpen, setDetailModalOpen] = useState(false);
   
-  // Selected user for delete modal
+  
   const [deleteUserTarget, setDeleteUserTarget] = useState<any | null>(null);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
 
-  // 1. Fetch Users
+  
   const { data: usersResponse, isLoading } = useQuery({
     queryKey: ["users"],
     queryFn: UserService.getAllUsers
   });
 
-  // 2. Suspend/Activate Mutation
+  
   const suspendMutation = useMutation({
     mutationFn: UserService.toggleUserSuspension,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["users"] });
-      // Update selectedUser if open
+      
       if (selectedUser) {
         const updatedUser = queryClient
           .getQueryData<{ success: boolean; data: any[] }>(["users"])
@@ -54,7 +54,7 @@ export default function UserManagement() {
     }
   });
 
-  // 3. Delete Mutation
+  
   const deleteMutation = useMutation({
     mutationFn: UserService.deleteUser,
     onSuccess: () => {
@@ -81,7 +81,7 @@ export default function UserManagement() {
 
   const users = usersResponse?.data || [];
 
-  // Filter logic
+  
   const filteredUsers = users.filter((u: any) => {
     const matchesSearch = 
       u.name.toLowerCase().includes(search.toLowerCase()) ||
@@ -90,7 +90,7 @@ export default function UserManagement() {
       
     const matchesRole = roleFilter === "all" || u.role === roleFilter;
     const matchesStatus = statusFilter === "all" || u.status === statusFilter;
-    // Exclude admins and organizers (organizers have their own dedicated page)
+    
     const excludeAdminsAndOrganizers = u.role !== "admin" && u.role !== "organizer";
     
     return matchesSearch && matchesRole && matchesStatus && excludeAdminsAndOrganizers;
@@ -98,7 +98,7 @@ export default function UserManagement() {
 
   return (
     <div className="space-y-6">
-      {/* Title */}
+      {}
       <div>
         <h1 className="text-3xl font-extrabold tracking-tight">User Management</h1>
         <p className="text-muted-foreground text-sm mt-1">
@@ -106,11 +106,11 @@ export default function UserManagement() {
         </p>
       </div>
 
-      {/* Filters Card */}
+      {}
       <Card>
         <CardContent className="pt-6">
           <div className="flex flex-col md:flex-row gap-4 items-center justify-between">
-            {/* Search */}
+            {}
             <div className="relative w-full md:max-w-xs">
               <span className="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400 pointer-events-none">
                 <Search className="h-4 w-4" />
@@ -124,7 +124,7 @@ export default function UserManagement() {
               />
             </div>
 
-            {/* Filter controls */}
+            {}
             <div className="flex flex-wrap items-center gap-3 w-full md:w-auto">
               <div className="flex items-center gap-2">
                 <span className="text-xs text-slate-500 font-semibold uppercase">Role</span>
@@ -155,7 +155,7 @@ export default function UserManagement() {
         </CardContent>
       </Card>
 
-      {/* Users Table */}
+      {}
       <Card>
         <CardHeader className="pb-2">
           <CardTitle>Registered Accounts ({filteredUsers.length})</CardTitle>
@@ -259,7 +259,7 @@ export default function UserManagement() {
         </CardContent>
       </Card>
 
-      {/* 1. Detail Profile Modal */}
+      {}
       <Dialog open={detailModalOpen} onOpenChange={setDetailModalOpen}>
         {selectedUser && (
           <DialogContent onClose={() => setDetailModalOpen(false)} className="max-w-xl">
@@ -271,7 +271,7 @@ export default function UserManagement() {
             </DialogHeader>
 
             <div className="space-y-6 mt-4">
-              {/* Header profile details */}
+              {}
               <div className="flex gap-4 items-center">
                 <img
                   src={selectedUser.profileImage || `https://api.dicebear.com/7.x/initials/svg?seed=${selectedUser.name}`}
@@ -292,7 +292,7 @@ export default function UserManagement() {
                 </div>
               </div>
 
-              {/* Account Meta grid */}
+              {}
               <div className="grid grid-cols-2 gap-4 bg-muted/30 p-4 rounded-xl border border-border/40 text-xs">
                 <div>
                   <span className="text-slate-500 block mb-0.5">Email Address</span>
@@ -314,7 +314,7 @@ export default function UserManagement() {
                 </div>
               </div>
 
-              {/* Bio */}
+              {}
               <div className="space-y-1">
                 <h4 className="text-xs font-bold uppercase tracking-wider text-slate-500">Bio</h4>
                 <p className="text-xs text-slate-700 dark:text-slate-300 italic leading-relaxed">
@@ -322,7 +322,7 @@ export default function UserManagement() {
                 </p>
               </div>
 
-              {/* Activities Logs */}
+              {}
               <div className="space-y-2.5">
                 <h4 className="text-xs font-bold uppercase tracking-wider text-slate-500">Activity History Log</h4>
                 <div className="max-h-40 overflow-y-auto space-y-2 pr-1 border border-border/40 rounded-xl p-3 bg-muted/10">
@@ -352,7 +352,7 @@ export default function UserManagement() {
         )}
       </Dialog>
 
-      {/* 2. Delete Confirmation Modal */}
+      {}
       <Dialog open={deleteModalOpen} onOpenChange={setDeleteModalOpen}>
         {deleteUserTarget && (
           <DialogContent onClose={() => setDeleteModalOpen(false)}>

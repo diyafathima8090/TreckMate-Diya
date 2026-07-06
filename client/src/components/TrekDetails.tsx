@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useParams, Link } from './RouterCompatibility';
 import { useAuth } from '../context/AuthContext';
 import Navbar from './Navbar';
-import { getTrekById } from '../utils/trekStorage';
+import { getTrekById } from '../services/trekStorage';
 import { MapContainer as LeafletMapContainer, TileLayer as LeafletTileLayer, Marker as LeafletMarker, Polyline as LeafletPolyline, useMap } from 'react-leaflet';
 const MapContainer = LeafletMapContainer as any;
 const TileLayer = LeafletTileLayer as any;
@@ -60,7 +60,7 @@ const coordsLookup = {
 const TrekDetails = () => {
   const { id } = useParams();
 
-  // Dynamic database containing trek-specific layout specs
+  
   const allTreksData = {
     munnar: {
       title: "Munnar Mist Trek",
@@ -262,7 +262,8 @@ const TrekDetails = () => {
       
       if (user && data) {
         try {
-          const res = await fetch('/api/bookings/my-bookings', {
+          const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+          const res = await fetch(`${API_URL}/api/bookings/my-bookings`, {
             headers: {
               'Authorization': `Bearer ${localStorage.getItem(`token_${user.role}`) || ''}`
             }
@@ -295,11 +296,11 @@ const TrekDetails = () => {
     fetchTrekAndBooking();
   }, [id, user]);
 
-  // INTERACTIVE STATES
+  
   const [isMapExpanded, setIsMapExpanded] = useState(false);
   const [guideRequested, setGuideRequested] = useState(false);
   const [toastMessage, setToastMessage] = useState('');
-  // Fetch historical chat from MongoDB (Optional legacy cleanup)
+  
   const [userLocation, setUserLocation] = useState(null);
 
   useEffect(() => {
@@ -312,7 +313,7 @@ const TrekDetails = () => {
   }, []);
 
   useEffect(() => {
-    // ... removed old chat logic ...
+    
   }, []);
 
   if (loading) {
@@ -344,14 +345,14 @@ const TrekDetails = () => {
   return (
     <div className="font-sans text-white bg-trek-dark min-h-screen selection:bg-orange-500 selection:text-white pt-20 relative overflow-hidden">
 
-      {/* Toast Notification */}
+      {}
       {toastMessage && (
         <div className="fixed top-24 right-5 z-50 bg-orange-600 text-white px-5 py-3 rounded-lg shadow-[0_0_15px_rgba(234,88,12,0.6)] font-black uppercase tracking-wider animate-bounce text-xs border border-orange-400">
           {toastMessage}
         </div>
       )}
 
-      {/* Wilderness Background Photograph */}
+      {}
       <div
         className="absolute inset-0 bg-cover bg-center z-0"
         style={{ backgroundImage: `url('${trek.image || trek.banner || '/trips_details_bg.png'}')` }}
@@ -362,12 +363,12 @@ const TrekDetails = () => {
 
       <Navbar />
 
-      {/* 1. HERO HEADER SECTION */}
+      {}
       <section className="relative z-20 max-w-7xl mx-auto px-6 md:px-12 lg:px-24 pt-10 pb-6 select-text">
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-white/10 pb-8">
 
           <div className="max-w-xl">
-            {/* Tag capsules */}
+            {}
             <div className="flex items-center gap-2 mb-3.5 select-none">
               {['Camping', 'Trekking', 'High Altitude'].map((tag) => (
                 <span key={tag} className="bg-white/5 border border-white/10 rounded px-2.5 py-1 text-[9px] font-black uppercase text-gray-300 tracking-wider">
@@ -376,12 +377,12 @@ const TrekDetails = () => {
               ))}
             </div>
 
-            {/* Title */}
+            {}
             <h1 className="font-outfit text-4xl md:text-5xl lg:text-6xl font-black uppercase tracking-tight text-white leading-none mb-3.5">
               {trek.title}
             </h1>
 
-            {/* Location & Ratings */}
+            {}
             <div className="flex flex-wrap items-center gap-4 text-xs font-light text-gray-400">
               <span className="flex items-center gap-1.5 font-bold text-orange-400">
                  {trek.location}
@@ -392,7 +393,7 @@ const TrekDetails = () => {
               </span>
             </div>
 
-            {/* Actions Row */}
+            {}
             <div className="flex flex-wrap items-center gap-3.5 mt-6 select-none">
               {bookingStatus === 'confirmed' ? (
                 <button disabled className="bg-green-500/20 text-green-400 border border-green-500/50 font-bold px-8 py-3 rounded-xl uppercase tracking-wider text-xs shadow-none transition-all duration-300">
@@ -424,7 +425,7 @@ const TrekDetails = () => {
             </div>
           </div>
 
-          {/* Weather status capsule right side */}
+          {}
           <div className="bg-white/5 border border-white/10 rounded-2xl p-4 flex items-center gap-4 w-fit select-none backdrop-blur-md shadow-lg h-max self-start md:self-end">
             <svg className="w-8 h-8 text-amber-400 animate-pulse" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m0-12.728l.707.707m12.728 12.728l.707-.707M12 8a4 4 0 100 8 4 4 0 000-8z" />
@@ -438,41 +439,41 @@ const TrekDetails = () => {
         </div>
       </section>
 
-      {/* 2. SPLIT LAYOUT COLUMNS GRID */}
+      {}
       <main className="relative z-20 max-w-7xl mx-auto px-6 md:px-12 lg:px-24 py-6 pb-24 flex flex-col lg:flex-row gap-10 items-stretch">
 
-        {/* LEFT COLUMN: Overview & Journey Details */}
+        {}
         <section className="flex-[1.8] flex flex-col gap-8 select-text">
 
-          {/* Trek description */}
+          {}
           <div>
             <p className="text-sm md:text-base text-gray-400 font-light leading-relaxed select-text">
               {trek.description}
             </p>
           </div>
 
-          {/* Quick Stats Grid (4 Columns) */}
+          {}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 select-none">
 
-            {/* Stat 1: Difficulty */}
+            {}
             <div className="bg-[#121317]/80 border border-white/5 rounded-2xl p-4 flex flex-col justify-between hover:border-white/10 transition shadow-md">
               <span className="text-[8px] text-gray-500 uppercase font-black tracking-widest block mb-3">️ Difficulty</span>
               <span className="text-md font-extrabold text-white uppercase tracking-wide leading-none">{trek.difficulty}</span>
             </div>
 
-            {/* Stat 2: Duration */}
+            {}
             <div className="bg-[#121317]/80 border border-white/5 rounded-2xl p-4 flex flex-col justify-between hover:border-white/10 transition shadow-md">
               <span className="text-[8px] text-gray-500 uppercase font-black tracking-widest block mb-3"> Duration</span>
               <span className="text-md font-extrabold text-white uppercase tracking-wide leading-none">{trek.duration}</span>
             </div>
 
-            {/* Stat 3: Max Seats */}
+            {}
             <div className="bg-[#121317]/80 border border-white/5 rounded-2xl p-4 flex flex-col justify-between hover:border-white/10 transition shadow-md">
               <span className="text-[8px] text-gray-500 uppercase font-black tracking-widest block mb-3"> Max Seats</span>
               <span className="text-md font-extrabold text-white uppercase tracking-wide leading-none">{trek.seats}</span>
             </div>
 
-            {/* Stat 4: Availability */}
+            {}
             <div className="bg-orange-500/10 border border-orange-500/20 rounded-2xl p-4 flex flex-col justify-between hover:border-orange-500/35 transition shadow-md animate-pulse">
               <span className="text-[8px] text-orange-400 uppercase font-black tracking-widest block mb-3"> Availability</span>
               <span className="text-md font-extrabold text-orange-400 uppercase tracking-wide leading-none">{trek.left}</span>
@@ -480,7 +481,7 @@ const TrekDetails = () => {
 
           </div>
 
-          {/* Departure Reporting Details */}
+          {}
           <div className="bg-white/[0.01] border border-white/10 rounded-2xl p-5 select-none grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="flex items-center gap-3.5">
               <div className="h-10 w-10 bg-white/5 border border-white/10 rounded-xl flex items-center justify-center text-lg shadow-inner">
@@ -502,30 +503,30 @@ const TrekDetails = () => {
             </div>
           </div>
 
-          {/* Journey Timeline vertical flow */}
+          {}
           <div>
             <h3 className="font-outfit text-xl font-black uppercase text-white tracking-wide mb-6">Journey Timeline</h3>
 
             <div className="flex flex-col gap-6 relative pl-3">
-              {/* Central vertical dotted line */}
+              {}
               <div className="absolute left-[1.125rem] top-4 bottom-4 w-0.5 border-l border-dashed border-white/20 select-none" />
 
               {trek.timeline.map((item, index) => (
                 <div key={index} className="flex gap-5 relative group">
 
-                  {/* Timeline Node Circle */}
+                  {}
                   <div className="h-9 w-9 rounded-full bg-[#121317] border border-white/20 flex items-center justify-center text-xs font-black text-orange-500 relative z-10 select-none shadow-md group-hover:border-orange-500 transition duration-300">
                     {item.num}
                   </div>
 
-                  {/* Card Content */}
+                  {}
                   <div className="flex-grow bg-[#121317]/80 border border-white/5 rounded-2xl p-5 hover:border-white/15 hover:bg-[#121317]/95 transition duration-300 shadow-xl flex flex-col justify-between gap-3">
                     <div>
                       <h4 className="font-outfit text-md font-extrabold uppercase text-white">{item.title}</h4>
                       <p className="text-xs text-gray-400 font-light leading-relaxed mt-2 select-text">{item.desc}</p>
                     </div>
 
-                    {/* Checkpoint accessories / warnings */}
+                    {}
                     {item.hasDining && (
                       <div className="flex gap-2 items-center select-none text-[10px] text-gray-400 border-t border-white/5 pt-2 w-max">
                          Food Provided <span className="h-1.5 w-1.5 rounded-full bg-white/20" />  Base Camp Shelter
@@ -552,19 +553,19 @@ const TrekDetails = () => {
 
         </section>
 
-        {/* RIGHT COLUMN: Interactive Widgets */}
+        {}
         <section className="flex-1 flex flex-col gap-6 select-none">
 
-          {/* A. Live Route Path Map Widget */}
+          {}
           <div className="bg-[#121317]/90 border border-white/10 rounded-2xl p-5 shadow-xl flex flex-col gap-3 relative overflow-hidden group">
 
-            {/* Header */}
+            {}
             <div className="flex justify-between items-center border-b border-white/5 pb-2.5">
               <span className="text-[10px] text-orange-400 font-black uppercase tracking-widest">Satellite Trail</span>
               <span className="text-[8px] bg-white/5 border border-white/10 rounded px-1.5 py-0.5 text-gray-400 font-semibold tracking-wider font-mono">Live route path</span>
             </div>
 
-            {/* Micro map canvas preview */}
+            {}
             <div className="h-36 w-full bg-black/40 border border-white/5 rounded-xl flex items-center justify-center relative overflow-hidden select-none">
               {(() => {
                 const coords = coordsLookup[id] || coordsLookup.munnar;
@@ -602,7 +603,7 @@ const TrekDetails = () => {
                 );
               })()}
               
-              {/* Blurred overlays */}
+              {}
               <div className="absolute inset-0 bg-gradient-to-t from-[#121317]/90 to-transparent pointer-events-none z-10" />
 
               <Link
@@ -615,12 +616,12 @@ const TrekDetails = () => {
 
           </div>
 
-          {/* B. Live Group Chat Widget */}
+          {}
           <div className="flex-1 bg-[#121317]/95 border border-white/10 rounded-2xl shadow-xl overflow-hidden h-[400px]">
              <ChatLayout singleRoomId={id} />
           </div>
 
-          {/* C. Amber Weather Alert Banner */}
+          {}
           <div className="bg-red-500/10 border border-red-500/20 rounded-2xl p-4 flex items-start gap-3 shadow-md animate-pulse">
             <svg className="w-5 h-5 text-red-400 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
@@ -633,10 +634,10 @@ const TrekDetails = () => {
             </div>
           </div>
 
-          {/* D. Guide Profile Credentials Card */}
+          {}
           <div className="bg-[#121317]/95 border border-white/10 rounded-2xl p-5 shadow-xl flex items-center justify-between">
             <div className="flex items-center gap-3.5 select-text">
-              {/* Guide initials avatar */}
+              {}
               <div className="h-10 w-10 rounded-xl bg-gradient-to-tr from-trek-brown/30 to-white/10 border border-white/10 flex items-center justify-center font-black text-lg text-orange-400 shadow-inner select-none">
                 {trek.guide.avatar}
               </div>
@@ -644,7 +645,7 @@ const TrekDetails = () => {
                 <span className="text-[8px] text-gray-500 uppercase font-black leading-none">Certified Trail Guide</span>
                 <span className="text-sm font-extrabold text-white mt-1 leading-none">{trek.guide.name}</span>
 
-                {/* Stats subrow */}
+                {}
                 <div className="flex items-center gap-2 text-[9px] text-gray-500 mt-2 font-medium select-none">
                   <span>{trek.guide.treks}</span>
                   <span className="h-1 w-1 rounded-full bg-white/10" />
@@ -653,7 +654,7 @@ const TrekDetails = () => {
               </div>
             </div>
 
-            {/* Contact Trigger */}
+            {}
             <button
               onClick={() => setGuideRequested(!guideRequested)}
               className={`text-[9px] font-black uppercase tracking-widest border rounded-xl px-4.5 py-2.5 transition active:scale-95 cursor-pointer shadow-md select-none ${guideRequested
@@ -669,7 +670,7 @@ const TrekDetails = () => {
 
       </main>
 
-      {/* FOOTER */}
+      {}
       <footer className="relative z-20 px-6 md:px-12 lg:px-24 py-8 bg-black border-t border-white/5 flex items-center justify-between select-none">
         <div className="flex items-center gap-3">
           <svg className="w-6 h-6 text-orange-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
@@ -682,12 +683,12 @@ const TrekDetails = () => {
         </div>
       </footer>
 
-      {/* INTERACTIVE FULLSCREEN SVG MAP MODAL OVERLAY */}
+      {}
       {isMapExpanded && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-black/95 backdrop-blur-md select-none animate-fadeIn">
           <div className="max-w-3xl w-full bg-[#121317] border border-white/10 rounded-2xl overflow-hidden shadow-2xl p-6 relative flex flex-col justify-between h-[85vh]">
 
-            {/* Header info */}
+            {}
             <div className="flex justify-between items-center border-b border-white/5 pb-4 mb-4 select-text">
               <div>
                 <span className="text-[10px] text-orange-400 font-black uppercase tracking-widest block leading-none">satellite route map</span>
@@ -701,11 +702,11 @@ const TrekDetails = () => {
               </button>
             </div>
 
-            {/* Detailed Topographic SVG path Canvas */}
+            {}
             <div className="flex-grow flex items-center justify-center relative w-full h-[60vh] bg-black/30 border border-white/5 rounded-xl p-4 select-none">
               <svg viewBox="0 0 500 500" className="w-full h-full text-gray-600 select-none">
 
-                {/* Elevation Contours */}
+                {}
                 <path d="M 20 80 Q 120 150 200 60 T 350 40" fill="none" stroke="currentColor" strokeWidth="0.75" className="opacity-10" />
                 <path d="M 40 180 Q 160 220 280 140 T 440 120" fill="none" stroke="currentColor" strokeWidth="0.75" className="opacity-15" />
                 <path d="M 60 280 Q 200 320 340 240 T 480 200" fill="none" stroke="currentColor" strokeWidth="0.75" className="opacity-20" />
@@ -713,11 +714,11 @@ const TrekDetails = () => {
                 <path d="M 380 180 C 410 180 440 220 440 250 C 440 280 410 320 380 320 C 350 320 320 280 320 250 C 320 220 350 180 380 180 Z" fill="none" stroke="currentColor" strokeWidth="0.75" className="opacity-15" />
                 <path d="M 380 200 C 400 200 420 230 420 250 C 420 270 400 300 380 300 C 360 300 340 270 340 250 C 340 230 360 200 380 200 Z" fill="none" stroke="currentColor" strokeWidth="0.75" className="opacity-20" />
 
-                {/* Compass lines */}
+                {}
                 <line x1="250" y1="40" x2="250" y2="460" stroke="currentColor" strokeWidth="0.5" className="opacity-15" strokeDasharray="6 6" />
                 <line x1="40" y1="250" x2="460" y2="250" stroke="currentColor" strokeWidth="0.5" className="opacity-15" strokeDasharray="6 6" />
 
-                {/* Main GPS Route Path */}
+                {}
                 <path
                   id="expanded-route-path"
                   d="M 90 410 Q 180 360 220 290 T 320 230 T 410 130"
@@ -731,31 +732,31 @@ const TrekDetails = () => {
                   <animate attributeName="stroke-dashoffset" values="100;0" dur="8s" repeatCount="indefinite" />
                 </path>
 
-                {/* Current position */}
+                {}
                 <g>
                   <circle cx="90" cy="410" r="14" fill="#f97316" fillOpacity="0.15" className="animate-ping" style={{ animationDuration: '3s' }} />
                   <circle cx="90" cy="410" r="7" fill="#1e1e1e" stroke="#f97316" strokeWidth="2.5" className="drop-shadow-[0_0_6px_rgba(249,115,22,0.8)]" />
                   <circle cx="90" cy="410" r="2.5" fill="#f97316" />
                 </g>
 
-                {/* Waypoints */}
+                {}
                 <circle cx="180" cy="340" r="6" fill="#f97316" className="drop-shadow-[0_0_4px_rgba(249,115,22,0.8)] animate-pulse" />
                 <circle cx="280" cy="270" r="6" fill="#f97316" className="drop-shadow-[0_0_4px_rgba(249,115,22,0.8)] animate-pulse" />
 
-                {/* Peak Summit flag */}
+                {}
                 <g>
                   <circle cx="410" cy="130" r="18" fill="#10b981" fillOpacity="0.15" className="animate-pulse" />
                   <circle cx="410" cy="130" r="7" fill="#1e1e1e" stroke="#10b981" strokeWidth="2.5" className="drop-shadow-[0_0_8px_rgba(16,185,129,0.8)]" />
                   <path d="M 410 130 L 410 108 L 424 114 L 410 120 Z" fill="#10b981" stroke="#10b981" strokeWidth="1" />
                 </g>
 
-                {/* Labels */}
+                {}
                 <text x="90" y="440" fill="#9ca3af" fontSize="9" fontWeight="bold" textAnchor="middle">START POINT</text>
                 <text x="410" y="90" fill="#10b981" fontSize="9" fontWeight="extrabold" textAnchor="middle">SUMMIT SUMMIT</text>
               </svg>
             </div>
 
-            {/* Footer note */}
+            {}
             <div className="border-t border-white/5 pt-4 text-center select-text">
               <span className="text-[10px] text-gray-500 uppercase tracking-widest font-semibold">Active GPS coordinate feed updated real-time over satellite</span>
             </div>

@@ -85,13 +85,13 @@ const KeyStatistics = () => {
   useEffect(() => {
     const interval = setInterval(() => {
       setActiveIndex((prev) => (prev === 0 ? 1 : 0));
-    }, 4500); // 4.5 seconds
+    }, 4500); 
     return () => clearInterval(interval);
   }, []);
 
   return (
     <section className="relative w-full py-28 bg-black overflow-hidden">
-      {/* Background Image with Overlay */}
+      {}
       <div 
         className="absolute inset-0 bg-cover bg-center opacity-100 z-0"
         style={{ backgroundImage: "url('https://images.unsplash.com/photo-1506905925346-21bda4d32df4?q=80&w=1920&auto=format&fit=crop')" }}
@@ -99,12 +99,12 @@ const KeyStatistics = () => {
       <div className="absolute inset-0 bg-gradient-to-b from-trek-dark via-[#111111]/40 to-trek-dark z-10"></div>
 
       <div className="relative z-20 max-w-7xl mx-auto px-6 md:px-12 lg:px-24">
-        {/* Title */}
+        {}
         <h2 className="font-outfit text-4xl md:text-5xl font-black text-center text-white mb-20 tracking-tight">
           Key Statistics at a Glance
         </h2>
 
-        {/* Container for sliding content - fixed height to prevent layout shift */}
+        {}
         <div className="relative w-full h-32 md:h-36">
           {datasets.map((data, index) => {
             const isActive = index === activeIndex;
@@ -135,7 +135,7 @@ const KeyStatistics = () => {
           })}
         </div>
 
-        {/* Bottom Traits */}
+        {}
         <div className="flex flex-wrap items-center justify-center gap-6 mt-16 text-white font-bold text-sm tracking-wider uppercase">
           <span className="hover:text-orange-500 transition-colors cursor-pointer">Expert Guides</span>
           <div className="w-1.5 h-1.5 rounded-full bg-orange-500"></div>

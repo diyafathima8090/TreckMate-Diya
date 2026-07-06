@@ -7,7 +7,7 @@ import Autoplay from 'embla-carousel-autoplay';
 import Fade from 'embla-carousel-fade';
 import Navbar from '../components/Navbar';
 import KeyStatistics from '../components/KeyStatistics';
-import axios from '../utils/axios';
+import axios from '../lib/axios';
 
 const ScrollRevealParagraph = () => {
   const containerRef = useRef(null);
@@ -20,8 +20,8 @@ const ScrollRevealParagraph = () => {
       const rect = containerRef.current.getBoundingClientRect();
       const windowHeight = window.innerHeight;
 
-      // We want to trigger when the top of the element enters the bottom 90% of screen
-      // and finish when it reaches the top 20% of screen
+      
+      
       const start = windowHeight * 0.9;
       const end = windowHeight * 0.2;
 
@@ -41,7 +41,7 @@ const ScrollRevealParagraph = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // Structural definition of the text segments
+  
   const segments = [
     { text: "At ", highlight: false },
     { text: "TrekMate", highlight: true, brand: true },
@@ -56,7 +56,7 @@ const ScrollRevealParagraph = () => {
     { text: ", we minimize our footprint so that these majestic summits remain wild and pristine for generations to come.", highlight: false }
   ];
 
-  // Flatten segments into a list of characters
+  
   const charactersList = [];
   segments.forEach(segment => {
     const chars = segment.text.split('');
@@ -78,10 +78,10 @@ const ScrollRevealParagraph = () => {
     >
       {charactersList.map((item, index) => {
         const charThreshold = index / total;
-        // Fade range width (how fast each letter resolves)
+        
         const range = 0.15;
 
-        let opacity = 0.18; // default dimmed opacity for a clean high-end look
+        let opacity = 0.18; 
         let colorClass = "text-white/20";
         let weightClass = "font-medium";
 
@@ -89,7 +89,7 @@ const ScrollRevealParagraph = () => {
           const fadeVal = (progress - charThreshold) / range;
           const clampedFade = Math.min(Math.max(fadeVal, 0), 1);
 
-          opacity = 0.18 + clampedFade * 0.82; // resolves to 1.0 opacity
+          opacity = 0.18 + clampedFade * 0.82; 
 
           if (item.brand) {
             colorClass = "text-trek-brown transition-colors duration-300";
@@ -102,7 +102,7 @@ const ScrollRevealParagraph = () => {
             weightClass = "font-medium";
           }
         } else {
-          // Inactive states styled beautifully
+          
           if (item.brand) {
             colorClass = "text-trek-brown/20";
             weightClass = "font-black";
@@ -138,7 +138,7 @@ const Home = () => {
   const [selectedIndex, setSelectedIndex] = useState(0);
 
   useEffect(() => {
-    // Fetch banners
+    
     const fetchBanners = async () => {
       try {
         const res = await axios.get('/content/banners');
@@ -153,7 +153,7 @@ const Home = () => {
         console.error("Error fetching banners:", err);
       }
       
-      // Fallback
+      
       setBanners([
         { imageUrl: 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=1920&auto=format&fit=crop' },
         { imageUrl: 'https://images.unsplash.com/photo-1469334031218-e382a71b716b?q=80&w=1920&auto=format&fit=crop' },
@@ -177,13 +177,13 @@ const Home = () => {
 
   return (
     <div className="font-sans text-white bg-trek-dark min-h-screen selection:bg-trek-brown selection:text-white flex flex-col">
-      {/* Sleek transparent navigation bar */}
+      {}
       <Navbar />
       <div className="animate-page flex-1 w-full">
 
-        {/* Hero Section */}
+        {}
         <section className="relative min-h-screen w-full flex flex-col justify-between overflow-hidden">
-          {/* Embla Carousel Background with Dark Overlay */}
+          {}
           <div className="absolute inset-0 z-0 overflow-hidden bg-trek-dark">
             <div className="w-full h-full" ref={emblaRef}>
               <div className="flex h-full w-full" style={{ touchAction: 'none' }}>
@@ -212,16 +212,16 @@ const Home = () => {
                 ))}
               </div>
             </div>
-            {/* Cinematic lighting gradients to ensure optimal readability on the left, and nice shadows */}
+            {}
             <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/40 to-transparent z-10 pointer-events-none"></div>
             <div className="absolute inset-0 bg-gradient-to-t from-trek-dark via-transparent to-black/30 z-10 pointer-events-none"></div>
           </div>
 
-          {/* Hero Content Wrapper */}
+          {}
           <div className="relative z-20 flex-grow flex flex-col justify-center px-6 md:px-12 lg:px-24 pt-32 pb-16">
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center w-full">
 
-              {/* Left Column Content */}
+              {}
               <main className="lg:col-span-7 flex flex-col justify-center text-left">
                 <h1 className="font-outfit text-5xl md:text-8xl lg:text-[96px] font-black tracking-tight leading-[1.02] mb-6 uppercase drop-shadow-sm flex flex-col">
                   <span className="text-white animate-hero-text" style={{ animationDelay: '100ms' }}>Explore.</span>

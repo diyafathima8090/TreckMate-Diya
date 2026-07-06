@@ -3,7 +3,7 @@ export const uploadImage = (req, res) => {
     if (!req.file) {
       return res.status(400).json({ success: false, message: 'No file uploaded' });
     }
-    // Return the secure URL from cloudinary
+    
     res.status(200).json({
       success: true,
       imageUrl: req.file.path,

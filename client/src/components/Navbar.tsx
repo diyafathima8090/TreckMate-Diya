@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from './RouterCompatibility';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
-import axios from '../utils/axios';
+import axios from '../lib/axios';
 
 const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -29,7 +29,7 @@ const Navbar = () => {
     };
   }, []);
 
-  // Close mobile menu when route changes
+  
   useEffect(() => {
     setMobileMenuOpen(false);
   }, [location.pathname]);
@@ -80,7 +80,7 @@ const Navbar = () => {
     >
       <div className="max-w-7xl mx-auto px-6 md:px-12 lg:px-24 flex items-center justify-between relative">
 
-        {/* Logo Section */}
+        {}
         <Link to="/" id="nav-logo" className="flex items-center gap-3 text-white group z-50 relative">
           <svg className="w-8 h-8 text-white transition-transform duration-500 group-hover:rotate-12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
             <path d="m8 3 4 8 5-5 5 15H2L8 3z" />
@@ -88,7 +88,7 @@ const Navbar = () => {
           <span className="font-outfit font-black tracking-widest text-xl uppercase">TrekMate</span>
         </Link>
 
-        {/* Navigation Menu Links (Desktop) */}
+        {}
         <div className="hidden md:flex items-center gap-8 text-sm font-medium tracking-wider uppercase text-gray-300">
           <Link
             to="/"
@@ -142,13 +142,13 @@ const Navbar = () => {
           )}
         </div>
 
-        {/* Dynamic CTA Portal Button / Profile Dropdown & Mobile Toggle */}
+        {}
         <div className="relative flex items-center gap-4 z-50">
           {loading ? (
             <div className="h-10 w-10 rounded-full border border-white/10 bg-white/5 animate-pulse"></div>
           ) : user ? (
             <div className="flex items-center gap-3">
-              {/* Notification Bell Icon */}
+              {}
               <Link
                 to="/notifications"
                 className="p-2 text-gray-400 hover:text-white transition duration-200 cursor-pointer relative flex items-center justify-center"
@@ -162,7 +162,7 @@ const Navbar = () => {
                 )}
               </Link>
 
-              {/* Profile Avatar Trigger */}
+              {}
               <button
                 onClick={() => setDropdownOpen(!dropdownOpen)}
                 className="h-10 w-10 rounded-full border border-white/25 bg-gradient-to-tr from-trek-brown/30 to-white/10 hover:border-white/50 transition-all duration-300 flex items-center justify-center cursor-pointer shadow-lg hover:scale-105 active:scale-95 overflow-hidden relative"
@@ -182,17 +182,17 @@ const Navbar = () => {
                 )}
               </button>
 
-              {/* Profile Dropdown Menu */}
+              {}
               {dropdownOpen && (
                 <>
-                  {/* Invisible Overlay to catch clicks and close dropdown */}
+                  {}
                   <div
                     className="fixed inset-0 z-40 cursor-default"
                     onClick={() => setDropdownOpen(false)}
                   />
                   <div className="absolute right-0 top-full mt-2 w-52 rounded-xl bg-[#121317]/95 border border-white/10 p-2 shadow-2xl z-50 flex flex-col gap-1.5 select-text origin-top-right">
 
-                    {/* User info header */}
+                    {}
                     <div className="px-3 py-2 border-b border-white/5 flex flex-col gap-0.5">
                       <span className="text-xs font-black text-white truncate uppercase">{user.name}</span>
                       <span className="text-[10px] text-gray-500 truncate font-light">@{user.username}</span>
@@ -201,7 +201,7 @@ const Navbar = () => {
                       </span>
                     </div>
 
-                    {/* Navigation inside menu */}
+                    {}
                     <Link
                       to="/profile"
                       onClick={() => setDropdownOpen(false)}
@@ -233,7 +233,7 @@ const Navbar = () => {
                       </Link>
                     )}
 
-                    {/* Logout Trigger */}
+                    {}
                     <button
                       onClick={handleLogout}
                       className="w-full text-left px-3 py-2 text-xs font-semibold text-red-400 hover:text-red-300 hover:bg-red-500/5 rounded-lg transition border-t border-white/5 pt-2 mt-1"
@@ -257,7 +257,7 @@ const Navbar = () => {
             </Link>
           )}
 
-          {/* Hamburger Menu Toggle (Mobile) */}
+          {}
           <button
             className="md:hidden ml-2 text-white p-2 outline-none"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
@@ -276,7 +276,7 @@ const Navbar = () => {
         </div>
       </div>
 
-      {/* Mobile Drawer Overlay */}
+      {}
       <div
         className={`md:hidden fixed inset-0 z-40 bg-[#0a0a0a]/95 backdrop-blur-xl transition-all duration-300 ease-in-out transform flex flex-col pt-24 px-6 pb-6 ${mobileMenuOpen ? 'translate-y-0 opacity-100 pointer-events-auto' : '-translate-y-full opacity-0 pointer-events-none'
           }`}
