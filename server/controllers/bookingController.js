@@ -211,7 +211,7 @@ export const getOrganizerBookings = async (req, res, next) => {
     
     const bookings = await Booking.find({
       trekOrganizer: { $regex: new RegExp('^' + req.user.name + '$', 'i') }
-    }).sort({ createdAt: -1 });
+    }).sort({ createdAt: -1 }).lean();
 
     res.status(200).json({
       success: true,
@@ -235,7 +235,7 @@ export const getOrganizerRequests = async (req, res, next) => {
     const bookings = await Booking.find({
       trekOrganizer: { $regex: new RegExp('^' + req.user.name + '$', 'i') },
       booking_status: 'pending'
-    }).sort({ createdAt: -1 });
+    }).sort({ createdAt: -1 }).lean();
 
     res.status(200).json({ success: true, count: bookings.length, data: bookings });
   } catch (error) {
@@ -261,7 +261,7 @@ export const getUserBookings = async (req, res, next) => {
         { user: req.user._id },
         { email: { $regex: new RegExp('^' + req.user.email + '$', 'i') } }
       ]
-    }).sort({ createdAt: -1 });
+    }).sort({ createdAt: -1 }).lean();
 
     res.status(200).json({
       success: true,
@@ -297,7 +297,8 @@ export const getAllBookingsAdmin = async (req, res, next) => {
       .populate('user', 'name email')
       .populate('user_id', 'name email')
       .populate('trip_id', 'title')
-      .sort({ createdAt: -1 });
+      .sort({ createdAt: -1 })
+      .lean();
 
     const formattedBookings = bookings.map((b) => ({
       _id: b._id,

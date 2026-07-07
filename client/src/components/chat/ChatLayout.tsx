@@ -210,7 +210,7 @@ export const ChatLayout: React.FC<ChatLayoutProps> = ({ singleRoomId }) => {
               {loadingMessages ? (
                 <div className="flex justify-center p-4"><Loader2 className="w-6 h-6 text-[#ff6b35] animate-spin" /></div>
               ) : messages.map((msg, idx) => {
-                const isOwn = msg.sender_id?._id === user._id;
+                const isOwn = msg.sender_id?._id === user?._id;
                 const showAvatar = !isOwn && (idx === 0 || messages[idx - 1].sender_id?._id !== msg.sender_id?._id);
                 return (
                   <MessageBubble 

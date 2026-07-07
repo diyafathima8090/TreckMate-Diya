@@ -7,7 +7,8 @@ export const getMyPayments = async (req, res) => {
   try {
     const payments = await Payment.find({ user_id: req.user._id })
       .populate('trip_id', 'title location image')
-      .sort({ createdAt: -1 });
+      .sort({ createdAt: -1 })
+      .lean();
     res.json({ success: true, data: payments });
   } catch (err) {
     res.status(500).json({ success: false, message: err.message });
@@ -20,7 +21,8 @@ export const getAllPayments = async (req, res) => {
     const payments = await Payment.find()
       .populate('user_id', 'name email')
       .populate('trip_id', 'title location')
-      .sort({ createdAt: -1 });
+      .sort({ createdAt: -1 })
+      .lean();
 
     const formattedPayments = payments.map((p) => ({
       _id: p._id,

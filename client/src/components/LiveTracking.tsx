@@ -14,7 +14,6 @@ import axiosInstance from '../lib/axios';
 
 const MapUpdater = ({ center, isRecentering, isNavigating }) => {
   const map = useMap();
-
   useEffect(() => {
     if (isRecentering) {
       map.flyTo(center, 15, { animate: true, duration: 1.5 });
