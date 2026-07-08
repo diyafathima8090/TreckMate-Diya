@@ -12,7 +12,7 @@ import EmojiPicker from 'emoji-picker-react';
 import 'leaflet/dist/leaflet.css';
 import axiosInstance from '../lib/axios';
 
-const MapUpdater = ({ center, isRecentering, isNavigating }) => {
+const MapUpdater = React.memo(({ center, isRecentering, isNavigating }: any) => {
   const map = useMap();
   useEffect(() => {
     if (isRecentering) {
@@ -23,7 +23,7 @@ const MapUpdater = ({ center, isRecentering, isNavigating }) => {
   }, [isRecentering, isNavigating, center, map]);
 
   return null;
-};
+});
 
 const beaconIcon = new L.divIcon({
   className: 'bg-transparent',
@@ -67,9 +67,7 @@ const checkpointIcon = new L.divIcon({
 });
 
 const LiveTracking = () => {
-  const { id } = useParams();
-
-  // Dynamic Lookup for Trek Details to configure the HUD
+  const { id } = useParams();
   const trekLookup = {
     munnar: { title: "Munnar Mist Trek", location: "Munnar, Kerala", temp: "14°C Clear", difficulty: "Moderate", guide: "Sarah Williams", baseAlt: 1000, targetAlt: 2400, lat: 10.0889, lng: 77.0597, distance: "8.5 km", eta: "1h 15m" },
     wayanad: { title: "Wayanad River Camp", location: "Wayanad, Kerala", temp: "22°C Clear", difficulty: "Easy", guide: "David Miller", baseAlt: 800, targetAlt: 1800, lat: 11.6854, lng: 76.1320, distance: "6.2 km", eta: "45m" },
@@ -83,9 +81,7 @@ const LiveTracking = () => {
     agasthyakoodam: { title: "Agasthyakoodam Summit", location: "Trivandrum, India", temp: "13°C Foggy", difficulty: "Expert", guide: "Sarah Williams", baseAlt: 1100, targetAlt: 1868, lat: 8.6189, lng: 77.2488, distance: "20.0 km", eta: "6h 30m" }
   };
 
-  const trek = trekLookup[id] || trekLookup.munnar;
-
-  // Navigation Control Bar States
+  const trek = trekLookup[id] || trekLookup.munnar;
   const [isNavigating, setIsNavigating] = useState(false);
   const [navigationProgress, setNavigationProgress] = useState(0.2); // start at 20% on the path
   const [isRecentering, setIsRecentering] = useState(false);
@@ -93,9 +89,7 @@ const LiveTracking = () => {
   const [flashlightOn, setFlashlightOn] = useState(false);
   const [flashlightPos, setFlashlightPos] = useState({ x: '50%', y: '50%' });
   const [mapStyle, setMapStyle] = useState('osm'); // 'osm' | 'sat' | 'topo'
-  const [realCoords, setRealCoords] = useState(null);
-
-  // Jitter and simulation states
+  const [realCoords, setRealCoords] = useState(null);
   const [jitter, setJitter] = useState({ lat: 0, lng: 0, alt: 0 });
   const [heartRate, setHeartRate] = useState(115);
   const [secondsElapsed, setSecondsElapsed] = useState(12845); // ~3h 34m 5s
@@ -104,18 +98,13 @@ const LiveTracking = () => {
   const [sosCountdown, setSosCountdown] = useState(5);
   const [compassAngle, setCompassAngle] = useState(32);
   const [channelConnected, setChannelConnected] = useState(true);
-  const [toastMessage, setToastMessage] = useState('');
-
-  // Chat & Socket State
+  const [toastMessage, setToastMessage] = useState('');
   const socketRef = useRef(null);
-  const [chatMessages, setChatMessages] = useState([]);
-
-  // Fetch historical chat from MongoDB
+  const [chatMessages, setChatMessages] = useState([]);
   useEffect(() => {
     const fetchChatHistory = async () => {
       try {
-        const res = await axiosInstance.get(`/messages/${id || 'munnar'}`);
-        // Ensure data is array or handle response structure
+        const res = await axiosInstance.get(`/messages/${id || 'munnar'}`);
         const data = res.data.data || res.data;
         if (Array.isArray(data)) {
           setChatMessages(data);
@@ -160,33 +149,26 @@ const LiveTracking = () => {
     return () => {
       socketRef.current.disconnect();
     };
-  }, [id]);
-  // Checklist points (Static titles, status updated dynamically below)
+  }, [id]);
   const checkpointsData = [
     { name: "Base Camp Alpha", range: [0, 0.2] },
     { name: "River Crossing Point", range: [0.2, 0.45] },
     { name: "Ridge Outlook Peak", range: [0.45, 0.7] },
     { name: "High Meadow Shelter", range: [0.7, 0.9] },
     { name: "Summit Flagpoint", range: [0.9, 1.0] }
-  ];
-
-  // Helper to trigger floating toast
+  ];
   const triggerToast = (msg) => {
     setToastMessage(msg);
     setTimeout(() => {
       setToastMessage('');
     }, 3500);
-  };
-
-  // Format Elapsed Time
+  };
   const formatTime = (totalSeconds) => {
     const hrs = Math.floor(totalSeconds / 3600).toString().padStart(2, '0');
     const mins = Math.floor((totalSeconds % 3600) / 60).toString().padStart(2, '0');
     const secs = (totalSeconds % 60).toString().padStart(2, '0');
     return `${hrs}:${mins}:${secs}`;
-  };
-
-  // 1. Navigation Progress Loop (advances tracker when active)
+  };
   useEffect(() => {
     let navInterval;
     if (isNavigating) {
@@ -202,9 +184,7 @@ const LiveTracking = () => {
       }, 1000);
     }
     return () => clearInterval(navInterval);
-  }, [isNavigating]);
-
-  // 1b. Real Geolocation Tracking (overrides simulation if available)
+  }, [isNavigating]);
   useEffect(() => {
     let watchId;
     if (isNavigating) {
@@ -229,32 +209,23 @@ const LiveTracking = () => {
         navigator.geolocation.clearWatch(watchId);
       }
     };
-  }, [isNavigating]);
-
-  // 2. Telemetry and Environment Jitter Simulation Loop
+  }, [isNavigating]);
   useEffect(() => {
     const jitterInterval = setInterval(() => {
       setJitter({
         lat: (Math.random() - 0.5) * 0.0001,
         lng: (Math.random() - 0.5) * 0.0001,
         alt: Math.floor((Math.random() - 0.5) * 3)
-      });
-
-      // Heart rate fluctuation (increases if navigating, simulating exertion)
+      });
       setHeartRate(prev => {
         const exertion = isNavigating ? 4 : 0;
         return Math.min(150, Math.max(98, prev + Math.floor((Math.random() - 0.45) * 4) + exertion));
-      });
-
-      // Signal lock drift
-      setSignalStrength(prev => Math.min(100, Math.max(90, prev + Math.floor((Math.random() - 0.5) * 2))));
-
-      // Map compass heading drift
+      });
+      setSignalStrength(prev => Math.min(100, Math.max(90, prev + Math.floor((Math.random() - 0.5) * 2))));
       setCompassAngle(prev => (prev + Math.floor((Math.random() - 0.5) * 4)) % 360);
     }, 1500);
 
-    const clockInterval = setInterval(() => {
-      // Clock only ticks when navigating
+    const clockInterval = setInterval(() => {
       if (isNavigating) {
         setSecondsElapsed(prev => prev + 1);
       }
@@ -264,9 +235,7 @@ const LiveTracking = () => {
       clearInterval(jitterInterval);
       clearInterval(clockInterval);
     };
-  }, [isNavigating]);
-
-  // 3. SOS Countdown Timer Effect
+  }, [isNavigating]);
   useEffect(() => {
     let timer;
     if (sosState === 'counting') {
@@ -277,9 +246,7 @@ const LiveTracking = () => {
       }
     }
     return () => clearTimeout(timer);
-  }, [sosState, sosCountdown]);
-
-  // Transmit SOS when active
+  }, [sosState, sosCountdown]);
   useEffect(() => {
     if (sosState === 'active' && socketRef.current) {
       socketRef.current.emit('trigger_sos', {
@@ -305,9 +272,7 @@ const LiveTracking = () => {
     if (socketRef.current) {
       socketRef.current.emit('cancel_sos', { trekId: id || 'munnar' });
     }
-  };
-
-  // Interpolated GPS Coordinates along the trek path
+  };
   const startLat = trek.lat;
   const startLng = trek.lng;
   const endLat = trek.lat + 0.0136;
@@ -315,17 +280,11 @@ const LiveTracking = () => {
 
   const currentLat = realCoords ? realCoords.lat : startLat + (endLat - startLat) * navigationProgress;
   const currentLng = realCoords ? realCoords.lng : startLng + (endLng - startLng) * navigationProgress;
-  const currentAlt = realCoords && realCoords.alt ? realCoords.alt : Math.floor(trek.baseAlt + (trek.targetAlt - trek.baseAlt) * navigationProgress);
-
-  // Apply jitter noise to coordinate readings (only for simulation)
+  const currentAlt = realCoords && realCoords.alt ? realCoords.alt : Math.floor(trek.baseAlt + (trek.targetAlt - trek.baseAlt) * navigationProgress);
   const displayLat = currentLat + (realCoords ? 0 : jitter.lat);
   const displayLng = currentLng + (realCoords ? 0 : jitter.lng);
-  const displayAlt = Math.min(trek.targetAlt, Math.max(trek.baseAlt, currentAlt + (realCoords ? 0 : jitter.alt)));
-
-  // Compute elevation percentages
-  const elevationPercentage = Math.round(((displayAlt - trek.baseAlt) / (trek.targetAlt - trek.baseAlt)) * 100);
-
-  // Emit Telemetry over Socket
+  const displayAlt = Math.min(trek.targetAlt, Math.max(trek.baseAlt, currentAlt + (realCoords ? 0 : jitter.alt)));
+  const elevationPercentage = Math.round(((displayAlt - trek.baseAlt) / (trek.targetAlt - trek.baseAlt)) * 100);
   useEffect(() => {
     if (socketRef.current) {
       socketRef.current.emit('send_telemetry', {
@@ -341,9 +300,7 @@ const LiveTracking = () => {
         time: formatTime(secondsElapsed)
       });
     }
-  }, [displayLat, displayLng, displayAlt, heartRate, navigationProgress, isNavigating]);
-
-  // Emit SOS active state
+  }, [displayLat, displayLng, displayAlt, heartRate, navigationProgress, isNavigating, secondsElapsed, id, trek.title]);
   useEffect(() => {
     if (sosState === 'active' && socketRef.current) {
       socketRef.current.emit('trigger_sos', {
@@ -355,9 +312,7 @@ const LiveTracking = () => {
         time: new Date().toLocaleTimeString()
       });
     }
-  }, [sosState, displayLat, displayLng]);
-
-  // Compass and radar alignment
+  }, [sosState, displayLat, displayLng, id, trek.title]);
   const getBeaconCoords = (progress) => {
     const points = [
       { x: 120, y: 430 }, // Base Alpha
@@ -381,9 +336,7 @@ const LiveTracking = () => {
     };
   };
 
-  const beacon = getBeaconCoords(navigationProgress);
-
-  // Checkpoint State updates dynamically based on navigationProgress
+  const beacon = getBeaconCoords(navigationProgress);
   const getStatus = (index) => {
     if (index === 0) return navigationProgress >= 0.2 ? "passed" : "active";
     if (index === 1) {
@@ -416,9 +369,7 @@ const LiveTracking = () => {
     if (index === 3) return navigationProgress >= 0.9 ? "13:45" : navigationProgress >= 0.7 ? "Current" : "--:--";
     if (index === 4) return navigationProgress >= 1.0 ? "14:30" : navigationProgress >= 0.9 ? "Current" : "--:--";
     return "--:--";
-  };
-
-  // Flashlight Mouse Move Tracker
+  };
   const handleMouseMove = (e) => {
     if (!flashlightOn) return;
     const rect = e.currentTarget.getBoundingClientRect();
